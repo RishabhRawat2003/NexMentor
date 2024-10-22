@@ -1,6 +1,8 @@
 import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import crypto from 'crypto'
+
 
 const studentSchema = new Schema({
     username: {
@@ -94,6 +96,12 @@ const studentSchema = new Schema({
             type: Boolean,
             default: false
         }
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpire: {
+        type: Date
     }
 }, {
     timestamps: true
@@ -108,6 +116,16 @@ studentSchema.pre("save", async function (next) {
 studentSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
+
+studentSchema.methods.generateResetToken = function () {
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+};
 
 studentSchema.methods.generateAccessToken = function () {
     return jwt.sign(

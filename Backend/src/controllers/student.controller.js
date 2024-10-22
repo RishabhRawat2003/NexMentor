@@ -5,6 +5,8 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { OAuth2Client } from 'google-auth-library';
 import { sendVerificationEmail } from './emailService.js'
 import { Student } from '../models/student.model.js'
+import nodemailer from 'nodemailer'
+import crypto from 'crypto'
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -171,10 +173,95 @@ const studentLogout = asyncHandler(async (req, res) => {
 })
 
 
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    const student = await Student.findOne({ email });
+    if (!student) {
+        throw new ApiError(404, "User with this email does not exist");
+    }
+
+    const resetToken = student.generateResetToken()
+    await student.save({ validateBeforeSave: false });
+
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`; // change this url when deploying to production or for local host
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: student.email,
+            subject: 'Password Reset Request',
+            text: `
+Dear User,
+
+We received a request to reset the password for your account. If you made this request, please click the link below or copy and paste it into your browser to proceed with resetting your password:
+
+${resetUrl}
+
+If you did not request this password reset, please disregard this email. Your account remains secure.
+
+Best regards,  
+NeXmentor Support Team
+`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res
+            .status(200)
+            .json(new ApiResponse(200, {}, "reset link send successfully"));
+
+    } catch (error) {
+        student.resetPasswordToken = undefined;
+        student.resetPasswordExpire = undefined;
+        await student.save({ validateBeforeSave: false });
+
+        throw new ApiError(500, 'Email could not be sent');
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+
+    const user = await Student.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Invalid or expired token");
+    }
+
+    user.password = password
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password is reset Successfully"));
+});
+
+
 export {
     createStudentAccount,
     verifyOTP,
     studentLogin,
     studentDetails,
-    studentLogout
+    studentLogout,
+    forgotPassword,
+    resetPassword
 }

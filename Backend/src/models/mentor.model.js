@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import crypto from 'crypto'
 
 const mentorSchema = new Schema({
     username: {
@@ -101,24 +102,6 @@ const mentorSchema = new Schema({
         type: Boolean,
         default: false
     },
-    // experience: [
-    //     {
-    //         jobTitle: {
-    //             type: String,
-    //             trim: true
-    //         },
-    //         company: {
-    //             type: String,
-    //             trim: true
-    //         },
-    //         startDate: {
-    //             type: Date
-    //         },
-    //         endDate: {
-    //             type: Date
-    //         }
-    //     }
-    // ],
     refreshToken: {
         type: String,
     },
@@ -133,7 +116,13 @@ const mentorSchema = new Schema({
             type: String,
             trim: true
         }
-    ]
+    ],
+    resetPasswordToken:{
+        type:String
+    },
+    resetPasswordExpire:{
+        type:Date
+    }
 }, {
     timestamps: true
 })
@@ -147,6 +136,16 @@ mentorSchema.pre("save", async function (next) {
 mentorSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
+
+mentorSchema.methods.generateResetToken = function () {
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+};
 
 mentorSchema.methods.generateAccessToken = function () {
     return jwt.sign(

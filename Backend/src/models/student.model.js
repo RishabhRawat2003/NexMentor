@@ -3,6 +3,13 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 const studentSchema = new Schema({
+    username: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        index: true,
+        unique: true
+    },
     email: {
         type: String,
         required: true,
@@ -28,6 +35,20 @@ const studentSchema = new Schema({
         trim: true,
         min: 6
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    otp: {
+        type: String
+    },
+    otpExpiry: {
+        type: Date
+    },
+    googleId: {
+        type: String,
+        unique: true
+    },
     address: {
         city: {
             type: String,
@@ -39,7 +60,7 @@ const studentSchema = new Schema({
         }
     },
     number: {
-        type: number,
+        type: Number,
         trim: true,
         unique: true
     },
@@ -80,7 +101,7 @@ const studentSchema = new Schema({
 
 studentSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next()
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 

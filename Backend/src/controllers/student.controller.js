@@ -1,14 +1,14 @@
-import { Mentor } from '../models/mentor.model.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { ApiError } from '../utils/ApiError.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { OAuth2Client } from 'google-auth-library';
 import { sendVerificationEmail } from './emailService.js'
+import { Student } from '../models/student.model.js'
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
-        const user = await Mentor.findById(userId);
+        const user = await Student.findById(userId);
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
 
@@ -26,29 +26,29 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-const createAccount = asyncHandler(async (req, res) => {
+const createStudentAccount = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-        throw new ApiError(400, 'All Fields are required')
+        return new ApiError(400, 'Please fill in all fields')
     }
 
     if (password !== confirmPassword) {
         throw new ApiError(400, 'Passwords do not match')
     }
 
-    const existingMentor = await Mentor.findOne({
+    const existingStudent = await Student.findOne({
         email
     })
 
-    if (existingMentor) {
+    if (existingStudent) {
         throw new ApiError(400, 'Username or Email already exists')
     }
 
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
 
-    const newMentor = new Mentor({
+    const newStudent = new Student({
         firstName,
         email,
         lastName,
@@ -57,7 +57,7 @@ const createAccount = asyncHandler(async (req, res) => {
         otpExpiry
     });
 
-    await newMentor.save();
+    await newStudent.save();
 
     const mailContent = `
 Dear User,
@@ -78,85 +78,53 @@ The NeXmentor Team`;
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "OTP sent to your email."));
-})
 
+})
 
 const verifyOTP = asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
 
-    const mentor = await Mentor.findOne({ email });
+    const student = await Student.findOne({ email });
 
-    if (!mentor) {
-        throw new ApiError(404, 'Mentor not found');
+    if (!student) {
+        throw new ApiError(404, 'Student not found');
     }
 
-    if (mentor.otp !== otp || Date.now() > mentor.otpExpiry) {
+    if (student.otp !== otp || Date.now() > student.otpExpiry) {
         throw new ApiError(400, 'Invalid or expired OTP');
     }
 
-    mentor.isVerified = true;
-    mentor.otp = undefined;
-    mentor.otpExpiry = undefined;
-    await mentor.save();
+    student.isVerified = true;
+    student.otp = undefined;
+    student.otpExpiry = undefined;
+    await student.save();
 
     return res
         .status(200)
-        .json(new ApiResponse(200, {}, "Email verified successfully"));
+        .json(new ApiResponse(200, {}, "Email verified successfully and Your account is Created"));
 });
 
-const mentorAcademicDetails = asyncHandler(async (req, res) => {
-    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement } = req.body
 
-    if (!email || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !scoreCard || !studentId || !statement) {
-        throw new ApiError(401, "All Fields are Required")
-    }
-
-    const existedMentor = await Mentor.findOneAndUpdate(
-        { email },
-        {
-            neetScore,
-            number,
-            neetExamYear,
-            yearOfEducation,
-            institute,
-            scoreCard,
-            studentId,
-            statement
-        },
-        { new: true }
-    )
-
-    if (!existedMentor) {
-        throw new ApiError(404, "Mentor Not Found")
-    }
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, {}, "Mentor details updated successfully"))
-})
-
-
-
-const mentorLogin = asyncHandler(async (req, res) => {
+const studentLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
         throw new ApiError(401, "Email and Password are Required")
     }
 
-    const existedMentor = await Mentor.findOne({ email })
+    const existedStudent = await Student.findOne({ email })
 
-    if (!existedMentor) {
+    if (!existedStudent) {
         throw new ApiError(404, "Mentor Not Found")
     }
 
-    const isPasswordCorrect = await existedMentor.comparePassword(password)
+    const isPasswordCorrect = await existedStudent.comparePassword(password)
 
     if (!isPasswordCorrect) {
         throw new ApiError(401, "Invalid Password")
     }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existedMentor._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existedStudent._id)
 
     const options = {
         httpOnly: true,
@@ -170,15 +138,15 @@ const mentorLogin = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Login Successfully"))
 })
 
-const mentorDetails = asyncHandler(async (req, res) => {
-    const mentor = await Mentor.findById(req.user._id).select("-password")
+const studentDetails = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.user._id).select("-password")
     return res
         .status(200)
-        .json(new ApiResponse(200, mentor, "Mentor Details Fetched Successfully"))
+        .json(new ApiResponse(200, student, "Student Details Fetched Successfully"))
 })
 
-const mentorLogout = asyncHandler(async (req, res) => {
-    await Mentor.findByIdAndUpdate(
+const studentLogout = asyncHandler(async (req, res) => {
+    await Student.findByIdAndUpdate(
         req.user._id,
         {
             $unset: {
@@ -199,14 +167,14 @@ const mentorLogout = asyncHandler(async (req, res) => {
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "Mentor Logged Out Successfully"))
+        .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
 })
 
+
 export {
-    createAccount,
+    createStudentAccount,
     verifyOTP,
-    mentorAcademicDetails,
-    mentorLogin,
-    mentorDetails,
-    mentorLogout
+    studentLogin,
+    studentDetails,
+    studentLogout
 }

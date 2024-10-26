@@ -4,12 +4,13 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 
 const mentorSchema = new Schema({
-    username: {
+    mentorId: {
         type: String,
         trim: true,
         lowercase: true,
         index: true,
-        unique: true
+        unique: true,
+        sparse: true
     },
     email: {
         type: String,
@@ -117,11 +118,11 @@ const mentorSchema = new Schema({
             trim: true
         }
     ],
-    resetPasswordToken:{
-        type:String
+    resetPasswordToken: {
+        type: String
     },
-    resetPasswordExpire:{
-        type:Date
+    resetPasswordExpire: {
+        type: Date
     }
 }, {
     timestamps: true

@@ -8,6 +8,9 @@ import { Student } from '../models/student.model.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await Student.findById(userId);
@@ -255,6 +258,62 @@ const resetPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password is reset Successfully"));
 });
 
+const googleLogin = asyncHandler(async (req, res) => {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+       throw new ApiError(401,"NO token Provided")
+    }
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const {
+            sub: googleId,
+            email,
+            given_name: firstName,
+            family_name: lastName,
+            picture: profilePicture,
+            email_verified: isVerified
+        } = payload;
+
+        let student = await Student.findOne({ googleId });
+
+        if (!student) {
+            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+
+            student = new Student({
+                googleId,
+                email,
+                firstName,
+                lastName,
+                profilePicture,
+                isVerified,
+                username: generatedUsername
+            });
+            await student.save()
+        }
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(student._id);
+
+        const options = {
+            httpOnly: true,
+            secure: false // Change to true in production
+        };
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(new ApiResponse(200, student, "Google login successful"));
+
+    } catch (error) {
+        throw new ApiError(500, "Error during Google login")
+    }
+});
 
 export {
     createStudentAccount,
@@ -263,5 +322,6 @@ export {
     studentDetails,
     studentLogout,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    googleLogin
 }

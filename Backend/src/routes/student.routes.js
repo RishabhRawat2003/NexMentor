@@ -1,5 +1,5 @@
 import Router from 'express'
-import { createStudentAccount, forgotPassword, resetPassword, studentDetails, studentLogin, studentLogout, verifyOTP } from '../controllers/student.controller.js'
+import { createStudentAccount, forgotPassword, googleLogin, resetPassword, studentDetails, studentLogin, studentLogout, verifyOTP } from '../controllers/student.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 const router = Router()
 
@@ -11,6 +11,7 @@ router.route("/student-details").post(verifyJWT, studentDetails)
 router.route("/logout").post(verifyJWT, studentLogout)
 router.route("/forgot-password").post(forgotPassword)
 router.route("/reset-password/:token").post(resetPassword)
+router.route("/google-auth").post(googleLogin)
 
 
 export default router

@@ -8,6 +8,9 @@ import { sendVerificationEmail } from './emailService.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await Mentor.findById(userId);
@@ -29,9 +32,9 @@ const generateOTP = () => {
 };
 
 const createAccount = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password, confirmPassword } = req.body
+    const { firstName, lastName, email, password, confirmPassword, city, state } = req.body
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !city || !state) {
         throw new ApiError(400, 'All Fields are required')
     }
 
@@ -56,7 +59,11 @@ const createAccount = asyncHandler(async (req, res) => {
         lastName,
         password,
         otp,
-        otpExpiry
+        otpExpiry,
+        address: {
+            city,
+            state
+        }
     });
 
     await newMentor.save();
@@ -82,7 +89,6 @@ The NeXmentor Team`;
         .json(new ApiResponse(200, {}, "OTP sent to your email."));
 })
 
-
 const verifyOTP = asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
 
@@ -107,7 +113,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 const mentorAcademicDetails = asyncHandler(async (req, res) => {
-    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement } = req.body
+    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement } = req.body // here email should be changed to id
 
     if (!email || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !scoreCard || !studentId || !statement) {
         throw new ApiError(401, "All Fields are Required")
@@ -136,8 +142,6 @@ const mentorAcademicDetails = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, {}, "Mentor details updated successfully"))
 })
-
-
 
 const mentorLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
@@ -213,7 +217,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     }
 
     const resetToken = mentor.generateResetToken();
-    
+
     await mentor.save({ validateBeforeSave: false });
 
     const resetUrl = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`; // change this url when deploying to production or for local host
@@ -285,6 +289,64 @@ const resetPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password is reset Successfully"));
 });
 
+// this controller can create a account if not have and login too 
+const googleLogin = asyncHandler(async (req, res) => {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+        throw new ApiError(401, "NO token Provided")
+    }
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const {
+            sub: googleId,
+            email,
+            given_name: firstName,
+            family_name: lastName,
+            picture: profilePicture,
+            email_verified: isVerified
+        } = payload;
+
+        let mentor = await Mentor.findOne({ googleId });
+
+        if (!mentor) {
+            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+
+            mentor = new Mentor({
+                googleId,
+                email,
+                firstName,
+                lastName,
+                profilePicture,
+                isVerified,
+                mentorId: generatedUsername
+            });
+            await mentor.save()
+        }
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(mentor._id);
+
+        const options = {
+            httpOnly: true,
+            secure: false // Change to true in production
+        };
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(new ApiResponse(200, mentor, "Google login successful"));
+
+    } catch (error) {
+        throw new ApiError(500, "Error during Google login")
+    }
+});
+
 export {
     createAccount,
     verifyOTP,
@@ -293,5 +355,6 @@ export {
     mentorDetails,
     mentorLogout,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    googleLogin
 }

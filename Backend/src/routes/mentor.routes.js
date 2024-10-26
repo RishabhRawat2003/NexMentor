@@ -1,5 +1,5 @@
 import Router from 'express'
-import { createAccount, forgotPassword, mentorAcademicDetails, mentorDetails, mentorLogin, mentorLogout, resetPassword, verifyOTP } from '../controllers/mentor.controller.js'
+import { createAccount, forgotPassword, googleLogin, mentorAcademicDetails, mentorDetails, mentorLogin, mentorLogout, resetPassword, verifyOTP } from '../controllers/mentor.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 verifyJWT
 const router = Router()
@@ -13,6 +13,7 @@ router.route("/mentor-details").post(verifyJWT, mentorDetails)
 router.route("/logout").post(verifyJWT, mentorLogout)
 router.route("/forgot-password").post(forgotPassword)
 router.route("/reset-password/:token").post(resetPassword)
+router.route("/google-auth").post(googleLogin)
 
 
 

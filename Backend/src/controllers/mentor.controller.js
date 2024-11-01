@@ -3,13 +3,12 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { ApiError } from '../utils/ApiError.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
-import { OAuth2Client } from 'google-auth-library';
 import { sendVerificationEmail } from './emailService.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
+import { razorpayInstance } from '../config/razorpayConfig.js'
 
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+// const razorpayInstanceValue = razorpayInstance()
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -102,7 +101,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Invalid or expired OTP');
     }
 
-    mentor.isVerified = true;
+    mentor.emailVerified = true;
     mentor.otp = undefined;
     mentor.otpExpiry = undefined;
     await mentor.save();
@@ -113,9 +112,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 const mentorAcademicDetails = asyncHandler(async (req, res) => {
-    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement } = req.body // here email should be changed to id
+    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement, gender, neetAttempt } = req.body // here email should be changed to id
 
-    if (!email || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !scoreCard || !studentId || !statement) {
+    if (!email || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !scoreCard || !studentId || !statement || !gender || !neetAttempt) {
         throw new ApiError(401, "All Fields are Required")
     }
 
@@ -129,7 +128,9 @@ const mentorAcademicDetails = asyncHandler(async (req, res) => {
             institute,
             scoreCard,
             studentId,
-            statement
+            statement,
+            gender,
+            neetAttempt
         },
         { new: true }
     )
@@ -289,63 +290,53 @@ const resetPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password is reset Successfully"));
 });
 
-// this controller can create a account if not have and login too 
-const googleLogin = asyncHandler(async (req, res) => {
-    const { idToken } = req.body;
+//this is for when mentor first create there account
+const createOrder = asyncHandler(async (req, res) => {
+    const amount = 149 // this amount can be changed in the future
 
-    if (!idToken) {
-        throw new ApiError(401, "NO token Provided")
+    const option = {
+        amount: amount * 100,
+        currency: "INR",
+        receipt: `receipt_${new Date().getTime()}`
     }
 
     try {
-        const ticket = await client.verifyIdToken({
-            idToken: idToken,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
+        razorpayInstanceValue.orders.create(option, (err, order) => {
+            if (err) {
+                throw new ApiError(500, "Failed to create order")
+            }
+            return res
+                .status(200)
+                .json(new ApiResponse(200, order, "Order Created Successfully"))
+        })
+    } catch (error) {
+        throw new ApiError(500, "Failed to create order")
+    }
 
-        const payload = ticket.getPayload();
-        const {
-            sub: googleId,
-            email,
-            given_name: firstName,
-            family_name: lastName,
-            picture: profilePicture,
-            email_verified: isVerified
-        } = payload;
+})
 
-        let mentor = await Mentor.findOne({ googleId });
+const verifyPayment = asyncHandler(async (req, res) => {
+    const { orderId, paymentId, signature } = req.body
 
-        if (!mentor) {
-            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+    const secretKey = process.env.RAZORPAY_KEY_SECRET
 
-            mentor = new Mentor({
-                googleId,
-                email,
-                firstName,
-                lastName,
-                profilePicture,
-                isVerified,
-                mentorId: generatedUsername
-            });
-            await mentor.save()
-        }
-        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(mentor._id);
+    const hmac = crypto.createHmac("sha256", secretKey)
 
-        const options = {
-            httpOnly: true,
-            secure: false // Change to true in production
-        };
+    hmac.update(orderId + "|" + paymentId)
 
+    const generatedSignature = hmac.digest("hex")
+
+    if (generatedSignature === signature) {
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
-            .json(new ApiResponse(200, mentor, "Google login successful"));
-
-    } catch (error) {
-        throw new ApiError(500, "Error during Google login")
+            .json(new ApiResponse(200, {}, "Payment verified Successfully"))
+    } else {
+        throw new ApiError(401, "Payment not verified")
     }
-});
+
+})
+
+
 
 export {
     createAccount,
@@ -356,5 +347,6 @@ export {
     mentorLogout,
     forgotPassword,
     resetPassword,
-    googleLogin
+    createOrder,
+    verifyPayment,
 }

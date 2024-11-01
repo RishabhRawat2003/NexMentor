@@ -7,6 +7,7 @@ import { sendVerificationEmail } from './emailService.js'
 import { Student } from '../models/student.model.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
+import axios from 'axios'
 
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -99,7 +100,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Invalid or expired OTP');
     }
 
-    student.isVerified = true;
+    student.emailVerified = true;
     student.otp = undefined;
     student.otpExpiry = undefined;
     await student.save();
@@ -262,7 +263,7 @@ const googleLogin = asyncHandler(async (req, res) => {
     const { idToken } = req.body;
 
     if (!idToken) {
-       throw new ApiError(401,"NO token Provided")
+        throw new ApiError(401, "NO token Provided")
     }
 
     try {
@@ -278,7 +279,7 @@ const googleLogin = asyncHandler(async (req, res) => {
             given_name: firstName,
             family_name: lastName,
             picture: profilePicture,
-            email_verified: isVerified
+            email_verified: emailVerified
         } = payload;
 
         let student = await Student.findOne({ googleId });
@@ -292,7 +293,7 @@ const googleLogin = asyncHandler(async (req, res) => {
                 firstName,
                 lastName,
                 profilePicture,
-                isVerified,
+                emailVerified,
                 username: generatedUsername
             });
             await student.save()
@@ -315,6 +316,80 @@ const googleLogin = asyncHandler(async (req, res) => {
     }
 });
 
+
+// Linkedin authentication
+const linkdinRedirect = asyncHandler(async (req, res) => {
+    const state = process.env.ACCESS_TOKEN_SECRET;
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${process.env.LINKEDIN_REDIRECT_URI}&scope=openid%20profile%20email&state=${state}`;
+    res.redirect(authUrl);
+})
+
+const linkedinLogin = asyncHandler(async (req, res) => {
+    const { code } = req.query;
+
+    if (!code) {
+        throw new ApiError(401, "No authorization code provided");
+    }
+
+    try {
+        const tokenResponse = await axios.post(
+            "https://www.linkedin.com/oauth/v2/accessToken",
+            new URLSearchParams({
+                grant_type: "authorization_code",
+                code: code,
+                redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
+                client_id: process.env.LINKEDIN_CLIENT_ID,
+                client_secret: process.env.LINKEDIN_CLIENT_SECRET
+            }).toString(),
+            { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        );
+        const accessToken = tokenResponse.data.access_token;
+
+        const profileResponse = await axios.get("https://api.linkedin.com/v2/userinfo", {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        const linkedinId = profileResponse.data.sub;
+        const firstName = profileResponse.data.given_name;
+        const lastName = profileResponse.data.family_name;
+        const profilePicture = profileResponse.data.picture || null;
+        const email = profileResponse.data.email;
+        const emailVerified = profileResponse.data.email_verified
+
+
+        let student = await Student.findOne({ linkedinId });
+        if (!student) {
+            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+            student = new Student({
+                linkedinId,
+                email,
+                firstName,
+                lastName,
+                profilePicture,
+                username: generatedUsername,
+                emailVerified
+            });
+            await student.save();
+        }
+        const { accessToken: mentorAccessToken, refreshToken } = await generateAccessAndRefreshToken(student._id);
+
+        const options = {
+            httpOnly: true,
+            secure: false// Set secure to true in production
+        };
+
+        return res
+            .status(200)
+            .cookie("accessToken", mentorAccessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            // .json(new ApiResponse(200, mentor, "LinkedIn login successful"))
+            .redirect("http://localhost:5173")
+    } catch (error) {
+        throw new ApiError(500, "Error during LinkedIn login");
+    }
+});
+
+
 export {
     createStudentAccount,
     verifyOTP,
@@ -323,5 +398,7 @@ export {
     studentLogout,
     forgotPassword,
     resetPassword,
-    googleLogin
+    googleLogin,
+    linkdinRedirect,
+    linkedinLogin
 }

@@ -32,12 +32,12 @@ const studentSchema = new Schema({
     password: {
         type: String,
         required: function () {
-            return !this.googleId;
+            return !this.googleId && !this.linkedinId; // Password is required only if no social login IDs are present
         },
         trim: true,
         min: 6
     },
-    isVerified: {
+    emailVerified: {
         type: Boolean,
         default: false
     },
@@ -48,6 +48,10 @@ const studentSchema = new Schema({
         type: Date
     },
     googleId: {
+        type: String,
+        unique: true
+    },
+    linkedinId: {
         type: String,
         unique: true
     },

@@ -31,13 +31,11 @@ const mentorSchema = new Schema({
     },
     password: {
         type: String,
-        required: function () {
-            return !this.googleId;
-        },
+        required: true,
         trim: true,
         min: 6
     },
-    isVerified: {
+    emailVerified: {
         type: Boolean,
         default: false
     },
@@ -48,6 +46,10 @@ const mentorSchema = new Schema({
         type: Date
     },
     googleId: {
+        type: String,
+        unique: true
+    },
+    linkedinId: {
         type: String,
         unique: true
     },
@@ -98,6 +100,19 @@ const mentorSchema = new Schema({
         type: String,
         default: '',
         trim: true
+    },
+    gender: {
+        type: String,
+        default: '',
+        trim: true
+    },
+    neetAttempt: {
+        type: Number,
+        trim: true
+    },
+    verifiedFromAdmin: {
+        type: Boolean,
+        default: false
     },
     paid: {
         type: Boolean,

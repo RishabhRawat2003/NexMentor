@@ -281,8 +281,9 @@ const googleLogin = asyncHandler(async (req, res) => {
             picture: profilePicture,
             email_verified: emailVerified
         } = payload;
-
-        let student = await Student.findOne({ googleId });
+        let student = await Student.findOne({
+            $or: [{ googleId }, { email }]
+        });
 
         if (!student) {
             const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
@@ -357,7 +358,7 @@ const linkedinLogin = asyncHandler(async (req, res) => {
         const emailVerified = profileResponse.data.email_verified
 
 
-        let student = await Student.findOne({ linkedinId });
+        let student = await Student.findOne({ $or: [{ linkedinId }, { email }] });
         if (!student) {
             const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
             student = new Student({

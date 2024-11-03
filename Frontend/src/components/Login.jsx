@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import Logo from './images/logo.png';
 import { FaBars, FaArrowLeftLong } from "react-icons/fa6";
-import { AiFillLinkedin } from 'react-icons/ai';
 import { NavLink, useNavigate } from 'react-router-dom';
 import LoginForm from './utils/LoginForm';
 import sliderImage1 from './images/loginSignupPageImages/slider1.jpg';
 import sliderImage2 from './images/loginSignupPageImages/slider2.jpg';
 import sliderImage3 from './images/loginSignupPageImages/slider3.jpg';
+import Authentication from './utils/Authentication';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import ErrorPopup from './utils/ErrorPopUp';
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const images = [sliderImage1, sliderImage2, sliderImage3];
 
@@ -18,34 +19,15 @@ function Login() {
   const [activeContainer, setActiveContainer] = useState('student');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loginDetails, setLoginDetails] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false)
+  const [errorPopUp, setErrorPopUp] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
   const navigate = useNavigate()
 
 
   const handleButtonClick = (container) => {
     setActiveContainer(container);
     setLoginDetails({ email: '', password: '' });
-  };
-
-  const handleLoginRedirect = () => {
-    window.location.href = "http://localhost:8000/api/v1/students/auth/linkedin";
-  };
-
-  const handleLoginSuccess = async (response) => {
-    const idToken = response.credential;
-    try {
-      const res = await axios.post("/api/v1/students/google-auth", { idToken });
-      if (res.data.statusCode === 200) {
-        console.log(res.data);
-        // Redirect to student dashboard
-        navigate('/') // remove this when dashboard is made
-      }
-    } catch (error) {
-      console.error('Error sending ID token to backend:', error);
-    }
-  };
-
-  const handleLoginFailure = (error) => {
-    console.error('Login failed:', error);
   };
 
   const handleBulletClick = (index) => setCurrentIndex(index);
@@ -55,10 +37,16 @@ function Login() {
     setLoginDetails(prevDetails => ({ ...prevDetails, [name]: value }));
   };
 
+  function handleCloseErrorPopUp() {
+    setErrorPopUp(false)
+  }
+
   async function loginStudent() {
     try {
+      setLoading(true)
       const response = await axios.post("/api/v1/students/login", loginDetails)
       console.log(response.data.data);
+      setLoading(false)
       // Redirect to student dashboard
       navigate('/') // remove this when dashboard is made
       setLoginDetails({
@@ -67,6 +55,9 @@ function Login() {
       })
     } catch (error) {
       console.error('Error logging in student:', error);
+      setLoading(false)
+      setErrorMsg(error.response.data.message)
+      setErrorPopUp(true)
       setLoginDetails({
         email: '',
         password: ''
@@ -76,8 +67,10 @@ function Login() {
 
   async function loginMentor() {
     try {
+      setLoading(true)
       const response = await axios.post("/api/v1/mentors/login", loginDetails)
       console.log(response.data.data);
+      setLoading(false)
       // Redirect to mentor dashboard
       navigate('/') // remove this when dashboard is made
       setLoginDetails({
@@ -86,6 +79,9 @@ function Login() {
       })
     } catch (error) {
       console.error('Error logging in mentor:', error);
+      setLoading(false)
+      setErrorMsg(error.response.data.message)
+      setErrorPopUp(true)
       setLoginDetails({
         email: '',
         password: ''
@@ -96,7 +92,7 @@ function Login() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -108,6 +104,12 @@ function Login() {
 
   return (
     <>
+      {
+        loading && (<Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>)
+      }
+      <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
         <img src={Logo} alt="neXmentor Logo" />
         <div className='md:hidden'><FaBars size={30} /></div>
@@ -155,30 +157,7 @@ function Login() {
             <div className='relative w-full h-[65vh] overflow-hidden'>
               {/* Student login */}
               <div className={`absolute top-0 w-full h-full flex flex-col transition-transform duration-300 ease-in-out ${activeContainer === 'student' ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className='w-full h-auto flex items-center justify-between mt-7'>
-                  <div className='w-[45%]'>
-                    <GoogleOAuthProvider clientId={googleClientId}>
-                      <div className='w-full h-10 bg-gray-300'>
-                        <GoogleLogin
-                          onSuccess={handleLoginSuccess}
-                          onError={handleLoginFailure}
-                          text="Sign In"
-                        />
-                      </div>
-                    </GoogleOAuthProvider>
-                  </div>
-                  <div className='w-[45%] py-1 border-[1px] md:hover:bg-blue-50 active:bg-blue-50'>
-                    <button className='flex items-center px-2 rounded-sm w-full h-7.5' onClick={handleLoginRedirect}>
-                      <AiFillLinkedin size={30} className='text-blue-700' />
-                      <p className='flex-1'>LinkedIn</p>
-                    </button>
-                  </div>
-                </div>
-                <div className='h-auto mt-7 mx-4 flex items-center gap-3 justify-center'>
-                  <p className='w-full h-[1px] bg-gray-400'></p>
-                  <span className='w-[20%] text-xs text-gray-400 font-semibold text-center font-cg-times'>OR</span>
-                  <p className='w-full h-[1px] bg-gray-400'></p>
-                </div>
+                <Authentication />
                 <LoginForm
                   label="Student"
                   onChangeEvent={handleChange}

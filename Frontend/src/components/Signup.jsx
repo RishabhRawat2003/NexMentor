@@ -1,24 +1,68 @@
 import React, { useEffect, useState } from 'react'
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Logo from './images/logo.png'
 import { FaBars } from "react-icons/fa6";
-import { AiFillLinkedin } from 'react-icons/ai';
 import TextField from '@mui/material/TextField';
 import sliderImage1 from './images/loginSignupPageImages/slider1.jpg'
 import sliderImage2 from './images/loginSignupPageImages/slider2.jpg'
 import sliderImage3 from './images/loginSignupPageImages/slider3.jpg'
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { NavLink, useNavigate } from 'react-router-dom';
-
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
+import Authentication from './utils/Authentication';
+import axios from 'axios';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import VerifyEmailOTP from './utils/OtpPopUp';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Button,
+} from '@mui/material';
+import ErrorPopup from './utils/ErrorPopUp';
 
 function Signup() {
   const [activeContainer, setActiveContainer] = useState('student')
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(false)
+  const [verifyEmailPopUp, setVerifyEmailPopUp] = useState(false)
+  const [accountCreatedPopUp, setAccountCreatedPopUp] = useState(false)
+  const [errorPopUp, setErrorPopUp] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [createAccount, setCreateAccount] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
 
   const images = [sliderImage1, sliderImage2, sliderImage3];
   const navigate = useNavigate()
+
+  const handleClose = async (params) => {
+    if (params === true) {
+      setAccountCreatedPopUp(true)
+    } else {
+      try {
+        const response = await axios.post("/api/v1/students/delete-student", { email: createAccount.email })
+        console.log(response.data.data);
+      } catch (error) {
+        console.log("error while removing unverified user !!", error);
+
+      }
+    }
+    setVerifyEmailPopUp(false)
+    setCreateAccount({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    })
+  }
+
 
   function handleButtonClick(params) {
     setActiveContainer(params)
@@ -28,27 +72,7 @@ function Signup() {
     setCurrentIndex(index);
   };
 
-  const handleLogin = () => {
-    window.location.href = "http://localhost:8000/api/v1/students/auth/linkedin";
-  };
-
-  const handleLoginSuccess = async (response) => {
-    const idToken = response.credential;
-
-    try {
-      const res = await axios.post("/api/v1/students/google-auth", { idToken })
-      console.log(res.data);
-
-    } catch (error) {
-      console.error('Error sending ID token to backend:', error);
-    }
-  };
-
-  const handleLoginFailure = (error) => {
-    console.error('Login failed:', error);
-  };
-
-  async function handleEmailVerify(){
+  async function handleEmailVerify() {
     try {
       navigate('/signup/mentor-signup')
     } catch (error) {
@@ -56,6 +80,38 @@ function Signup() {
 
     }
   }
+
+  async function verifyEmailStudent() {
+    try {
+      setLoading(true)
+      const response = await axios.post("/api/v1/students/create-account", createAccount)
+      const id = response.data.data
+      localStorage.setItem("userId", JSON.stringify(id))
+      if (response.data.statusCode === 200) {
+        console.log(response.data);
+        setLoading(false)
+        setVerifyEmailPopUp(true)
+      }
+    } catch (error) {
+      console.log("Error while verifying email !", error);
+      setLoading(false)
+      setErrorMsg(error.response.data.message)
+      setErrorPopUp(true)
+    }
+  }
+
+  function handleLogin() {
+    navigate('/login')
+  }
+
+  function handleCloseErrorPopUp() {
+    setErrorPopUp(false)
+  }
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setCreateAccount(prevDetails => ({ ...prevDetails, [name]: value }));
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -68,6 +124,28 @@ function Signup() {
 
   return (
     <>
+      {
+        loading && (<Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>)
+      }
+      <VerifyEmailOTP open={verifyEmailPopUp} handleClose={handleClose} email={createAccount.email} />
+      {
+        accountCreatedPopUp && (<Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Account Created</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              Your account has been successfully created!
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleLogin} color="primary" variant="contained">
+              Login
+            </Button>
+          </DialogActions>
+        </Dialog>)
+      }
+      <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
         <img src={Logo} alt="neXmentor Logo" />
         <div className='md:hidden'><FaBars size={30} /></div>
@@ -117,27 +195,7 @@ function Signup() {
             <div className='relative w-full h-[90vh] overflow-hidden xl:h-[70vh]'>
               {/* student Signup */}
               <div className={`absolute top-0 w-full h-full flex flex-col transition-transform duration-300 ease-in-out ${activeContainer === 'student' ? 'transform translate-x-0' : 'transform -translate-x-full'}`}>
-                <div className='w-full h-auto flex items-center justify-between mt-7'>
-                  <div className='w-[45%]'>
-                    <GoogleOAuthProvider clientId={googleClientId}>
-                      <div className='w-full h-10 bg-gray-300'>
-                        <GoogleLogin
-                          onSuccess={handleLoginSuccess}
-                          onError={handleLoginFailure}
-                          text="signup_with"
-                        />
-                      </div>
-                    </GoogleOAuthProvider>
-                  </div>
-                  <div className='w-[45%] py-1 border-[1px] md:hover:bg-blue-50 active:bg-blue-50'>
-                    <button className='flex items-center px-2 rounded-sm w-full h-7.5' onClick={handleLogin}><AiFillLinkedin size={30} className='text-blue-700' /><p className='flex-1'>LinkedIn</p></button>
-                  </div>
-                </div>
-                <div className='h-auto mt-7 mx-4 flex items-center gap-3 justify-center'>
-                  <p className='w-full h-[1px] bg-gray-400'></p>
-                  <span className='w-[20%] text-xs text-gray-400 font-semibold text-center font-cg-times'>OR</span>
-                  <p className='w-full h-[1px] bg-gray-400'></p>
-                </div>
+                <Authentication />
                 <div className='w-full h-auto flex flex-col'>
                   <div className='w-full h-auto flex justify-between mt-5'>
                     <TextField
@@ -145,12 +203,18 @@ function Signup() {
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      value={createAccount.firstName}
+                      name='firstName'
+                      onChange={(e) => handleChange(e)}
                     />
                     <TextField
                       label="Last Name"
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      value={createAccount.lastName}
+                      name='lastName'
+                      onChange={(e) => handleChange(e)}
                     />
                   </div>
                   <TextField
@@ -158,6 +222,9 @@ function Signup() {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    value={createAccount.email}
+                    name='email'
+                    onChange={(e) => handleChange(e)}
                   />
                   <div className='w-full h-auto flex flex-col xl:flex-row xl:justify-between'>
                     <TextField
@@ -166,6 +233,9 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
+                      value={createAccount.password}
+                      name='password'
+                      onChange={(e) => handleChange(e)}
                     />
                     <TextField
                       label="Confirm Password"
@@ -173,9 +243,12 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
+                      value={createAccount.confirmPassword}
+                      name='confirmPassword'
+                      onChange={(e) => handleChange(e)}
                     />
                   </div>
-                  <div className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
+                  <div onClick={verifyEmailStudent} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
                     Sign Up
                   </div>
                   <div className='w-full h-auto font-cg-times text-gray-500 text-xs xl:text-sm'>

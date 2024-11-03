@@ -36,11 +36,13 @@ const createStudentAccount = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-        return new ApiError(400, 'Please fill in all fields')
+        console.log("All Fields are required !!");
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required !!"))
     }
 
     if (password !== confirmPassword) {
-        throw new ApiError(400, 'Passwords do not match')
+        console.log("Passwords do not match");
+        return res.status(401).json(new ApiResponse(401, {}, "Passwords do not match"))
     }
 
     const existingStudent = await Student.findOne({
@@ -48,7 +50,8 @@ const createStudentAccount = asyncHandler(async (req, res) => {
     })
 
     if (existingStudent) {
-        throw new ApiError(400, 'Username or Email already exists')
+        console.log('Email already exists')
+        return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
 
     const otp = generateOTP();
@@ -83,7 +86,7 @@ The NeXmentor Team`;
 
     return res
         .status(200)
-        .json(new ApiResponse(200, {}, "OTP sent to your email."));
+        .json(new ApiResponse(200, newStudent._id, "OTP send to your email."));
 
 })
 
@@ -97,7 +100,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
     }
 
     if (student.otp !== otp || Date.now() > student.otpExpiry) {
-        throw new ApiError(400, 'Invalid or expired OTP');
+        console.log('Invalid or expired OTP');
+        return res.status(401).json(new ApiResponse(401, {}, "Invalid or expired OTP"))
     }
 
     student.emailVerified = true;
@@ -110,24 +114,84 @@ const verifyOTP = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Email verified successfully and Your account is Created"));
 });
 
+const resendOtp = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    if (!id) {
+        throw new ApiError(401, "Id is required")
+    }
+
+    const student = await Student.findById(id)
+
+    if (!student) {
+        throw new ApiError(404, "Student not found")
+    }
+
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + 5 * 60 * 1000;
+
+    student.otp = otp;
+    student.otpExpiry = otpExpiry;
+    await student.save();
+
+    const mailContent = `
+Dear User,
+
+Thank you for registering on NeXmentor. 
+
+Your One-Time Password (OTP) for email verification is: **${otp}**.
+
+Please enter this OTP on the verification page to complete your registration process. 
+
+For your security, this OTP is valid for only 5 minutes. If you did not request this code, please ignore this email.
+
+Thank you,
+The NeXmentor Team`;
+
+    await sendVerificationEmail(student.email, mailContent);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "OTP resend to your email."));
+
+
+})
+
+const removeStudentIfNotVerified = asyncHandler(async (req, res) => {
+    const { email } = req.body
+
+    if (!email) {
+        throw new ApiError(400, "email is required")
+    }
+
+    await Student.findOneAndDelete({ email })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Student account is deleted Without verifying !!"))
+
+})
 
 const studentLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        throw new ApiError(401, "Email and Password are Required")
+        console.log("Email and Password are Required")
+        return res.status(400).json(new ApiResponse(401, {}, "Email and Password are Required"))
     }
 
     const existedStudent = await Student.findOne({ email })
 
     if (!existedStudent) {
-        throw new ApiError(404, "Mentor Not Found")
+        console.log("Student Not Found")
+        return res.status(400).json(new ApiResponse(404, {}, "Student Not Found"))
     }
 
     const isPasswordCorrect = await existedStudent.comparePassword(password)
 
     if (!isPasswordCorrect) {
-        throw new ApiError(401, "Invalid Password")
+        console.log("Invalid Password")
+        return res.status(400).json(new ApiResponse(401, {}, "Invalid Password"))
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existedStudent._id)
@@ -401,5 +465,7 @@ export {
     resetPassword,
     googleLogin,
     linkdinRedirect,
-    linkedinLogin
+    linkedinLogin,
+    resendOtp,
+    removeStudentIfNotVerified
 }

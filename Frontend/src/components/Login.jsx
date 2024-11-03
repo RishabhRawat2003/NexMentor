@@ -8,9 +8,10 @@ import sliderImage1 from './images/loginSignupPageImages/slider1.jpg';
 import sliderImage2 from './images/loginSignupPageImages/slider2.jpg';
 import sliderImage3 from './images/loginSignupPageImages/slider3.jpg';
 import Authentication from './utils/Authentication';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
 import ErrorPopup from './utils/ErrorPopUp';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoginParam } from './store/ParamsSlice';
+import Loading from './utils/Loading';
 
 
 const images = [sliderImage1, sliderImage2, sliderImage3];
@@ -23,11 +24,14 @@ function Login() {
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const navigate = useNavigate()
+  const dispatch = useDispatch();
 
+  const loginParam = useSelector((state) => state.data.loginParam);
 
   const handleButtonClick = (container) => {
     setActiveContainer(container);
     setLoginDetails({ email: '', password: '' });
+    dispatch(setLoginParam(container));
   };
 
   const handleBulletClick = (index) => setCurrentIndex(index);
@@ -93,6 +97,9 @@ function Login() {
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
     }, 5000);
+    if (loginParam.length > 1) {
+      setActiveContainer(loginParam)
+    }
     return () => clearInterval(interval);
   }, []);
 
@@ -105,9 +112,7 @@ function Login() {
   return (
     <>
       {
-        loading && (<Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-          <CircularProgress color="inherit" />
-        </Backdrop>)
+        loading && (<Loading />)
       }
       <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>

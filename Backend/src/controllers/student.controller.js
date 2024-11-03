@@ -80,7 +80,7 @@ Please enter this OTP on the verification page to complete your registration pro
 For your security, this OTP is valid for only 5 minutes. If you did not request this code, please ignore this email.
 
 Thank you,
-The NeXmentor Team`;
+The NexMentor Team`;
 
     await sendVerificationEmail(email, mailContent);
 
@@ -146,7 +146,7 @@ Please enter this OTP on the verification page to complete your registration pro
 For your security, this OTP is valid for only 5 minutes. If you did not request this code, please ignore this email.
 
 Thank you,
-The NeXmentor Team`;
+The NexMentor Team`;
 
     await sendVerificationEmail(student.email, mailContent);
 
@@ -277,7 +277,7 @@ ${resetUrl}
 If you did not request this password reset, please disregard this email. Your account remains secure.
 
 Best regards,  
-NeXmentor Support Team
+NexMentor Support Team
 `,
         };
 

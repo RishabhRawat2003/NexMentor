@@ -11,15 +11,17 @@ import {
 import axios from 'axios';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
 
-export default function VerifyEmailOTP({ open, handleClose, email }) {
+export default function VerifyEmailOTP({ open, handleClose, email, userType }) {
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [errorPopup, setErrorPopUp] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
-    const [msgPopUp, setMsgPopUP] = useState(false)
+    const [msgPopUp, setMsgPopUP] = useState(false);
 
-    const id = JSON.parse(localStorage.getItem("userId"))
+    const id = JSON.parse(localStorage.getItem("userId"));
+    const navigate = useNavigate()
 
     const handleOtpChange = (event) => {
         setOtp(event.target.value);
@@ -27,33 +29,39 @@ export default function VerifyEmailOTP({ open, handleClose, email }) {
 
     async function handleResendOtp() {
         try {
-            setLoading(true)
-            const response = await axios.post("/api/v1/students/resend-otp", { id })
+            setLoading(true);
+            const endpoint = userType === 'mentor' ? "/api/v1/mentors/resend-otp" : "/api/v1/students/resend-otp";
+            const response = await axios.post(endpoint, { id });
             if (response.status === 200) {
-                setLoading(false)
-                setMsgPopUP(true)
+                setLoading(false);
+                setMsgPopUP(true);
                 setTimeout(() => {
                     setMsgPopUP(false);
                 }, 4000);
             }
         } catch (error) {
-            console.log("Error while resending Otp !!", error);
+            console.log("Error while resending OTP: ", error);
+            setLoading(false);
         }
     }
 
     const handleVerify = async () => {
         try {
             setLoading(true);
-            const response = await axios.post('/api/v1/students/verify-email', { email, otp });
+            const endpoint = userType === 'mentor' ? "/api/v1/mentors/verify-email" : "/api/v1/students/verify-email";
+            const response = await axios.post(endpoint, { email, otp });
             if (response.data.statusCode === 200) {
-                console.log(response.data);
                 setLoading(false);
-                handleClose(true);
+                if (userType === 'mentor') {
+                    navigate('/signup/mentor-signup')
+                } else {
+                    handleClose(true);
+                }
             }
         } catch (error) {
             console.log("Error while verifying OTP: ", error);
             setLoading(false);
-            setErrorMsg(error.response.data.message || "An error occurred");
+            setErrorMsg(error.response?.data?.message || "An error occurred");
             setErrorPopUp(true);
 
             // Automatically hide the error message after 4 seconds
@@ -66,18 +74,19 @@ export default function VerifyEmailOTP({ open, handleClose, email }) {
 
     return (
         <>
-            {
-                loading && (
-                    <Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.modal + 1 }}>
-                        <CircularProgress color="inherit" />
-                    </Backdrop>
-                )
-            }
+            {loading && (
+                <Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.modal + 1 }}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+            )}
             <Dialog open={open}>
                 <DialogTitle>Verify Your Email</DialogTitle>
                 <DialogContent>
                     <Typography variant="body1" gutterBottom>
-                        We have sent an OTP to your email. Please enter the OTP below to verify your email address. <span onClick={handleResendOtp} className='text-[#0092DB] cursor-pointer md:hover:underline active:underline'>Resend OTP</span>
+                        We have sent an OTP to your email. Please enter the OTP below to verify your email address.
+                        <span onClick={handleResendOtp} className='text-[#0092DB] cursor-pointer md:hover:underline active:underline'>
+                            Resend OTP
+                        </span>
                     </Typography>
                     <TextField
                         label="Enter OTP"
@@ -91,8 +100,7 @@ export default function VerifyEmailOTP({ open, handleClose, email }) {
                         <p className='text-red-500'>{errorMsg}</p>
                     )}
                     {msgPopUp && (
-                        <p className='text-green-500'>OTP resend successfully</p>
-
+                        <p className='text-green-500'>OTP resent successfully</p>
                     )}
                 </DialogContent>
                 <DialogActions>

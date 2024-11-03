@@ -34,11 +34,13 @@ const createAccount = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword, city, state } = req.body
 
     if (!firstName || !lastName || !email || !password || !confirmPassword || !city || !state) {
-        throw new ApiError(400, 'All Fields are required')
+        console.log("All Fields are required !!");
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required !!"))
     }
 
     if (password !== confirmPassword) {
-        throw new ApiError(400, 'Passwords do not match')
+        console.log("Passwords do not match");
+        return res.status(401).json(new ApiResponse(401, {}, "Passwords do not match"))
     }
 
     const existingMentor = await Mentor.findOne({
@@ -46,7 +48,8 @@ const createAccount = asyncHandler(async (req, res) => {
     })
 
     if (existingMentor) {
-        throw new ApiError(400, 'Username or Email already exists')
+        console.log('Email already exists')
+        return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
 
     const otp = generateOTP();
@@ -79,13 +82,13 @@ Please enter this OTP on the verification page to complete your registration pro
 For your security, this OTP is valid for only 5 minutes. If you did not request this code, please ignore this email.
 
 Thank you,
-The NeXmentor Team`;
+The NexMentor Team`;
 
     await sendVerificationEmail(email, mailContent);
 
     return res
         .status(200)
-        .json(new ApiResponse(200, {}, "OTP sent to your email."));
+        .json(new ApiResponse(200, newMentor._id, "OTP sent to your email."));
 })
 
 const verifyOTP = asyncHandler(async (req, res) => {
@@ -98,7 +101,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
     }
 
     if (mentor.otp !== otp || Date.now() > mentor.otpExpiry) {
-        throw new ApiError(400, 'Invalid or expired OTP');
+        console.log('Invalid or expired OTP');
+        return res.status(401).json(new ApiResponse(401, {}, "Invalid or expired OTP"))
     }
 
     mentor.emailVerified = true;
@@ -144,23 +148,84 @@ const mentorAcademicDetails = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Mentor details updated successfully"))
 })
 
+const resendOtp = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    if (!id) {
+        throw new ApiError(401, "Id is required")
+    }
+
+    const mentor = await Mentor.findById(id)
+
+    if (!mentor) {
+        throw new ApiError(404, "Mentor not found")
+    }
+
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + 5 * 60 * 1000;
+
+    mentor.otp = otp;
+    mentor.otpExpiry = otpExpiry;
+    await mentor.save();
+
+    const mailContent = `
+Dear User,
+
+Thank you for registering on NeXmentor. 
+
+Your One-Time Password (OTP) for email verification is: **${otp}**.
+
+Please enter this OTP on the verification page to complete your registration process. 
+
+For your security, this OTP is valid for only 5 minutes. If you did not request this code, please ignore this email.
+
+Thank you,
+The NexMentor Team`;
+
+    await sendVerificationEmail(mentor.email, mailContent);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "OTP resend to your email."));
+
+
+})
+
+const removeMentorIfNotVerified = asyncHandler(async (req, res) => {
+    const { email } = req.body
+
+    if (!email) {
+        throw new ApiError(400, "email is required")
+    }
+
+    await Mentor.findOneAndDelete({ email })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Mentor account is deleted Without verifying !!"))
+
+})
+
 const mentorLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        throw new ApiError(401, "Email and Password are Required")
+        console.log("Email and Password are Required")
+        return res.status(400).json(new ApiResponse(401, {}, "Email and Password are Required"))
     }
 
     const existedMentor = await Mentor.findOne({ email })
 
     if (!existedMentor) {
-        throw new ApiError(404, "Mentor Not Found")
+        console.log("Mentor Not Found")
+        return res.status(400).json(new ApiResponse(404, {}, "Mentor Not Found"))
     }
 
     const isPasswordCorrect = await existedMentor.comparePassword(password)
 
     if (!isPasswordCorrect) {
-        throw new ApiError(401, "Invalid Password")
+        console.log("Invalid Password")
+        return res.status(400).json(new ApiResponse(401, {}, "Invalid Password"))
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existedMentor._id)
@@ -246,7 +311,7 @@ ${resetUrl}
 If you did not request this password reset, please disregard this email. Your account remains secure.
 
 Best regards,  
-NeXmentor Support Team
+NexMentor Support Team
 `,
         };
 
@@ -349,4 +414,6 @@ export {
     resetPassword,
     createOrder,
     verifyPayment,
+    resendOtp,
+    removeMentorIfNotVerified
 }

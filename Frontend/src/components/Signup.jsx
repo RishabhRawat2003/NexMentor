@@ -9,8 +9,6 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { NavLink, useNavigate } from 'react-router-dom';
 import Authentication from './utils/Authentication';
 import axios from 'axios';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
 import VerifyEmailOTP from './utils/OtpPopUp';
 import {
   Dialog,
@@ -21,6 +19,10 @@ import {
   Button,
 } from '@mui/material';
 import ErrorPopup from './utils/ErrorPopUp';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoginParam } from './store/ParamsSlice';
+import Loading from './utils/Loading';
+
 
 function Signup() {
   const [activeContainer, setActiveContainer] = useState('student')
@@ -37,69 +39,85 @@ function Signup() {
     password: '',
     confirmPassword: ''
   })
+  const [createMentorAccount, setCreateMentorAccount] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    city: '',
+    state: ''
+  })
 
+  const dispatch = useDispatch();
+  const loginParam = useSelector((state) => state.data.loginParam);
   const images = [sliderImage1, sliderImage2, sliderImage3];
   const navigate = useNavigate()
 
-  const handleClose = async (params) => {
-    if (params === true) {
-      setAccountCreatedPopUp(true)
+  const handleClose = async (verified) => {
+    if (verified) {
+      setAccountCreatedPopUp(true);
     } else {
+      const userEmail = activeContainer === 'student' ? createAccount.email : createMentorAccount.email;
       try {
-        const response = await axios.post("/api/v1/students/delete-student", { email: createAccount.email })
-        console.log(response.data.data);
+        await axios.post(`/api/v1/${activeContainer}s/delete-${activeContainer}`, { email: userEmail });
       } catch (error) {
-        console.log("error while removing unverified user !!", error);
-
+        console.error("Error while removing unverified user!", error);
       }
     }
-    setVerifyEmailPopUp(false)
+    setVerifyEmailPopUp(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setCreateAccount({
       firstName: '',
       lastName: '',
       email: '',
       password: '',
       confirmPassword: ''
-    })
-  }
+    });
+    setCreateMentorAccount({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      city: '',
+      state: ''
+    });
+  };
 
 
-  function handleButtonClick(params) {
-    setActiveContainer(params)
+  function handleButtonClick(type) {
+    setActiveContainer(type);
+    resetForm();
+    dispatch(setLoginParam(type));
   }
 
   const handleBulletClick = (index) => {
     setCurrentIndex(index);
   };
 
-  async function handleEmailVerify() {
-    try {
-      navigate('/signup/mentor-signup')
-    } catch (error) {
-      console.log("Error while verifying email !", error);
+  const verifyEmail = async () => {
+    const accountData = activeContainer === 'student' ? createAccount : createMentorAccount;
+    const url = `/api/v1/${activeContainer}s/create-account`;
 
-    }
-  }
-
-  async function verifyEmailStudent() {
     try {
-      setLoading(true)
-      const response = await axios.post("/api/v1/students/create-account", createAccount)
-      const id = response.data.data
-      localStorage.setItem("userId", JSON.stringify(id))
+      setLoading(true);
+      const response = await axios.post(url, accountData);
       if (response.data.statusCode === 200) {
-        console.log(response.data);
-        setLoading(false)
-        setVerifyEmailPopUp(true)
+        localStorage.setItem("userId", JSON.stringify(response.data.data));
+        setVerifyEmailPopUp(true);
       }
+      setLoading(false);
     } catch (error) {
-      console.log("Error while verifying email !", error);
-      setLoading(false)
-      setErrorMsg(error.response.data.message)
-      setErrorPopUp(true)
+      console.error("Error while verifying email!", error);
+      setErrorMsg(error.response?.data?.message || "An error occurred");
+      setErrorPopUp(true);
+      setLoading(false);
     }
-  }
-
+  };
   function handleLogin() {
     navigate('/login')
   }
@@ -110,41 +128,37 @@ function Signup() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setCreateAccount(prevDetails => ({ ...prevDetails, [name]: value }));
+    if (activeContainer === 'student') {
+      setCreateAccount(prev => ({ ...prev, [name]: value }));
+    } else {
+      setCreateMentorAccount(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+      setCurrentIndex(prev => (prev + 1) % images.length);
     }, 4000);
-
+    if (loginParam) setActiveContainer(loginParam);
     return () => clearInterval(interval);
-  }, [images.length])
+  }, [images.length]);
 
 
   return (
     <>
-      {
-        loading && (<Backdrop open={true} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-          <CircularProgress color="inherit" />
-        </Backdrop>)
-      }
-      <VerifyEmailOTP open={verifyEmailPopUp} handleClose={handleClose} email={createAccount.email} />
-      {
-        accountCreatedPopUp && (<Dialog open={open} onClose={handleClose}>
+      {loading && <Loading />}
+      <VerifyEmailOTP open={verifyEmailPopUp} handleClose={handleClose} email={activeContainer === 'student' ? createAccount.email : createMentorAccount.email} userType={activeContainer === 'student' ? 'student' : 'mentor'} />
+      {accountCreatedPopUp && (
+        <Dialog open={accountCreatedPopUp} onClose={() => setAccountCreatedPopUp(false)}>
           <DialogTitle>Account Created</DialogTitle>
           <DialogContent>
-            <Typography variant="body1">
-              Your account has been successfully created!
-            </Typography>
+            <Typography>Your account has been successfully created!</Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleLogin} color="primary" variant="contained">
-              Login
-            </Button>
+            <Button onClick={handleLogin} color="primary" variant="contained">Login</Button>
           </DialogActions>
-        </Dialog>)
-      }
+        </Dialog>
+      )}
       <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
         <img src={Logo} alt="neXmentor Logo" />
@@ -248,7 +262,7 @@ function Signup() {
                       onChange={(e) => handleChange(e)}
                     />
                   </div>
-                  <div onClick={verifyEmailStudent} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
+                  <div onClick={verifyEmail} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
                     Sign Up
                   </div>
                   <div className='w-full h-auto font-cg-times text-gray-500 text-xs xl:text-sm'>
@@ -265,12 +279,18 @@ function Signup() {
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      name='firstName'
+                      value={createMentorAccount.firstName}
+                      onChange={handleChange}
                     />
                     <TextField
                       label="Last Name"
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      name='lastName'
+                      value={createMentorAccount.lastName}
+                      onChange={handleChange}
                     />
                   </div>
                   <TextField
@@ -278,6 +298,9 @@ function Signup() {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    name="email"
+                    value={createMentorAccount.email}
+                    onChange={handleChange}
                   />
                   <div className='w-full h-auto flex justify-between'>
                     <TextField
@@ -285,12 +308,18 @@ function Signup() {
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      name='state'
+                      value={createMentorAccount.state}
+                      onChange={handleChange}
                     />
                     <TextField
                       label="City"
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
+                      name='city'
+                      value={createMentorAccount.city}
+                      onChange={handleChange}
                     />
                   </div>
                   <div className='w-full h-auto flex flex-col xl:flex-row xl:justify-between'>
@@ -300,6 +329,9 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
+                      name='password'
+                      value={createMentorAccount.password}
+                      onChange={handleChange}
                     />
                     <TextField
                       label="Confirm Password"
@@ -307,9 +339,12 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
+                      name='confirmPassword'
+                      value={createMentorAccount.confirmPassword}
+                      onChange={handleChange}
                     />
                   </div>
-                  <div onClick={handleEmailVerify} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
+                  <div onClick={verifyEmail} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
                     Sign Up
                   </div>
                   <div className='w-full h-auto font-cg-times text-gray-500 text-xs xl:text-sm'>

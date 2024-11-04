@@ -1,11 +1,8 @@
-import React, { useState } from 'react'
-import Logo from './images/logo.png'
-import { FaBars } from "react-icons/fa6";
-import TextField from '@mui/material/TextField';
-import ForgotImage from './images/loginSignupPageImages/forgetPassword.png'
+import React, { useState, useCallback, lazy, Suspense } from 'react';
+import { FaBars, FaArrowLeftLong } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
-import { FaArrowLeftLong } from "react-icons/fa6";
-import axios from 'axios'
+import TextField from '@mui/material/TextField';
+import axios from 'axios';
 import Loading from './utils/Loading';
 import ErrorPopup from './utils/ErrorPopUp';
 import {
@@ -16,35 +13,36 @@ import {
     Typography,
     Button,
 } from '@mui/material';
+import Logo from './images/loginSignupPageImages/logoSideImage.png';
+import ForgotImage from './images/loginSignupPageImages/forgetPassword.png'
 
 function ForgotPassword() {
-    const [email, setEmail] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
-    const [errorPopUp, setErrorPopUp] = useState(false)
-    const [linkSendPopup, setLinkSendPopUp] = useState(false)
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [errorPopUp, setErrorPopUp] = useState(false);
+    const [linkSendPopup, setLinkSendPopUp] = useState(false);
 
-    function handleCloseErrorPopUp() {
-        setErrorPopUp(false)
-    }
+    const handleCloseErrorPopUp = useCallback(() => {
+        setErrorPopUp(false);
+    }, []);
 
-    async function sendResetLink() {
+    const sendResetLink = useCallback(async () => {
+        setLoading(true);
         try {
-            setLoading(true)
-            const response = await axios.post("/api/v1/mentors/forgot-password", { email })
+            const response = await axios.post("/api/v1/mentors/forgot-password", { email });
+            setLoading(false);
             if (response.data.statusCode === 200) {
-                setLoading(false)
-                setLinkSendPopUp(true)
-                setEmail('')
+                setLinkSendPopUp(true);
+                setEmail('');
             }
         } catch (error) {
-            console.log("Error while sending reset link", error);
-            setLoading(false)
-            setErrorMsg(error.response.data.message)
-            setErrorPopUp(true)
+            console.error("Error while sending reset link", error);
+            setLoading(false);
+            setErrorMsg(error.response?.data?.message || 'An error occurred');
+            setErrorPopUp(true);
         }
-    }
-
+    }, [email]);
 
     return (
         <>
@@ -53,10 +51,14 @@ function ForgotPassword() {
                 <Dialog open={linkSendPopup} onClose={() => setLinkSendPopUp(false)}>
                     <DialogTitle>Password Reset Request</DialogTitle>
                     <DialogContent>
-                        <Typography>We have send the Password Reset Link to your email If you do not receive the email within a few minutes, please check your spam folder or ensure that you have entered the correct email address.</Typography>
+                        <Typography>
+                            We have sent the password reset link to your email. If you do not receive the email within a few minutes, please check your spam folder or ensure that you have entered the correct email address.
+                        </Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setLinkSendPopUp(false)} color="primary" variant="contained">Ok</Button>
+                        <Button onClick={() => setLinkSendPopUp(false)} color="primary" variant="contained">
+                            Ok
+                        </Button>
                     </DialogActions>
                 </Dialog>
             )}
@@ -64,10 +66,9 @@ function ForgotPassword() {
             <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
                 <img src={Logo} alt="neXmentor Logo" />
                 <div className='md:hidden'><FaBars size={30} /></div>
-            </header >
+            </header>
             <div className='w-full h-auto flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-20'>
                 <div className='w-full h-auto xl:flex xl:justify-center xl:gap-5 2xl:gap-10'>
-                    {/* side Image */}
                     <div className='hidden xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden xl:bg-[#E0E0E0]'>
                         <div className='w-full h-auto flex justify-between items-center p-8'>
                             <img src={Logo} alt="neXmentor Logo" />
@@ -76,15 +77,16 @@ function ForgotPassword() {
                             </NavLink>
                         </div>
                         <div className='w-full h-auto flex flex-col items-center font-cg-times my-5 gap-4'>
-                            <h1 className='text-5xl font-semibold'>Forgot Password ?</h1>
-                            <p className='text-lg'>Don't you worry you can change your password here</p>
+                            <h1 className='text-5xl font-semibold'>Forgot Password?</h1>
+                            <p className='text-lg'>Don't you worry, you can change your password here.</p>
                         </div>
                         <img src={ForgotImage} alt="Forgot-Image Logo" className='object-contain w-[25vw] mx-auto' />
                     </div>
-                    {/* main start here */}
                     <div className='w-auto h-auto flex flex-col mt-10 mx-5 xl:w-[35%] 2xl:w-[30%] font-cg-times'>
                         <h1 className='text-center text-2xl font-semibold md:text-3xl xl:text-5xl'>Forgot Password</h1>
-                        <p className='w-full h-auto text-center text-sm text-gray-500 mt-6 mb-10 md:text-base'>Enter your email address below to receive a password reset link now.</p>
+                        <p className='w-full h-auto text-center text-sm text-gray-500 mt-6 mb-10 md:text-base'>
+                            Enter your email address below to receive a password reset link now.
+                        </p>
                         <TextField
                             label="Email"
                             variant="outlined"
@@ -94,14 +96,17 @@ function ForgotPassword() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <div onClick={sendResetLink} className='w-full h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer'>
+                        <div
+                            onClick={sendResetLink}
+                            className='w-full h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer'
+                        >
                             Send Reset Link
                         </div>
                     </div>
                 </div>
             </div>
         </>
-    )
+    );
 }
 
-export default ForgotPassword
+export default ForgotPassword;

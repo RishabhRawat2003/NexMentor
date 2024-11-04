@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import Logo from './images/logo.png'
+import Logo from './images/loginSignupPageImages/logoSideImage.png';
 import { FaBars } from "react-icons/fa6";
 import TextField from '@mui/material/TextField';
-import sliderImage1 from './images/loginSignupPageImages/slider1.jpg'
-import sliderImage2 from './images/loginSignupPageImages/slider2.jpg'
-import sliderImage3 from './images/loginSignupPageImages/slider3.jpg'
-import { FaArrowLeftLong } from "react-icons/fa6";
 import { NavLink, useNavigate } from 'react-router-dom';
 import Authentication from './utils/Authentication';
 import axios from 'axios';
@@ -22,43 +18,30 @@ import ErrorPopup from './utils/ErrorPopUp';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoginParam } from './store/ParamsSlice';
 import Loading from './utils/Loading';
+import Slider from './utils/Slider';
 
 
 function Signup() {
   const [activeContainer, setActiveContainer] = useState('student')
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false)
   const [verifyEmailPopUp, setVerifyEmailPopUp] = useState(false)
   const [accountCreatedPopUp, setAccountCreatedPopUp] = useState(false)
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const [createAccount, setCreateAccount] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
-  const [createMentorAccount, setCreateMentorAccount] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    city: '',
-    state: ''
-  })
+  const [accountData, setAccountData] = useState({
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' },
+    mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
+  });
 
   const dispatch = useDispatch();
   const loginParam = useSelector((state) => state.data.loginParam);
-  const images = [sliderImage1, sliderImage2, sliderImage3];
   const navigate = useNavigate()
 
   const handleClose = async (verified) => {
     if (verified) {
       setAccountCreatedPopUp(true);
     } else {
-      const userEmail = activeContainer === 'student' ? createAccount.email : createMentorAccount.email;
+      const userEmail = activeContainer === 'student' ? accountData.student.email : accountData.mentor.email;
       try {
         await axios.post(`/api/v1/${activeContainer}s/delete-${activeContainer}`, { email: userEmail });
       } catch (error) {
@@ -70,24 +53,10 @@ function Signup() {
     resetForm();
   };
 
-  const resetForm = () => {
-    setCreateAccount({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    });
-    setCreateMentorAccount({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      city: '',
-      state: ''
-    });
-  };
+  const resetForm = () => setAccountData({
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' },
+    mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
+  });
 
 
   function handleButtonClick(type) {
@@ -96,17 +65,13 @@ function Signup() {
     dispatch(setLoginParam(type));
   }
 
-  const handleBulletClick = (index) => {
-    setCurrentIndex(index);
-  };
-
   const verifyEmail = async () => {
-    const accountData = activeContainer === 'student' ? createAccount : createMentorAccount;
+    const accountData2 = activeContainer === 'student' ? accountData.student : accountData.mentor;
     const url = `/api/v1/${activeContainer}s/create-account`;
 
     try {
       setLoading(true);
-      const response = await axios.post(url, accountData);
+      const response = await axios.post(url, accountData2);
       if (response.data.statusCode === 200) {
         localStorage.setItem("userId", JSON.stringify(response.data.data));
         setVerifyEmailPopUp(true);
@@ -129,26 +94,20 @@ function Signup() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    if (activeContainer === 'student') {
-      setCreateAccount(prev => ({ ...prev, [name]: value }));
-    } else {
-      setCreateMentorAccount(prev => ({ ...prev, [name]: value }));
-    }
+    setAccountData((prevData) => ({
+      ...prevData,
+      [activeContainer]: { ...prevData[activeContainer], [name]: value }
+    }));
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % images.length);
-    }, 4000);
-    if (loginParam) setActiveContainer(loginParam);
-    return () => clearInterval(interval);
-  }, [images.length]);
-
+    if (loginParam) setActiveContainer(loginParam)
+  }, []);
 
   return (
     <>
       {loading && <Loading />}
-      <VerifyEmailOTP open={verifyEmailPopUp} handleClose={handleClose} email={activeContainer === 'student' ? createAccount.email : createMentorAccount.email} userType={activeContainer === 'student' ? 'student' : 'mentor'} />
+      <VerifyEmailOTP open={verifyEmailPopUp} handleClose={handleClose} email={activeContainer === 'student' ? accountData.student.email : accountData.mentor.email} userType={activeContainer === 'student' ? 'student' : 'mentor'} />
       {accountCreatedPopUp && (
         <Dialog open={accountCreatedPopUp} onClose={() => setAccountCreatedPopUp(false)}>
           <DialogTitle>Account Created</DialogTitle>
@@ -171,32 +130,8 @@ function Signup() {
           <p className='text-lg'>Somewords will come here </p>
         </div>
         <div className='w-full h-auto xl:flex xl:justify-center xl:gap-5 2xl:gap-10'>
-          {/* Side Image start here */}
-          <div className='hidden xl:flex xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden'>
-            <div className="relative w-full mx-auto overflow-hidden flex items-center justify-center">
-              <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-                {images.map((image, index) => (
-                  <img src={image} key={index} alt={`Slide ${index + 1}`} className="w-full h-auto min-w-full object-contain" />
-                ))}
-              </div>
-              <div className='absolute left-5 bottom-24 flex flex-col gap-1 font-cg-times text-white'>
-                <span className='text-6xl'>Welcome</span>
-                <span className='text-3xl'>Something will come here</span>
-              </div>
-              <NavLink to="/" className='absolute top-5 right-5 px-5 py-2 bg-[#00000094] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
-                <FaArrowLeftLong />Back to Homepage
-              </NavLink>
-              <div className="absolute flex justify-center mt-2 bottom-5">
-                {images.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`w-14 h-1.5 rounded-full mx-1 cursor-pointer transition-all duration-300 ${index === currentIndex ? 'bg-gray-300' : 'bg-gray-800'}`}
-                    onClick={() => handleBulletClick(index)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Sider start here */}
+          <Slider />
           {/* main form start here */}
           <div className='w-auto h-auto flex flex-col mt-10 mx-5 xl:w-[35%] 2xl:w-[30%]'>
             <div className='w-full h-auto flex justify-center items-center text-2xl font-cg-times font-bold'>CREATE NEW ACCOUNT</div>
@@ -218,7 +153,7 @@ function Signup() {
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
-                      value={createAccount.firstName}
+                      value={accountData.student.firstName}
                       name='firstName'
                       onChange={(e) => handleChange(e)}
                     />
@@ -227,7 +162,7 @@ function Signup() {
                       variant="outlined"
                       margin="normal"
                       className='w-[48%]'
-                      value={createAccount.lastName}
+                      value={accountData.student.lastName}
                       name='lastName'
                       onChange={(e) => handleChange(e)}
                     />
@@ -237,7 +172,8 @@ function Signup() {
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    value={createAccount.email}
+                    type='email'
+                    value={accountData.student.email}
                     name='email'
                     onChange={(e) => handleChange(e)}
                   />
@@ -248,7 +184,7 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
-                      value={createAccount.password}
+                      value={accountData.student.password}
                       name='password'
                       onChange={(e) => handleChange(e)}
                     />
@@ -258,7 +194,7 @@ function Signup() {
                       margin="normal"
                       type='password'
                       className='w-full xl:w-[48%]'
-                      value={createAccount.confirmPassword}
+                      value={accountData.student.confirmPassword}
                       name='confirmPassword'
                       onChange={(e) => handleChange(e)}
                     />
@@ -281,8 +217,8 @@ function Signup() {
                       margin="normal"
                       className='w-[48%]'
                       name='firstName'
-                      value={createMentorAccount.firstName}
-                      onChange={handleChange}
+                      value={accountData.mentor.firstName}
+                      onChange={(e) => handleChange(e)}
                     />
                     <TextField
                       label="Last Name"
@@ -290,8 +226,8 @@ function Signup() {
                       margin="normal"
                       className='w-[48%]'
                       name='lastName'
-                      value={createMentorAccount.lastName}
-                      onChange={handleChange}
+                      value={accountData.mentor.lastName}
+                      onChange={(e) => handleChange(e)}
                     />
                   </div>
                   <TextField
@@ -300,8 +236,8 @@ function Signup() {
                     fullWidth
                     margin="normal"
                     name="email"
-                    value={createMentorAccount.email}
-                    onChange={handleChange}
+                    value={accountData.mentor.email}
+                    onChange={(e) => handleChange(e)}
                   />
                   <div className='w-full h-auto flex justify-between'>
                     <TextField
@@ -310,8 +246,8 @@ function Signup() {
                       margin="normal"
                       className='w-[48%]'
                       name='state'
-                      value={createMentorAccount.state}
-                      onChange={handleChange}
+                      value={accountData.mentor.state}
+                      onChange={(e) => handleChange(e)}
                     />
                     <TextField
                       label="City"
@@ -319,8 +255,8 @@ function Signup() {
                       margin="normal"
                       className='w-[48%]'
                       name='city'
-                      value={createMentorAccount.city}
-                      onChange={handleChange}
+                      value={accountData.mentor.city}
+                      onChange={(e) => handleChange(e)}
                     />
                   </div>
                   <div className='w-full h-auto flex flex-col xl:flex-row xl:justify-between'>
@@ -331,8 +267,8 @@ function Signup() {
                       type='password'
                       className='w-full xl:w-[48%]'
                       name='password'
-                      value={createMentorAccount.password}
-                      onChange={handleChange}
+                      value={accountData.mentor.password}
+                      onChange={(e) => handleChange(e)}
                     />
                     <TextField
                       label="Confirm Password"
@@ -341,8 +277,8 @@ function Signup() {
                       type='password'
                       className='w-full xl:w-[48%]'
                       name='confirmPassword'
-                      value={createMentorAccount.confirmPassword}
-                      onChange={handleChange}
+                      value={accountData.mentor.confirmPassword}
+                      onChange={(e) => handleChange(e)}
                     />
                   </div>
                   <div onClick={verifyEmail} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>

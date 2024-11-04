@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import Logo from './images/logo.png'
+import React, { useState , useCallback} from 'react'
+import Logo from './images/loginSignupPageImages/logoSideImage.png';
 import TextField from '@mui/material/TextField';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
@@ -20,45 +20,57 @@ function ResetLink() {
         confirmPassword: ''
     })
     const [loading, setLoading] = useState(false)
-    const [passwordChangedPopUp, setPasswordChangedPopUp] = useState(false)
-    const [errorPopUp, setErrorPopUp] = useState(false)
+    // const [passwordChangedPopUp, setPasswordChangedPopUp] = useState(false)
+    // const [errorPopUp, setErrorPopUp] = useState(false)
+    const [dialogs, setDialogs] = useState({
+        passwordChanged: false,
+        error: false,
+    });
     const [errorMsg, setErrorMsg] = useState('')
     const { token } = useParams();
     const navigate = useNavigate()
 
-    function handleChange(e) {
-        setPasswords({ ...passwords, [e.target.name]: e.target.value });
-    }
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setPasswords(prev => ({ ...prev, [name]: value }));
+    }, []);
+
 
     function handleLogin() {
         navigate('/login')
     }
 
     function handleCloseErrorPopUp() {
-        setErrorPopUp(false)
+        setDialogs(prev => ({ ...prev, error: true }));
     }
 
-    async function resetPassword() {
+    const resetPassword = useCallback(async () => {
+        if (passwords.password !== passwords.confirmPassword) {
+            setErrorMsg("Passwords do not match");
+            setDialogs(prev => ({ ...prev, error: true }));
+            return;
+        }
         try {
             setLoading(true)
             const response = await axios.post(`/api/v1/mentors/reset-password/${token}`, passwords)
             if (response.data.statusCode === 200) {
                 setLoading(false)
-                setPasswordChangedPopUp(true)
+                setDialogs(prev => ({ ...prev, passwordChanged: true }));
             }
         } catch (error) {
             console.error("Error while reseting password!", error);
             setErrorMsg(error.response?.data?.message || "An error occurred");
-            setErrorPopUp(true);
+            setDialogs(prev => ({ ...prev, error: true }));
             setLoading(false);
         }
-    }
+    }, [passwords]);
+
 
     return (
         <>
             {loading && <Loading />}
-            {passwordChangedPopUp && (
-                <Dialog open={passwordChangedPopUp} onClose={() => setPasswordChangedPopUp(false)}>
+            {dialogs.passwordChanged && (
+                <Dialog open={dialogs.passwordChanged} onClose={() => setDialogs(prev => ({ ...prev, passwordChanged: true }))}>
                     <DialogTitle>Password reset Successfully</DialogTitle>
                     <DialogContent>
                         <Typography>Your password has been successfully Changed!</Typography>
@@ -68,7 +80,7 @@ function ResetLink() {
                     </DialogActions>
                 </Dialog>
             )}
-            <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
+            <ErrorPopup open={dialogs.error} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
             <div className='w-screen h-screen flex justify-center items-center'>
                 <div className='w-[95vw] h-auto border-2 p-5 py-20 sm:w-[60vw] md:w-[50vw] lg:px-10 lg:w-[40vw] xl:w-[30vw] bg-gray-100 rounded-md shadow-lg'>
                     <div className='w-full h-auto flex justify-center items-center'><img src={Logo} alt="logo alt" /></div>

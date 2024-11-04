@@ -1,24 +1,19 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import Logo from './images/logo.png';
-import { FaBars, FaArrowLeftLong } from "react-icons/fa6";
-import { NavLink, useNavigate } from 'react-router-dom';
+import Logo from './images/loginSignupPageImages/logoSideImage.png';
+import { FaBars } from "react-icons/fa6";
+import { useNavigate } from 'react-router-dom';
 import LoginForm from './utils/LoginForm';
-import sliderImage1 from './images/loginSignupPageImages/slider1.jpg';
-import sliderImage2 from './images/loginSignupPageImages/slider2.jpg';
-import sliderImage3 from './images/loginSignupPageImages/slider3.jpg';
 import Authentication from './utils/Authentication';
 import ErrorPopup from './utils/ErrorPopUp';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoginParam } from './store/ParamsSlice';
 import Loading from './utils/Loading';
+import Slider from './utils/Slider';
 
-
-const images = [sliderImage1, sliderImage2, sliderImage3];
 
 function Login() {
   const [activeContainer, setActiveContainer] = useState('student');
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loginDetails, setLoginDetails] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false)
   const [errorPopUp, setErrorPopUp] = useState(false)
@@ -34,7 +29,6 @@ function Login() {
     dispatch(setLoginParam(container));
   };
 
-  const handleBulletClick = (index) => setCurrentIndex(index);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -45,69 +39,31 @@ function Login() {
     setErrorPopUp(false)
   }
 
-  async function loginStudent() {
+  async function loginUser(url) {
+    setLoading(true);
     try {
-      setLoading(true)
-      const response = await axios.post("/api/v1/students/login", loginDetails)
-      console.log(response.data.data);
-      setLoading(false)
-      // Redirect to student dashboard
-      navigate('/') // remove this when dashboard is made
-      setLoginDetails({
-        email: '',
-        password: ''
-      })
+      const response = await axios.post(url, loginDetails);
+      setLoading(false);
+      navigate('/'); // Remove this when dashboard is made
+      setLoginDetails({ email: '', password: '' });
     } catch (error) {
-      console.error('Error logging in student:', error);
-      setLoading(false)
-      setErrorMsg(error.response.data.message)
-      setErrorPopUp(true)
-      setLoginDetails({
-        email: '',
-        password: ''
-      })
+      console.error(`Error logging in ${activeContainer}:`, error);
+      setLoading(false);
+      setErrorMsg(error.response?.data?.message || 'An error occurred');
+      setErrorPopUp(true);
+      setLoginDetails({ email: '', password: '' });
     }
   }
 
-  async function loginMentor() {
-    try {
-      setLoading(true)
-      const response = await axios.post("/api/v1/mentors/login", loginDetails)
-      console.log(response.data.data);
-      setLoading(false)
-      // Redirect to mentor dashboard
-      navigate('/') // remove this when dashboard is made
-      setLoginDetails({
-        email: '',
-        password: ''
-      })
-    } catch (error) {
-      console.error('Error logging in mentor:', error);
-      setLoading(false)
-      setErrorMsg(error.response.data.message)
-      setErrorPopUp(true)
-      setLoginDetails({
-        email: '',
-        password: ''
-      })
-    }
-  }
+  const loginStudent = () => loginUser("/api/v1/students/login");
+  const loginMentor = () => loginUser("/api/v1/mentors/login");
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 5000);
     if (loginParam.length > 1) {
       setActiveContainer(loginParam)
     }
-    return () => clearInterval(interval);
   }, []);
 
-  const sliderContent = useMemo(() => (
-    images.map((image, index) => (
-      <img src={image} key={index} alt={`Slide ${index + 1}`} className="w-full h-auto min-w-full object-contain" />
-    ))
-  ), [images]);
 
   return (
     <>
@@ -126,29 +82,7 @@ function Login() {
         </div>
         <div className='w-full h-auto xl:flex xl:justify-center xl:gap-5 2xl:gap-10'>
           {/* Image slider */}
-          <div className='hidden xl:flex xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden'>
-            <div className="relative w-full mx-auto overflow-hidden flex items-center justify-center">
-              <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-                {sliderContent}
-              </div>
-              <div className='absolute left-5 bottom-24 flex flex-col gap-1 font-cg-times text-white'>
-                <span className='text-6xl'>Welcome Back</span>
-                <span className='text-3xl'>Something will come here</span>
-              </div>
-              <NavLink to="/" className='absolute top-5 right-5 px-5 py-2 bg-[#00000094] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
-                <FaArrowLeftLong /> Back to Homepage
-              </NavLink>
-              <div className="absolute flex justify-center mt-2 bottom-5">
-                {images.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`w-14 h-1.5 rounded-full mx-1 cursor-pointer transition-all duration-300 ${index === currentIndex ? 'bg-gray-300' : 'bg-gray-800'}`}
-                    onClick={() => handleBulletClick(index)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+          <Slider />
           {/* Main form */}
           <div className='w-auto h-auto flex flex-col mt-10 mx-5 xl:w-[35%] 2xl:w-[30%]'>
             <div className='w-full h-auto flex justify-center items-center text-2xl font-cg-times font-bold'>LOGIN</div>

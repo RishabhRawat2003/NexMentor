@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Logo from './images/logo.png';
+import Logo from './images/loginSignupPageImages/logoSideImage.png';
 import { FaBars, FaUserCheck } from "react-icons/fa6";
 import { Select, MenuItem, FormControl, TextField } from '@mui/material';
 import SideImage from './images/loginSignupPageImages/academics.png';
@@ -7,17 +7,11 @@ import Logo2 from './images/loginSignupPageImages/logoSideImage.png';
 import { TbUserUp } from "react-icons/tb";
 import { MdLockOutline } from "react-icons/md";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { Button, Typography, Box } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import axios from 'axios'
 import Loading from './utils/Loading';
 import ErrorPopup from './utils/ErrorPopUp';
 import { useNavigate } from 'react-router-dom';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button2 from '@mui/material/Button';
 
 
 function FileUpload({ label, onFileChange }) {
@@ -58,28 +52,6 @@ function FileUpload({ label, onFileChange }) {
   );
 }
 
-const ConfirmationDialog = ({ open, onClose, onConfirm }) => {
-  return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirm Navigation</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Are you sure you want to leave this page? Your changes may not be saved.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button2 onClick={onClose} color="primary">
-          No, Stay Here
-        </Button2>
-        <Button2 onClick={onConfirm} color="primary" autoFocus>
-          Yes, Leave
-        </Button2>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-
 function MentorSignup() {
   const [year, setYear] = useState('');
   const [gender, setGender] = useState('');
@@ -90,7 +62,6 @@ function MentorSignup() {
   const [loading, setLoading] = useState(false)
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const [closePagePopUp, setClosePagePopUp] = useState(false)
   const [mentorDetails, setMentorDetails] = useState({
     neetScore: '',
     neetExamYear: '',
@@ -208,20 +179,6 @@ function MentorSignup() {
     }
   }
 
-  const handleLeave = async () => {
-    try {
-      await axios.post(`/api/v1/mentors/delete-mentor`, { id });
-      setShowPopup(false);
-      localStorage.removeItem("userId")
-      window.location.href = 'http://localhost:5173/signup';
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleStay = () => {
-    setShowPopup(false);
-  };
 
   useEffect(() => {
     const loadScript = (src) => {
@@ -241,14 +198,11 @@ function MentorSignup() {
   }, [])
 
   useEffect(() => {
-    // Function to handle beforeunload event
     const handleBeforeUnload = (event) => {
       event.preventDefault();
-      setShowPopup(true);
-      event.returnValue = '';
+      event.returnValue = ''
     };
 
-    // Attach the event listener
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
@@ -260,11 +214,6 @@ function MentorSignup() {
     <>
       {loading && <Loading />}
       <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
-      <ConfirmationDialog
-        open={closePagePopUp}
-        onClose={handleStay}
-        onConfirm={handleLeave}
-      />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
         <img src={Logo} alt="neXmentor Logo" />
         <div className='md:hidden'><FaBars size={30} /></div>
@@ -414,7 +363,7 @@ function MentorSignup() {
               </div>
               <div
                 onClick={check ? handlePayment : undefined}
-                className={`w-auto h-10 flex justify-center items-center font-cg-times text-white my-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] rounded-md mx-5 md:text-lg ${check
+                className={`w-auto h-10 flex justify-center items-center font-cg-times text-white my-5 rounded-md mx-5 md:text-lg ${check
                   ? 'bg-[#0092DB] cursor-pointer active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd]'
                   : 'bg-gray-400 cursor-not-allowed'
                   }`}

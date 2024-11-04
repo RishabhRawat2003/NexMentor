@@ -21,7 +21,7 @@ export default function ErrorPopup({ open, handleClose, errorMessage }) {
         }}>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ErrorOutlineIcon color="error" />
-                <Typography variant="h6" color="error">
+                <Typography variant="span" color="error">
                     Error
                 </Typography>
             </DialogTitle>

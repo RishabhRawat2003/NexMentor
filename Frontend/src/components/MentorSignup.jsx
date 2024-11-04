@@ -1,45 +1,270 @@
-import React, { useState } from 'react'
-import Logo from './images/logo.png'
-import { FaBars } from "react-icons/fa6";
-import TextField from '@mui/material/TextField';
-import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { NavLink } from 'react-router-dom';
-import { FaArrowLeftLong } from "react-icons/fa6";
-import SideImage from './images/loginSignupPageImages/academics.png'
-import Logo2 from './images/loginSignupPageImages/logoSideImage.png'
+import React, { useEffect, useState } from 'react';
+import Logo from './images/logo.png';
+import { FaBars, FaUserCheck } from "react-icons/fa6";
+import { Select, MenuItem, FormControl, TextField } from '@mui/material';
+import SideImage from './images/loginSignupPageImages/academics.png';
+import Logo2 from './images/loginSignupPageImages/logoSideImage.png';
 import { TbUserUp } from "react-icons/tb";
 import { MdLockOutline } from "react-icons/md";
-import { FaUserCheck } from "react-icons/fa";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { Button, Typography, Box } from '@mui/material';
+import axios from 'axios'
+import Loading from './utils/Loading';
+import ErrorPopup from './utils/ErrorPopUp';
+import { useNavigate } from 'react-router-dom';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button2 from '@mui/material/Button';
+
+
+function FileUpload({ label, onFileChange }) {
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      onFileChange(file);
+    }
+  };
+
+  return (
+    <Box className="w-[48%]" display="flex" flexDirection="column" gap={1}>
+      <Button
+        variant="outlined"
+        component="label"
+        fullWidth
+        startIcon={<UploadFileIcon />}
+        sx={{
+          justifyContent: 'flex-start', // Align text to the start
+          padding: '10px 12px', // Add padding to fit file name text
+          overflow: 'hidden', // Prevent overflow of long filenames
+          textOverflow: 'ellipsis', // Show ellipsis for long text
+          whiteSpace: 'nowrap' // Prevent text wrap
+        }}
+      >
+        {fileName || label}
+        <input
+          type="file"
+          hidden
+          onChange={handleFileChange}
+          accept="image/*"
+        />
+      </Button>
+    </Box>
+  );
+}
+
+const ConfirmationDialog = ({ open, onClose, onConfirm }) => {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Confirm Navigation</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to leave this page? Your changes may not be saved.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button2 onClick={onClose} color="primary">
+          No, Stay Here
+        </Button2>
+        <Button2 onClick={onConfirm} color="primary" autoFocus>
+          Yes, Leave
+        </Button2>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 
 function MentorSignup() {
-  const [city, setCity] = useState('');
-  const [gender, setGender] = useState('')
-  const [neetAttempt, setNeetAttempt] = useState('')
+  const [year, setYear] = useState('');
+  const [gender, setGender] = useState('');
+  const [neetAttempt, setNeetAttempt] = useState('');
+  const [neetScoreCard, setNeetScoreCard] = useState(null);
+  const [collegeId, setCollegeId] = useState(null);
+  const [check, setCheck] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [errorPopUp, setErrorPopUp] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [closePagePopUp, setClosePagePopUp] = useState(false)
+  const [mentorDetails, setMentorDetails] = useState({
+    neetScore: '',
+    neetExamYear: '',
+    institute: '',
+    number: '',
+  })
+  const id = JSON.parse(localStorage.getItem("userId"));
 
+  const navigate = useNavigate()
 
-  const handleChangeCity = (event) => {
-    setCity(event.target.value);
-  };
+  const handleChangeYear = (event) => setYear(event.target.value);
+  const handleChangeGender = (event) => setGender(event.target.value);
+  const handleChangeAttempt = (event) => setNeetAttempt(event.target.value);
 
-  const handleChangeGender = (event) => {
-    setGender(event.target.value);
-  };
+  const handleChange = (e) => {
+    setMentorDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
 
-  const handleChangeAttempt = (event) => {
-    setNeetAttempt(event.target.value);
-  };
+  function resetForm() {
+    setMentorDetails({
+      neetScore: '',
+      neetExamYear: '',
+      institute: '',
+      number: '',
+    })
+    setYear('')
+    setGender('')
+    setNeetAttempt('')
+    setCheck(false)
+    setNeetScoreCard(null)
+    setCollegeId(null)
+  }
 
-  async function handlePayment() {
+  async function onPayment() {
     try {
-      console.log("Hello");
-    } catch (error) {
-      console.log("Error while making payment !!", error);
+      const response = await axios.post("/api/v1/mentors/create-order")
+      const data = response.data.data
 
+      const paymentObject = new window.Razorpay({
+        key: "rzp_test_ZkEAtdmouhqkw4",
+        order_id: data.id,
+        ...data,
+        handler: function (response) {
+          const option2 = {
+            orderId: response.razorpay_order_id,
+            paymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature,
+            userId: id
+          }
+          axios.post("/api/v1/mentors/verify-payment", option2)
+            .then((response) => {
+              if (response.data.success === true) {
+                navigate("/signup/mentor-signup/mentor-signup-success")
+                localStorage.removeItem("userId")
+              } else {
+                setErrorMsg(error.response.data.message)
+                setErrorPopUp(true)
+              }
+            }).catch((error) => {
+              console.log(error);
+              setErrorMsg(error.response.data.message)
+              setErrorPopUp(true)
+            })
+        }
+      })
+      paymentObject.open()
+    } catch (error) {
+      console.log(error);
+      setLoading(false)
+      setErrorMsg(error.response.data.message)
+      setErrorPopUp(true)
+      resetForm()
     }
   }
 
+  function handleCloseErrorPopUp() {
+    setErrorPopUp(false)
+  }
+
+  async function handlePayment() {
+    try {
+      setLoading(true)
+      const formData = new FormData();
+
+      formData.append('id', id);
+      formData.append('neetScore', mentorDetails.neetScore);
+      formData.append('neetExamYear', mentorDetails.neetExamYear);
+      formData.append('yearOfEducation', year);
+      formData.append('institute', mentorDetails.institute);
+      formData.append('number', mentorDetails.number);
+      formData.append('gender', gender);
+      formData.append('neetAttempt', neetAttempt);
+      formData.append('agreeVerificationStep', check);
+
+      if (neetScoreCard) formData.append('scoreCard', neetScoreCard);
+      if (collegeId) formData.append('studentId', collegeId);
+
+      const response = await axios.post('/api/v1/mentors/fill-academic-details', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.statusCode === 200) {
+        setLoading(false)
+        resetForm()
+        onPayment()
+      }
+    } catch (error) {
+      console.log("Error while making payment:", error);
+      setLoading(false)
+      setErrorMsg(error.response.data.message)
+      setErrorPopUp(true)
+      resetForm()
+    }
+  }
+
+  const handleLeave = async () => {
+    try {
+      await axios.post(`/api/v1/mentors/delete-mentor`, { id });
+      setShowPopup(false);
+      localStorage.removeItem("userId")
+      window.location.href = 'http://localhost:5173/signup';
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleStay = () => {
+    setShowPopup(false);
+  };
+
+  useEffect(() => {
+    const loadScript = (src) => {
+      return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+          resolve(true);
+        }
+        script.onerror = () => {
+          resolve(false);
+        }
+        document.body.appendChild(script);
+      })
+    }
+    loadScript('https://checkout.razorpay.com/v1/checkout.js')
+  }, [])
+
+  useEffect(() => {
+    // Function to handle beforeunload event
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      setShowPopup(true);
+      event.returnValue = '';
+    };
+
+    // Attach the event listener
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <>
+      {loading && <Loading />}
+      <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
+      <ConfirmationDialog
+        open={closePagePopUp}
+        onClose={handleStay}
+        onConfirm={handleLeave}
+      />
       <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
         <img src={Logo} alt="neXmentor Logo" />
         <div className='md:hidden'><FaBars size={30} /></div>
@@ -49,9 +274,6 @@ function MentorSignup() {
           {/* Side Image start here */}
           <div className='hidden xl:relative xl:z-30 xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[90vh] xl:rounded-xl xl:overflow-hidden'>
             <img src={SideImage} alt="Mentorship Logo" className="w-full h-full object-cover" />
-            <NavLink to="/" className='absolute top-5 z-20 right-5 px-5 py-2 bg-[#00000094] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
-              <FaArrowLeftLong />Back to Homepage
-            </NavLink>
             <img src={Logo2} alt="Logo" className='absolute z-20 w-80 top-28 left-12' />
             <div className='absolute w-full h-auto flex bottom-24 left-12 z-20'>
               <div className='w-20 h-auto flex flex-col items-center'>
@@ -83,18 +305,24 @@ function MentorSignup() {
                   variant="outlined"
                   margin="normal"
                   className='w-[48%]'
+                  name='neetScore'
+                  value={mentorDetails.neetScore}
+                  onChange={(e) => handleChange(e)}
                 />
                 <TextField
                   label="Neet Exam Year"
                   variant="outlined"
                   margin="normal"
                   className='w-[48%]'
+                  name='neetExamYear'
+                  value={mentorDetails.neetExamYear}
+                  onChange={(e) => handleChange(e)}
                 />
               </div>
               <FormControl fullWidth>
                 <Select
-                  value={city}
-                  onChange={handleChangeCity}
+                  value={year}
+                  onChange={handleChangeYear}
                   displayEmpty
                   renderValue={(selected) => {
                     if (selected === "") {
@@ -106,42 +334,34 @@ function MentorSignup() {
                   <MenuItem value="">
                     <em>Select a Year</em> {/* Placeholder text */}
                   </MenuItem>
-                  <MenuItem value="1">1</MenuItem>
-                  <MenuItem value="2">2</MenuItem>
-                  <MenuItem value="3">3</MenuItem>
-                  <MenuItem value="4">4</MenuItem>
-                  <MenuItem value="5">5</MenuItem>
+                  <MenuItem value="1st year">1st year</MenuItem>
+                  <MenuItem value="2nd year">2nd year</MenuItem>
+                  <MenuItem value="3rd year">3rd year</MenuItem>
+                  <MenuItem value="4th year">4th year</MenuItem>
+                  <MenuItem value="Final Year">Final Year</MenuItem>
                 </Select>
               </FormControl>
               <div className='w-full h-auto flex justify-between mt-3'>
                 <TextField
-                  label="Institue"
+                  label="Institute"
                   variant="outlined"
                   margin="normal"
                   className='w-[48%]'
+                  name='institute'
+                  value={mentorDetails.institute}
+                  onChange={(e) => handleChange(e)}
                 />
                 <TextField
                   label="Number"
                   variant="outlined"
                   margin="normal"
                   className='w-[48%]'
+                  name='number'
+                  value={mentorDetails.number}
+                  onChange={(e) => handleChange(e)}
                 />
               </div>
-              <div className='w-full h-auto flex justify-between'>
-                <TextField
-                  label="Neet Score Card"
-                  variant="outlined"
-                  margin="normal"
-                  className='w-[48%]'
-                />
-                <TextField
-                  label="College ID"
-                  variant="outlined"
-                  margin="normal"
-                  className='w-[48%]'
-                />
-              </div>
-              <div className='w-full h-auto flex justify-between my-3 mb-5'>
+              <div className='w-full h-auto flex justify-between my-3'>
                 <FormControl className='w-[48%]'>
                   <Select
                     value={gender}
@@ -184,14 +404,21 @@ function MentorSignup() {
                   </Select>
                 </FormControl>
               </div>
-              <TextField
-                label="Statement of Purpose"
-                multiline
-                rows={4}
-                variant="outlined"
-                fullWidth
-              />
-              <div onClick={handlePayment} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
+              <div className='w-full h-auto flex justify-between my-5'>
+                <FileUpload label="Neet Score Card" onFileChange={(file) => setNeetScoreCard(file)} />
+                <FileUpload label="College ID" onFileChange={(file) => setCollegeId(file)} />
+              </div>
+              <div className='flex gap-2 items-center'>
+                <input type="checkbox" id='agree' className='size-3' value={check} onChange={(event) => setCheck(event.target.checked)} />
+                <label htmlFor="agree" className='text-gray-500 text-xs lg:text-sm'>I agree with verification steps in <span className='text-black font-semibold'>For Mentor</span></label>
+              </div>
+              <div
+                onClick={check ? handlePayment : undefined}
+                className={`w-auto h-10 flex justify-center items-center font-cg-times text-white my-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] rounded-md mx-5 md:text-lg ${check
+                  ? 'bg-[#0092DB] cursor-pointer active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd]'
+                  : 'bg-gray-400 cursor-not-allowed'
+                  }`}
+              >
                 Continue and Pay ₹149
               </div>
             </div>
@@ -203,3 +430,4 @@ function MentorSignup() {
 }
 
 export default MentorSignup
+

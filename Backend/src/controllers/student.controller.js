@@ -8,6 +8,7 @@ import { Student } from '../models/student.model.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 import axios from 'axios'
+import { Mentor } from '../models/mentor.model.js'
 
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -240,19 +241,26 @@ const studentLogout = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
 })
 
-
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
-    const student = await Student.findOne({ email });
-    if (!student) {
-        throw new ApiError(404, "User with this email does not exist");
+    let user = await Student.findOne({ email });
+    let userType = "Student";
+
+    if (!user) {
+        user = await Mentor.findOne({ email });
+        userType = "Mentor";
     }
 
-    const resetToken = student.generateResetToken()
-    await student.save({ validateBeforeSave: false });
+    if (!user) {
+        console.log("User with this email does not exist");
+        return res.status(404).json(new ApiResponse(404, {}, "User with this email does not exist"));
+    }
 
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`; // change this url when deploying to production or for local host
+    const resetToken = user.generateResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `http://localhost:5173/login/forgot-password/resetPassword/${resetToken}`; //change the url when deploy
 
     try {
         const transporter = nodemailer.createTransport({
@@ -265,10 +273,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: student.email,
+            to: user.email,
             subject: 'Password Reset Request',
             text: `
-Dear User,
+Dear ${userType},
 
 We received a request to reset the password for your account. If you made this request, please click the link below or copy and paste it into your browser to proceed with resetting your password:
 
@@ -283,14 +291,12 @@ NexMentor Support Team
 
         await transporter.sendMail(mailOptions);
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, {}, "reset link send successfully"));
+        res.status(200).json(new ApiResponse(200, {}, "Reset link sent successfully"));
 
     } catch (error) {
-        student.resetPasswordToken = undefined;
-        student.resetPasswordExpire = undefined;
-        await student.save({ validateBeforeSave: false });
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save({ validateBeforeSave: false });
 
         throw new ApiError(500, 'Email could not be sent');
     }
@@ -298,29 +304,35 @@ NexMentor Support Team
 
 const resetPassword = asyncHandler(async (req, res) => {
     const { token } = req.params;
-    const { password } = req.body;
+    const { password, confirmPassword } = req.body;
+
+    if (!password || !confirmPassword) {
+        return res.status(400).json(new ApiResponse(400, {}, "Password and Confirm Password are required"));
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json(new ApiResponse(400, {}, "Password and Confirm Password do not match"));
+    }
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-
-    const user = await Student.findOne({
-        resetPasswordToken: hashedToken,
-        resetPasswordExpire: { $gt: Date.now() },
-    });
+    let user = await Mentor.findOne({ resetPasswordToken: hashedToken });
 
     if (!user) {
-        throw new ApiError(400, "Invalid or expired token");
+        user = await Student.findOne({ resetPasswordToken: hashedToken });
     }
 
-    user.password = password
+    if (!user) {
+        return res.status(400).json(new ApiResponse(400, {}, "Invalid or expired token"));
+    }
+
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
     await user.save();
 
-    res
-        .status(200)
-        .json(new ApiResponse(200, {}, "Password is reset Successfully"));
+    res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
 const googleLogin = asyncHandler(async (req, res) => {

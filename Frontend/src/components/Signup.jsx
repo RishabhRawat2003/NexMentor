@@ -65,6 +65,7 @@ function Signup() {
         console.error("Error while removing unverified user!", error);
       }
     }
+    localStorage.removeItem("userId")
     setVerifyEmailPopUp(false);
     resetForm();
   };

@@ -1,15 +1,66 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Logo from './images/logo.png'
 import { FaBars } from "react-icons/fa6";
 import TextField from '@mui/material/TextField';
 import ForgotImage from './images/loginSignupPageImages/forgetPassword.png'
 import { NavLink } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
-
+import axios from 'axios'
+import Loading from './utils/Loading';
+import ErrorPopup from './utils/ErrorPopUp';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Typography,
+    Button,
+} from '@mui/material';
 
 function ForgotPassword() {
+    const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
+    const [errorPopUp, setErrorPopUp] = useState(false)
+    const [linkSendPopup, setLinkSendPopUp] = useState(false)
+
+    function handleCloseErrorPopUp() {
+        setErrorPopUp(false)
+    }
+
+    async function sendResetLink() {
+        try {
+            setLoading(true)
+            const response = await axios.post("/api/v1/mentors/forgot-password", { email })
+            if (response.data.statusCode === 200) {
+                setLoading(false)
+                setLinkSendPopUp(true)
+                setEmail('')
+            }
+        } catch (error) {
+            console.log("Error while sending reset link", error);
+            setLoading(false)
+            setErrorMsg(error.response.data.message)
+            setErrorPopUp(true)
+        }
+    }
+
+
     return (
         <>
+            {loading && <Loading />}
+            {linkSendPopup && (
+                <Dialog open={linkSendPopup} onClose={() => setLinkSendPopUp(false)}>
+                    <DialogTitle>Password Reset Request</DialogTitle>
+                    <DialogContent>
+                        <Typography>We have send the Password Reset Link to your email If you do not receive the email within a few minutes, please check your spam folder or ensure that you have entered the correct email address.</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setLinkSendPopUp(false)} color="primary" variant="contained">Ok</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+            <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
             <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
                 <img src={Logo} alt="neXmentor Logo" />
                 <div className='md:hidden'><FaBars size={30} /></div>
@@ -39,10 +90,12 @@ function ForgotPassword() {
                             variant="outlined"
                             fullWidth
                             margin="normal"
+                            type='email'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
-                        <div className='w-full h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer'>
+                        <div onClick={sendResetLink} className='w-full h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer'>
                             Send Reset Link
-
                         </div>
                     </div>
                 </div>

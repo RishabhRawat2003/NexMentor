@@ -11,6 +11,8 @@ import Signup from './components/Signup.jsx'
 import ForgotPassword from './components/ForgotPassword.jsx'
 import store from './components/store/store.js'
 import MentorSignup from './components/MentorSignup.jsx'
+import MentorSignupSuccess from './components/MentorSignupSuccess.jsx'
+import ResetLink from './components/ResetLink.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,8 +22,10 @@ const router = createBrowserRouter(
       </Route>
       <Route path='/login' element={<Login />} />
       <Route path='/login/forgot-password' element={<ForgotPassword />} />
+      <Route path='/login/forgot-password/resetPassword/:token' element={<ResetLink />} />
       <Route path='/signup' element={<Signup />} />
       <Route path='/signup/mentor-signup' element={<MentorSignup />} />
+      <Route path='/signup/mentor-signup/mentor-signup-success' element={<MentorSignupSuccess />} />
     </>
   )
 )

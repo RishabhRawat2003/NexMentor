@@ -91,15 +91,12 @@ const mentorSchema = new Schema({
         type: String
     },
     scoreCard: {
-        type: String
+        type: String,
+        default: ''
     },
     studentId: {
-        type: String
-    },
-    statement: {
         type: String,
-        default: '',
-        trim: true
+        default: ''
     },
     gender: {
         type: String,
@@ -109,6 +106,10 @@ const mentorSchema = new Schema({
     neetAttempt: {
         type: Number,
         trim: true
+    },
+    agreeVerificationStep: {
+        type: Boolean,
+        default: false
     },
     verifiedFromAdmin: {
         type: Boolean,

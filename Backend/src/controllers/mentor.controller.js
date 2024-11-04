@@ -7,8 +7,9 @@ import { sendVerificationEmail } from './emailService.js'
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 import { razorpayInstance } from '../config/razorpayConfig.js'
+import { Student } from '../models/student.model.js'
 
-// const razorpayInstanceValue = razorpayInstance()
+const razorpayInstanceValue = razorpayInstance()
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -116,37 +117,45 @@ const verifyOTP = asyncHandler(async (req, res) => {
 });
 
 const mentorAcademicDetails = asyncHandler(async (req, res) => {
-    const { email, neetScore, neetExamYear, yearOfEducation, institute, number, scoreCard, studentId, statement, gender, neetAttempt } = req.body // here email should be changed to id
+    const { id, neetScore, neetExamYear, yearOfEducation, institute, number, gender, neetAttempt, agreeVerificationStep } = req.body;
 
-    if (!email || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !scoreCard || !studentId || !statement || !gender || !neetAttempt) {
-        throw new ApiError(401, "All Fields are Required")
+    if (!id || !neetScore || !neetExamYear || !yearOfEducation || !institute || !number || !req.files?.scoreCard || !req.files?.studentId || !gender || !neetAttempt || !agreeVerificationStep) {
+        console.log("All Fields are Required");
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are Required"));
     }
 
-    const existedMentor = await Mentor.findOneAndUpdate(
-        { email },
+    const scoreCardFile = req.files.scoreCard[0]; // Get the uploaded score card file
+    const studentIdFile = req.files.studentId[0]; // Get the uploaded student ID file
+
+    // console.log(scoreCardFile,studentIdFile);
+
+    const scoreCardUpload = await uploadOnCloudinary(scoreCardFile.path);
+    const studentIdUpload = await uploadOnCloudinary(studentIdFile.path);
+
+    const updatedMentor = await Mentor.findByIdAndUpdate(
+        id,
         {
             neetScore,
             number,
             neetExamYear,
             yearOfEducation,
             institute,
-            scoreCard,
-            studentId,
-            statement,
+            scoreCard: scoreCardUpload ? scoreCardUpload.secure_url : '',
+            studentId: studentIdUpload ? studentIdUpload.secure_url : '',
             gender,
-            neetAttempt
+            neetAttempt,
+            agreeVerificationStep
         },
         { new: true }
-    )
+    );
 
-    if (!existedMentor) {
-        throw new ApiError(404, "Mentor Not Found")
+    if (!updatedMentor) {
+        console.log("Mentor Not Found");
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor Not Found"));
     }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, {}, "Mentor details updated successfully"))
-})
+    return res.status(200).json(new ApiResponse(200, {}, "Mentor details updated successfully"));
+});
 
 const resendOtp = asyncHandler(async (req, res) => {
     const { id } = req.body
@@ -192,13 +201,15 @@ The NexMentor Team`;
 })
 
 const removeMentorIfNotVerified = asyncHandler(async (req, res) => {
-    const { email } = req.body
+    const { email, id } = req.body
 
-    if (!email) {
-        throw new ApiError(400, "email is required")
+    if (!email && !id) {
+        throw new ApiError(400, "email or id is required")
     }
 
-    await Mentor.findOneAndDelete({ email })
+    await Mentor.findOneAndDelete({
+        $or: [{ email }, { id }],
+    })
 
     return res
         .status(200)
@@ -277,16 +288,23 @@ const mentorLogout = asyncHandler(async (req, res) => {
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
-    const mentor = await Mentor.findOne({ email });
-    if (!mentor) {
-        throw new ApiError(404, "User with this email does not exist");
+    let user = await Student.findOne({ email });
+    let userType = "Student";
+
+    if (!user) {
+        user = await Mentor.findOne({ email });
+        userType = "Mentor";
     }
 
-    const resetToken = mentor.generateResetToken();
+    if (!user) {
+        console.log("User with this email does not exist");
+        return res.status(404).json(new ApiResponse(404, {}, "User with this email does not exist"));
+    }
 
-    await mentor.save({ validateBeforeSave: false });
+    const resetToken = user.generateResetToken();
+    await user.save({ validateBeforeSave: false });
 
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`; // change this url when deploying to production or for local host
+    const resetUrl = `http://localhost:5173/login/forgot-password/resetPassword/${resetToken}`; //change the url when deploy
 
     try {
         const transporter = nodemailer.createTransport({
@@ -299,10 +317,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: mentor.email,
+            to: user.email,
             subject: 'Password Reset Request',
             text: `
-Dear User,
+Dear ${userType},
 
 We received a request to reset the password for your account. If you made this request, please click the link below or copy and paste it into your browser to proceed with resetting your password:
 
@@ -317,13 +335,12 @@ NexMentor Support Team
 
         await transporter.sendMail(mailOptions);
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, {}, "reset link send successfully"));
+        res.status(200).json(new ApiResponse(200, {}, "Reset link sent successfully"));
+
     } catch (error) {
-        mentor.resetPasswordToken = undefined;
-        mentor.resetPasswordExpire = undefined;
-        await mentor.save({ validateBeforeSave: false });
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save({ validateBeforeSave: false });
 
         throw new ApiError(500, 'Email could not be sent');
     }
@@ -331,33 +348,40 @@ NexMentor Support Team
 
 const resetPassword = asyncHandler(async (req, res) => {
     const { token } = req.params;
-    const { password } = req.body;
+    const { password, confirmPassword } = req.body;
+
+    if (!password || !confirmPassword) {
+        return res.status(400).json(new ApiResponse(400, {}, "Password and Confirm Password are required"));
+    }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json(new ApiResponse(400, {}, "Password and Confirm Password do not match"));
+    }
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await Mentor.findOne({
-        resetPasswordToken: hashedToken,
-        resetPasswordExpire: { $gt: Date.now() },
-    });
+    let user = await Mentor.findOne({ resetPasswordToken: hashedToken });
 
     if (!user) {
-        throw new ApiError(400, "Invalid or expired token");
+        user = await Student.findOne({ resetPasswordToken: hashedToken });
     }
 
-    user.password = password
+    if (!user) {
+        return res.status(400).json(new ApiResponse(400, {}, "Invalid or expired token"));
+    }
+
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
     await user.save();
 
-    res
-        .status(200)
-        .json(new ApiResponse(200, {}, "Password is reset Successfully"));
+    res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
-//this is for when mentor first create there account
+
 const createOrder = asyncHandler(async (req, res) => {
-    const amount = 149 // this amount can be changed in the future
+    const amount = 149 // this amount can be changed in the future from Admin Dashboard
 
     const option = {
         amount: amount * 100,
@@ -368,20 +392,22 @@ const createOrder = asyncHandler(async (req, res) => {
     try {
         razorpayInstanceValue.orders.create(option, (err, order) => {
             if (err) {
-                throw new ApiError(500, "Failed to create order")
+                console.log("Failed to create Payment")
+                return res.status(401).json(new ApiResponse(401, {}, "Failed to create Payment, Try again"));
             }
             return res
                 .status(200)
                 .json(new ApiResponse(200, order, "Order Created Successfully"))
         })
     } catch (error) {
-        throw new ApiError(500, "Failed to create order")
+        console.log("Failed to create Payment")
+        return res.status(401).json(new ApiResponse(401, {}, "Failed to create Payment, Try again"));
     }
 
 })
 
 const verifyPayment = asyncHandler(async (req, res) => {
-    const { orderId, paymentId, signature } = req.body
+    const { orderId, paymentId, signature, userId } = req.body
 
     const secretKey = process.env.RAZORPAY_KEY_SECRET
 
@@ -392,6 +418,17 @@ const verifyPayment = asyncHandler(async (req, res) => {
     const generatedSignature = hmac.digest("hex")
 
     if (generatedSignature === signature) {
+
+        if (!userId) {
+            return res.status(401).json(new ApiResponse(401, {}, "User not found"))
+        }
+
+        await Mentor.findByIdAndUpdate(
+            userId,
+            { $set: { paid: true } },
+            { new: true }
+        )
+
         return res
             .status(200)
             .json(new ApiResponse(200, {}, "Payment verified Successfully"))
@@ -401,13 +438,11 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
 })
 
-
-
 export {
     createAccount,
     verifyOTP,
-    mentorAcademicDetails,
     mentorLogin,
+    mentorAcademicDetails,
     mentorDetails,
     mentorLogout,
     forgotPassword,

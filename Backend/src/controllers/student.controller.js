@@ -9,8 +9,11 @@ import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 import axios from 'axios'
 import { Mentor } from '../models/mentor.model.js'
+import { razorpayInstance } from '../config/razorpayConfig.js'
+import { Package } from '../models/mentorPackage.model.js';
+import { Notification } from '../models/notification.model.js';
 
-
+const razorpayInstanceValue = razorpayInstance()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -29,6 +32,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 }
 
+// registering student logic
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -57,6 +61,7 @@ const createStudentAccount = asyncHandler(async (req, res) => {
 
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
+    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
 
     const newStudent = new Student({
         firstName,
@@ -64,7 +69,8 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         lastName,
         password,
         otp,
-        otpExpiry
+        otpExpiry,
+        username: generatedUsername
     });
 
     await newStudent.save();
@@ -173,6 +179,7 @@ const removeStudentIfNotVerified = asyncHandler(async (req, res) => {
 
 })
 
+//student login, details and logout logic
 const studentLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
@@ -241,6 +248,7 @@ const studentLogout = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
 })
 
+//forgot password logic
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -302,6 +310,7 @@ NexMentor Support Team
     }
 });
 
+//reset password logic
 const resetPassword = asyncHandler(async (req, res) => {
     const { token } = req.params;
     const { password, confirmPassword } = req.body;
@@ -335,6 +344,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
+//google authentication
 const googleLogin = asyncHandler(async (req, res) => {
     const { idToken } = req.body;
 
@@ -392,7 +402,6 @@ const googleLogin = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error during Google login")
     }
 });
-
 
 // Linkedin authentication
 const linkdinRedirect = asyncHandler(async (req, res) => {
@@ -466,6 +475,215 @@ const linkedinLogin = asyncHandler(async (req, res) => {
     }
 });
 
+// profile update controllers
+const updateProfileDetails = asyncHandler(async (req, res) => {
+    const {
+        firstName,
+        lastName,
+        username,
+        number,
+        email,
+        currentClass
+    } = req.body;
+
+    const updateFields = {};
+
+    if (firstName) updateFields.firstName = firstName;
+    if (lastName) updateFields.lastName = lastName;
+    if (username) updateFields.username = username;
+    if (number) updateFields.number = number;
+    if (email) updateFields.email = email;
+    if (currentClass) updateFields.currentClass = currentClass;
+
+    if (req.files?.profilePicture) {
+        const profileImageFile = req.files.profilePicture[0];
+        const profileImageUpload = await uploadOnCloudinary(profileImageFile.path);
+        if (profileImageUpload?.secure_url) {
+            updateFields.profilePicture = profileImageUpload.secure_url;
+        }
+    }
+
+    const student = await Student.findByIdAndUpdate(
+        req.user._id,
+        { $set: updateFields },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    if (!student) {
+        return res.status(404).json({ status: 404, message: "Student not found" });
+    }
+
+    return res
+        .status(200)
+        .json({ status: 200, data: student, message: "Account details updated successfully" });
+});
+
+//student buying session package logic
+const createOrder = asyncHandler(async (req, res) => {
+    const amount = 149 // here comes the amount of the package
+
+    const option = {
+        amount: amount * 100,
+        currency: "INR",
+        receipt: `receipt_${new Date().getTime()}`
+    }
+
+    try {
+        razorpayInstanceValue.orders.create(option, (err, order) => {
+            if (err) {
+                console.log("Failed to create Payment")
+                return res.status(401).json(new ApiResponse(401, {}, "Failed to create Payment, Try again"));
+            }
+            return res
+                .status(200)
+                .json(new ApiResponse(200, order, "Order Created Successfully"))
+        })
+    } catch (error) {
+        console.log("Failed to create Payment")
+        return res.status(401).json(new ApiResponse(401, {}, "Failed to create Payment, Try again"));
+    }
+
+})
+
+const verifyPayment = asyncHandler(async (req, res) => {
+    const { orderId, paymentId, signature, packageId } = req.body
+
+    const secretKey = process.env.RAZORPAY_KEY_SECRET
+
+    const hmac = crypto.createHmac("sha256", secretKey)
+
+    hmac.update(orderId + "|" + paymentId)
+
+    const generatedSignature = hmac.digest("hex")
+
+    if (generatedSignature === signature) {
+
+        const packageItem = await Package.findById(packageId).populate('owner');
+        if (!packageItem) {
+            console.log("Package not found");
+            return res.status(400).json(new ApiResponse(400, {}, "Package not found"));
+        }
+
+        const student = await Student.findByIdAndUpdate(
+            req.user._id,
+            {
+                $push: {
+                    purchasedPackages: {
+                        package: packageItem._id,
+                        mentor: packageItem.owner._id,
+                        status: 'pending'
+                    }
+                }
+            },
+            { new: true }
+        ).populate("purchasedPackages.package purchasedPackages.mentor");
+
+        if (!student) {
+            console.log("Student not found");
+            return res.status(404).json(new ApiResponse(404, {}, "Student not found"));
+        }
+
+        const mentor = packageItem.owner;
+        if (mentor) {
+            // Implement notification logic here
+            // For example, send an email or save a notification in a notifications collection
+            const notification = await Notification.create({
+                message: `${student.username}  has purchased your package ${packageItem.packageName} for ${packageItem.packagePrice} INR`,
+                recipientId: student._id
+            })
+
+            if (!notification) {
+                throw new ApiError(500, "Error while sending Notification to mentor")
+            }
+
+            mentor.notification.push(notification)
+            await notification.save()
+
+            const mailContent = `
+Dear Mentor,
+
+We are excited to inform you that a student has purchased your mentoring package on NexMentor!
+
+**Package Details:**
+- **Student Name**: ${student.username}
+- **Package Price**: $${packageItem.packagePrice}
+- **Package Name**: ${packageItem.packageName}
+
+Please review and approve this session to proceed with scheduling and payment. Once approved, you have to coordinate with the student to set up the session.
+
+**Action Required**: 
+1. Log in to your mentor account to review the details.
+2. Approve the session to finalize scheduling.
+
+
+Thank you for being a valued mentor on NexMentor. We look forward to seeing you make a positive impact in your student’s learning journey!
+
+Best regards,
+The NeXmentor Team
+`;
+
+            await sendVerificationEmail(mentor.email, mailContent);
+        }
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, student.purchasedPackages.slice(-1)[0], "Payment verified Successfully"))
+    } else {
+        throw new ApiError(401, "Payment not verified")
+    }
+
+})
+
+// const purchasePackage = asyncHandler(async (req, res) => {
+//     const { packageId, deadline } = req.body;
+//     const studentId = req.user._id; // Assuming the student is authenticated
+
+//     // Validate deadline
+//     if (!deadline) {
+//         return res.status(400).json({ message: "Deadline is required" });
+//     }
+
+//     // Find the package
+//     const package = await Package.findById(packageId).populate('owner');
+//     if (!package) {
+//         return res.status(404).json({ message: "Package not found" });
+//     }
+
+//     // Add package with deadline to student's purchasedPackages array
+//     const student = await Student.findByIdAndUpdate(
+//         studentId,
+//         {
+//             $push: {
+//                 purchasedPackages: {
+//                     package: package._id,
+//                     deadline: new Date(deadline),
+//                     mentor: package.owner._id,
+//                 }
+//             }
+//         },
+//         { new: true }
+//     ).populate("purchasedPackages.package purchasedPackages.mentor");
+
+//     if (!student) {
+//         return res.status(404).json({ message: "Student not found" });
+//     }
+
+//     // Notify the mentor about the package purchase
+//     // This can be done through a message, email, or notification system
+//     const mentor = package.owner;
+//     if (mentor) {
+//         // Implement notification logic here
+//         // For example, send an email or save a notification in a notifications collection
+//     }
+
+//     return res.status(200).json({
+//         message: "Package purchased successfully",
+//         purchasedPackage: student.purchasedPackages.slice(-1)[0], // Return the last purchased package
+//     });
+// });
+
+
+
 
 export {
     createStudentAccount,
@@ -479,5 +697,8 @@ export {
     linkdinRedirect,
     linkedinLogin,
     resendOtp,
-    removeStudentIfNotVerified
+    removeStudentIfNotVerified,
+    updateProfileDetails,
+    verifyPayment,
+    createOrder
 }

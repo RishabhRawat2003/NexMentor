@@ -8,6 +8,8 @@ import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 import { razorpayInstance } from '../config/razorpayConfig.js'
 import { Student } from '../models/student.model.js'
+import { Package } from '../models/mentorPackage.model.js'
+
 
 const razorpayInstanceValue = razorpayInstance()
 
@@ -27,6 +29,8 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 }
 
+
+// account creation releated logic here
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
@@ -52,25 +56,24 @@ const createAccount = asyncHandler(async (req, res) => {
         console.log('Email already exists')
         return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
-
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
+    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
 
-    const newMentor = new Mentor({
+    const newMentor = await Mentor.create({
         firstName,
-        email,
         lastName,
+        email,
         password,
+        mentorId: generatedUsername,
         otp,
         otpExpiry,
         address: {
             city,
             state
         }
-    });
-
-    await newMentor.save();
-
+    })
+    console.log(generatedUsername);
     const mailContent = `
 Dear User,
 
@@ -217,6 +220,7 @@ const removeMentorIfNotVerified = asyncHandler(async (req, res) => {
 
 })
 
+// mentor login, details and logout logic
 const mentorLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
@@ -285,6 +289,7 @@ const mentorLogout = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Mentor Logged Out Successfully"))
 })
 
+// password related logic
 const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -379,7 +384,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
-
+// this is the payment gateway for mentor when they first create thier account
 const createOrder = asyncHandler(async (req, res) => {
     const amount = 149 // this amount can be changed in the future from Admin Dashboard
 
@@ -438,6 +443,99 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
 })
 
+//Make a new package to show in the mentor profile
+const createOrUpdatePackage = async (mentorId) => {
+    const searchedMentor = await Mentor.findById(mentorId);
+    if (!searchedMentor) {
+        throw new Error('Mentor not found');
+    }
+
+    const packagePrice = searchedMentor.neetScore > 600 ? 500 : 300;
+
+    let existingPackage = await Package.findOne({ mentorId });
+
+    if (existingPackage) {
+        existingPackage.packagePrice = packagePrice;
+        existingPackage.neetScore = searchedMentor.neetScore;
+        await existingPackage.save();
+    } else {
+        existingPackage = await Package.create({
+            packageName: "Mentor Package",
+            packageDescription: "Package for mentor based on NEET score",
+            packagePrice: packagePrice,
+            mentorId: mentorId,
+            neetScore: searchedMentor.neetScore,
+        });
+
+        searchedMentor.package.push(existingPackage._id);
+        await searchedMentor.save();
+    }
+
+    return existingPackage;
+};
+
+const allMentors = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9;
+    const skip = (page - 1) * limit;
+
+    try {
+        let mentors = await Mentor.find()
+            .skip(skip)
+            .limit(limit)
+            .select("-password -refreshToken -address -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId -package")
+
+        if (!mentors.length) {
+            console.log("No Mentor Found");
+            return res.status(404).json(new ApiResponse(404, {}, "No mentors found"));
+        }
+
+        mentors = await Promise.all(mentors.map(async (mentor) => {
+            const updatedPackage = await createOrUpdatePackage(mentor._id);
+
+            await mentor.populate("package");
+
+            return mentor;
+        }));
+
+        const totalMentors = await Mentor.countDocuments();
+        const totalPages = Math.ceil(totalMentors / limit);
+
+        return res.status(200).json(new ApiResponse(200, {
+            data: mentors,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalMentors,
+            },
+        }, "Mentors retrieved successfully"));
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: "An error occurred while retrieving mentors" });
+    }
+});
+
+
+const singleMentor = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+    if (!mentorId) {
+        throw new ApiError(401, "Mentor Id is Required")
+    }
+
+    const mentor = await Mentor.findById(mentorId).select("-password -refreshToken -address -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId").populate("package")
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, mentor, "Single mentor Info fetched Successfully"))
+
+})
+
 export {
     createAccount,
     verifyOTP,
@@ -450,5 +548,7 @@ export {
     createOrder,
     verifyPayment,
     resendOtp,
-    removeMentorIfNotVerified
+    removeMentorIfNotVerified,
+    allMentors,
+    singleMentor
 }

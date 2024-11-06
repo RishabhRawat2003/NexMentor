@@ -48,22 +48,10 @@ const studentSchema = new Schema({
         type: Date
     },
     googleId: {
-        type: String,
-        unique: true
+        type: String
     },
     linkedinId: {
-        type: String,
-        unique: true
-    },
-    address: {
-        city: {
-            type: String,
-            trim: true
-        },
-        state: {
-            type: String,
-            trim: true
-        }
+        type: String
     },
     number: {
         type: Number,
@@ -77,30 +65,36 @@ const studentSchema = new Schema({
     refreshToken: {
         type: String,
     },
-    educationalDetails: {
-        currentClass: {
-            type: String,
-            trim: true
-        },
-        currentCollege: {
-            collegeName: {
-                type: String,
-                trim: true
+    currentClass: {
+        type: String,
+        trim: true
+    },
+    purchasedSessions: [
+        {
+            package: {
+                type: Schema.Types.ObjectId,
+                ref: 'Package'
             },
-            batch: {
-                type: String,
-                trim: true
+            mentor: {
+                type: Schema.Types.ObjectId,
+                ref: "Mentor"
             },
-            year: {
+            purchaseDate: {
+                type: Date,
+                default: Date.now
+            },
+            status: {
                 type: String,
                 trim: true
             }
-        },
-        dropout: {
-            type: Boolean,
-            default: false
         }
-    },
+    ],
+    notifications: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Notification'
+        }
+    ],
     resetPasswordToken: {
         type: String
     },

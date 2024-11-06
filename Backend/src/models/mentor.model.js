@@ -9,8 +9,7 @@ const mentorSchema = new Schema({
         trim: true,
         lowercase: true,
         index: true,
-        unique: true,
-        sparse: true
+        unique: true
     },
     email: {
         type: String,
@@ -44,14 +43,6 @@ const mentorSchema = new Schema({
     },
     otpExpiry: {
         type: Date
-    },
-    googleId: {
-        type: String,
-        unique: true
-    },
-    linkedinId: {
-        type: String,
-        unique: true
     },
     address: {
         city: {
@@ -98,6 +89,10 @@ const mentorSchema = new Schema({
         type: String,
         default: ''
     },
+    package: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Package'
+    }],
     gender: {
         type: String,
         default: '',
@@ -111,6 +106,14 @@ const mentorSchema = new Schema({
         type: Boolean,
         default: false
     },
+    sessionRequests: [
+        {
+            student: {
+                type: Schema.Types.ObjectId,
+                ref: 'Student'
+            },
+        }
+    ],
     verifiedFromAdmin: {
         type: Boolean,
         default: false
@@ -128,10 +131,10 @@ const mentorSchema = new Schema({
             ref: 'Feedback'
         }
     ],
-    keywords: [
+    notifications: [
         {
-            type: String,
-            trim: true
+            type: Schema.Types.ObjectId,
+            ref: 'Notification'
         }
     ],
     resetPasswordToken: {

@@ -69,6 +69,10 @@ const studentSchema = new Schema({
         type: String,
         trim: true
     },
+    gender: {
+        type: String,
+        trim: true
+    },
     purchasedSessions: [
         {
             package: {

@@ -258,7 +258,7 @@ const mentorLogin = asyncHandler(async (req, res) => {
 })
 
 const mentorDetails = asyncHandler(async (req, res) => {
-    const mentor = await Mentor.findById(req.user._id).select("-password")
+    const mentor = await Mentor.findById(req.user._id).select("-password -refreshToken")
     return res
         .status(200)
         .json(new ApiResponse(200, mentor, "Mentor Details Fetched Successfully"))

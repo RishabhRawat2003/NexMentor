@@ -213,11 +213,11 @@ const studentLogin = asyncHandler(async (req, res) => {
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(200, {}, "Login Successfully"))
+        .json(new ApiResponse(200, existedStudent._id, "Login Successfully"))
 })
 
 const studentDetails = asyncHandler(async (req, res) => {
-    const student = await Student.findById(req.user._id).select("-password")
+    const student = await Student.findById(req.user._id).select("-password -refreshToken")
     return res
         .status(200)
         .json(new ApiResponse(200, student, "Student Details Fetched Successfully"))
@@ -483,7 +483,8 @@ const updateProfileDetails = asyncHandler(async (req, res) => {
         username,
         number,
         email,
-        currentClass
+        currentClass,
+        gender
     } = req.body;
 
     const updateFields = {};
@@ -494,6 +495,11 @@ const updateProfileDetails = asyncHandler(async (req, res) => {
     if (number) updateFields.number = number;
     if (email) updateFields.email = email;
     if (currentClass) updateFields.currentClass = currentClass;
+    if (gender) updateFields.gender = gender;
+
+    if (!firstName || !lastName || !username || !email) {
+        return res.status(400).json(new ApiResponse(400, {}, "All fields are required "))
+    }
 
     if (req.files?.profilePicture) {
         const profileImageFile = req.files.profilePicture[0];
@@ -510,12 +516,12 @@ const updateProfileDetails = asyncHandler(async (req, res) => {
     ).select("-password -refreshToken");
 
     if (!student) {
-        return res.status(404).json({ status: 404, message: "Student not found" });
+        return res.status(404).json(new ApiResponse(404, {}, "Student not found"));
     }
 
     return res
         .status(200)
-        .json({ status: 200, data: student, message: "Account details updated successfully" });
+        .json(new ApiResponse(200, student, "Details updated or changed Successfully"));
 });
 
 //student buying session package logic
@@ -634,6 +640,61 @@ The NeXmentor Team
 
 })
 
+
+const logoutUser = asyncHandler(async (req, res) => {
+    await Student.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax'
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body
+
+    if(!oldPassword || !newPassword || !confirmPassword){
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required"))
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(401).json(new ApiResponse(401, {}, "New password and confirm Password do not match"))
+    }
+
+    const user = await Student.findById(req.user?._id)
+
+    const isPasswordCorrect = await user.comparePassword(oldPassword)
+
+    if (!isPasswordCorrect) {
+        return res.status(401).json(new ApiResponse(401, {}, "Old Password is Incorrect"))
+    }
+
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password Changed Successfully"))
+
+})
+
 // const purchasePackage = asyncHandler(async (req, res) => {
 //     const { packageId, deadline } = req.body;
 //     const studentId = req.user._id; // Assuming the student is authenticated
@@ -700,5 +761,7 @@ export {
     removeStudentIfNotVerified,
     updateProfileDetails,
     verifyPayment,
-    createOrder
+    createOrder,
+    logoutUser,
+    changeCurrentPassword
 }

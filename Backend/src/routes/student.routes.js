@@ -1,5 +1,5 @@
 import Router from 'express'
-import { createOrder, createStudentAccount, forgotPassword, googleLogin, linkdinRedirect, linkedinLogin, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
+import { changeCurrentPassword, createOrder, createStudentAccount, forgotPassword, googleLogin, linkdinRedirect, linkedinLogin, logoutUser, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 const router = Router()
@@ -23,6 +23,8 @@ router.route("/student-details").post(verifyJWT, studentDetails)
 router.route("/student-update-details").post(verifyJWT, upload.fields([{ name: 'profilePicture' }]), updateProfileDetails)
 router.route("/create-order").post(verifyJWT, createOrder)
 router.route("/verify-payment").post(verifyJWT, verifyPayment)
+router.route("/logout").post(verifyJWT, logoutUser)
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 
 
 export default router

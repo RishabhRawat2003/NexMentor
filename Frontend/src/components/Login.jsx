@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import Logo from './images/loginSignupPageImages/logoSideImage.png';
-import { FaBars } from "react-icons/fa6";
+import Logo from './images/logo2.png';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from './utils/LoginForm';
 import Authentication from './utils/Authentication';
@@ -44,7 +43,15 @@ function Login() {
     try {
       const response = await axios.post(url, loginDetails);
       setLoading(false);
-      navigate('/'); // Remove this when dashboard is made
+      if (activeContainer === "student") {
+        localStorage.setItem("userType", JSON.stringify("student"))
+        localStorage.setItem("userId", JSON.stringify(response.data.data))
+        navigate('/student-profile');
+      } else {
+        // localStorage.setItem("userType", JSON.stringify("mentor"))
+        // localStorage.setItem("userId", JSON.stringify(response.data.data._id))
+        // navigate('/student-profile'); will navigate this to mentor dashboard
+      }
       setLoginDetails({ email: '', password: '' });
     } catch (error) {
       console.error(`Error logging in ${activeContainer}:`, error);
@@ -71,9 +78,8 @@ function Login() {
         loading && (<Loading />)
       }
       <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
-      <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
-        <img src={Logo} alt="neXmentor Logo" />
-        <div className='md:hidden'><FaBars size={30} /></div>
+      <header className='w-full h-auto flex items-center p-5 xl:hidden'>
+        <img src={Logo} alt="neXmentor Logo" className='w-40 sm:w-52 md:w-60' />
       </header>
       <div className='w-full h-auto flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-20'>
         <div className='w-full h-auto flex flex-col justify-center items-center mt-2 gap-2 font-cg-times xl:hidden'>

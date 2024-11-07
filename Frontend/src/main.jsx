@@ -13,12 +13,14 @@ import store from './components/store/store.js'
 import MentorSignup from './components/MentorSignup.jsx'
 import MentorSignupSuccess from './components/MentorSignupSuccess.jsx'
 import ResetLink from './components/ResetLink.jsx'
+import StudentProfile from './components/StudentProfile.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/' element={<App />}>
         <Route path='/' element={<Homepage />} />
+        <Route path='/student-profile' element={<StudentProfile />} />
       </Route>
       <Route path='/login' element={<Login />} />
       <Route path='/login/forgot-password' element={<ForgotPassword />} />

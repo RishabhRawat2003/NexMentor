@@ -1,5 +1,5 @@
 import React, { useState, useCallback, lazy, Suspense } from 'react';
-import { FaBars, FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftLong } from "react-icons/fa6";
 import { NavLink } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
@@ -13,7 +13,7 @@ import {
     Typography,
     Button,
 } from '@mui/material';
-import Logo from './images/loginSignupPageImages/logoSideImage.png';
+import Logo from './images/logo2.png';
 import ForgotImage from './images/loginSignupPageImages/forgetPassword.png'
 
 function ForgotPassword() {
@@ -63,15 +63,14 @@ function ForgotPassword() {
                 </Dialog>
             )}
             <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
-            <header className='w-full h-auto flex justify-between items-center p-5 xl:hidden'>
-                <img src={Logo} alt="neXmentor Logo" />
-                <div className='md:hidden'><FaBars size={30} /></div>
+            <header className='w-full h-auto flex items-center p-5 xl:hidden'>
+                <img src={Logo} alt="neXmentor Logo" className='w-40 sm:w-52 md:w-60' />
             </header>
             <div className='w-full h-auto flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-20'>
                 <div className='w-full h-auto xl:flex xl:justify-center xl:gap-5 2xl:gap-10'>
                     <div className='hidden xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden xl:bg-[#E0E0E0]'>
                         <div className='w-full h-auto flex justify-between items-center p-8'>
-                            <img src={Logo} alt="neXmentor Logo" />
+                            <img src={Logo} alt="neXmentor Logo" className='w-60' />
                             <NavLink to="/" className='px-5 py-2 bg-[#4A4A4A94] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
                                 <FaArrowLeftLong />Back to Homepage
                             </NavLink>

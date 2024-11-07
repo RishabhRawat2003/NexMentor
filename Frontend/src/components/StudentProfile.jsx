@@ -1,0 +1,182 @@
+import React, { useEffect, useState } from 'react'
+import { FaUser } from "react-icons/fa";
+import { MdManageSearch } from "react-icons/md";
+import { BsChatSquareTextFill } from "react-icons/bs";
+import { GrCompliance } from "react-icons/gr";
+import { IoIosLogOut } from "react-icons/io";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, FormControl, Select, MenuItem } from '@mui/material';
+import axios from 'axios';
+import AccountInformation from './AccountInformation';
+import { useNavigate } from 'react-router-dom';
+import Loading from './utils/Loading';
+
+function SessionManagement() {
+  return (
+    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
+      <h1 className='font-cg-times text-2xl font-semibold'>Session Management</h1>
+      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
+        <p className='min-h-40'>No Purchased Session yet</p>
+      </div>
+    </div>
+  )
+}
+
+function Chats() {
+  return (
+    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
+      <h1 className='font-cg-times text-2xl font-semibold'>Chats</h1>
+      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
+        <p className='h-40'>No Chats Found Yet</p>
+      </div>
+    </div>
+  )
+}
+
+function CompletedSessions() {
+  return (
+    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
+      <h1 className='font-cg-times text-2xl font-semibold'>Completed Sessions</h1>
+      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
+        <p className='h-40'>No Session Found Yet</p>
+      </div>
+    </div>
+  )
+}
+
+function AllTabs({ options, data }) {
+  if (options === 'accountInformation') {
+    return <AccountInformation data={data} />
+
+  }
+  else if (options === 'sessionManagement') {
+    return <SessionManagement />
+  }
+  else if (options === 'chats') {
+    return <Chats />
+  }
+  else {
+    return <CompletedSessions />
+  }
+
+}
+
+function LogoutDialog({ handleClose, handleLogout }) {
+
+  return (
+    <div>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to log out?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="error">
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
+
+
+function StudentProfile() {
+  const [options, setOptions] = useState('accountInformation')
+  const [logoutPopUp, setLogoutPopUp] = useState(false)
+  const [userDetails, setUserDetails] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+
+  const handleClose = () => {
+    setLogoutPopUp(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.post("/api/v1/students/logout")
+      if (response.data.statusCode === 200) {
+        setLogoutPopUp(false);
+        setLoading(false)
+        localStorage.removeItem("userId")
+        localStorage.removeItem("userType")
+        navigate('/login')
+      }
+    } catch (error) {
+      console.log("Error while logging out !!", error);
+    }
+  };
+
+  async function fetchUserDetails() {
+    try {
+      try {
+        setLoading(true)
+        const userType = JSON.parse(localStorage.getItem("userType"));
+        let url = userType === 'student' ? "/api/v1/students/student-details" : "/api/v1/mentors/mentor-details";
+        const response = await axios.post(url);
+        setUserDetails(response.data.data);
+        setLoading(false)
+      } catch (error) {
+        console.log("Error while fetching user", error);
+        setLoading(false)
+      }
+    } catch (error) {
+      console.log("Error while fetching User details", error);
+      setLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    fetchUserDetails()
+  }, [])
+
+  return (
+    <>
+      {
+        logoutPopUp && <LogoutDialog handleClose={handleClose} handleLogout={handleLogout} />
+
+      }
+      {
+        loading && <Loading />
+      }
+      <div className='w-full h-auto flex flex-col py-5 px-3'>
+        <div className='w-full h-auto flex flex-col gap-3 md:flex-row lg:gap-10'>
+          <div className='w-full h-auto flex justify-end md:w-[40vw]'>
+            <div className='w-full h-auto flex flex-col font-cg-times md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%]'>
+              <div className='w-full h-auto flex flex-col justify-center items-center md:flex-row md:justify-start md:px-2 md:gap-3'>
+                <div className='w-full h-auto flex justify-center items-center md:w-auto'><img src={userDetails.profilePicture} alt="profile picture" className='w-14 h-14 rounded-full md:w-16 md:h-16 border-[1px]' /></div>
+                <div className='w-full h-auto flex flex-col justify-center items-center md:w-auto md:items-start'>
+                  <span className='mt-1 md:text-lg'>{userDetails.firstName} {userDetails.lastName}</span>
+                  <span className='text-xs text-gray-600 md:text-sm'>{userDetails.username}</span>
+                </div>
+              </div>
+              <div className='w-full h-auto hidden md:flex md:flex-col font-cg-times'>
+                <div className='w-full h-[1px] bg-gray-600 mt-8'></div>
+                <div onClick={() => setOptions('accountInformation')} className={`${options === 'accountInformation' ? 'bg-blue-100 text-blue-500' : 'text-black bg-gray-100'} w-full h-auto mt-5 flex gap-5 py-2 items-center px-2 rounded-md cursor-pointer hover:md:bg-blue-100 hover:md:text-blue-500`} ><FaUser size={20} /> Account Information</div>
+                <div onClick={() => setOptions('sessionManagement')} className={`${options === 'sessionManagement' ? 'bg-blue-100 text-blue-500' : 'text-black bg-gray-100'} w-full h-auto my-3 flex gap-5 py-2 items-center px-2 rounded-md cursor-pointer hover:md:bg-blue-100 hover:md:text-blue-500`}><MdManageSearch size={20} /> Session Management</div>
+                <div onClick={() => setOptions('chats')} className={`${options === 'chats' ? 'bg-blue-100 text-blue-500' : 'text-black bg-gray-100'} w-full h-auto mb-3 flex gap-5 py-2 items-center px-2 rounded-md cursor-pointer hover:md:bg-blue-100 hover:md:text-blue-500`}><BsChatSquareTextFill size={20} /> Chats</div>
+                <div onClick={() => setOptions('completedSessions')} className={`${options === 'completedSessions' ? 'bg-blue-100 text-blue-500' : 'text-black bg-gray-100'} w-full h-auto flex gap-5 py-2 items-center px-2 rounded-md cursor-pointer hover:md:bg-blue-100 hover:md:text-blue-500`}><GrCompliance size={20} /> Compeleted Sessions</div>
+                <div onClick={() => setLogoutPopUp(true)} className='w-full h-auto my-3 text-black bg-gray-100 flex gap-5 py-2 items-center px-2 rounded-md cursor-pointer md:hover:bg-red-100 md:hover:text-red-500'><IoIosLogOut size={20} /> Logout</div>
+              </div>
+            </div>
+          </div>
+          <AllTabs data={userDetails} options={options} />
+          <div className='w-full h-auto flex flex-col gap-3 md:hidden'>
+            <SessionManagement />
+            <Chats />
+            <CompletedSessions />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default StudentProfile

@@ -46,7 +46,7 @@ function Login() {
       if (activeContainer === "student") {
         localStorage.setItem("userType", JSON.stringify("student"))
         localStorage.setItem("userId", JSON.stringify(response.data.data))
-        navigate('/student-profile');
+        navigate('/search-mentor');
       } else {
         // localStorage.setItem("userType", JSON.stringify("mentor"))
         // localStorage.setItem("userId", JSON.stringify(response.data.data._id))

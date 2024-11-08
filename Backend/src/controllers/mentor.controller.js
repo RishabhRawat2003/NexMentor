@@ -9,7 +9,7 @@ import crypto from 'crypto'
 import { razorpayInstance } from '../config/razorpayConfig.js'
 import { Student } from '../models/student.model.js'
 import { Package } from '../models/mentorPackage.model.js'
-
+import axios from 'axios'
 
 const razorpayInstanceValue = razorpayInstance()
 
@@ -29,6 +29,14 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 }
 
+async function createProfilePicture(firstName, lastName) {
+    try {
+        const response = await axios.get(`https://ui-avatars.com/api/?name=${firstName}+${lastName}/?background=0D8ABC&color=fff`)
+        return response.config.url
+    } catch (error) {
+        console.log("Error while creating profile picture", error);
+    }
+}
 
 // account creation releated logic here
 const generateOTP = () => {
@@ -56,9 +64,10 @@ const createAccount = asyncHandler(async (req, res) => {
         console.log('Email already exists')
         return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
+    const url = await createProfilePicture(firstName, lastName)
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
-    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now().toString().slice(-4)}`;
 
     const newMentor = await Mentor.create({
         firstName,
@@ -67,13 +76,13 @@ const createAccount = asyncHandler(async (req, res) => {
         password,
         mentorId: generatedUsername,
         otp,
+        profilePicture: url,
         otpExpiry,
         address: {
             city,
             state
         }
     })
-    console.log(generatedUsername);
     const mailContent = `
 Dear User,
 
@@ -516,7 +525,6 @@ const allMentors = asyncHandler(async (req, res) => {
     }
 });
 
-
 const singleMentor = asyncHandler(async (req, res) => {
     const { mentorId } = req.body
 
@@ -536,6 +544,66 @@ const singleMentor = asyncHandler(async (req, res) => {
 
 })
 
+const searchMentor = asyncHandler(async (req, res) => {
+    const { username, yearOfEducation, minBudget, maxBudget, city, state, minNeetScore, maxNeetScore, gender, neetAttempts } = req.body;
+
+    if (
+        username &&
+        !yearOfEducation &&
+        !minBudget &&
+        !maxBudget &&
+        !city &&
+        !state &&
+        !minNeetScore &&
+        !maxNeetScore &&
+        !gender &&
+        !neetAttempts
+    ) {
+        const mentor = await Mentor.findOne({ mentorId: username })
+            .select("-password -refreshToken -resetPasswordToken -resetPasswordExpire")
+            .populate({
+                path: 'package',
+                select: 'packagePrice'
+            });
+
+        if (!mentor) {
+            return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"));
+        }
+
+        return res.status(200).json(new ApiResponse(200, mentor, "Mentor Fetched of that username"));
+    }
+    const query = {};
+    if (username) query.mentorId = username;
+    if (yearOfEducation) query.yearOfEducation = yearOfEducation;
+    if (minNeetScore || maxNeetScore) query.neetScore = { $gte: minNeetScore || 0, $lte: maxNeetScore || Infinity };
+    if (gender) query.gender = gender;
+    if (neetAttempts) query.neetAttempt = neetAttempts;
+    if (city) query['address.city'] = city;
+    if (state) query['address.state'] = state;
+
+    // Fetch mentors based on the constructed query
+    let mentors = await Mentor.find(query)
+        .select("-password -refreshToken -address -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId -package")
+        .populate({
+            path: 'package',
+            select: 'packagePrice'
+        });
+
+    if (minBudget || maxBudget) {
+        mentors = mentors.filter(mentor => {
+            const packagePrices = mentor.package.map(pkg => pkg.packagePrice);
+            return packagePrices.some(price => price >= (minBudget || 0) && price <= (maxBudget || Infinity));
+        });
+    }
+
+    if (!mentors || mentors.length === 0) {
+        return res.status(404).json(new ApiResponse(404, {}, "No mentors found matching the criteria"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, mentors, "Mentors fetched based on the criteria"));
+});
+
+
 export {
     createAccount,
     verifyOTP,
@@ -550,5 +618,6 @@ export {
     resendOtp,
     removeMentorIfNotVerified,
     allMentors,
-    singleMentor
+    singleMentor,
+    searchMentor
 }

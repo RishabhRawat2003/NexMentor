@@ -14,6 +14,8 @@ import MentorSignup from './components/MentorSignup.jsx'
 import MentorSignupSuccess from './components/MentorSignupSuccess.jsx'
 import ResetLink from './components/ResetLink.jsx'
 import StudentProfile from './components/StudentProfile.jsx'
+import SearchMentor from './components/SearchMentor.jsx'
+import SingleMentor from './components/SingleMentor.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +23,8 @@ const router = createBrowserRouter(
       <Route path='/' element={<App />}>
         <Route path='/' element={<Homepage />} />
         <Route path='/student-profile' element={<StudentProfile />} />
+        <Route path='/search-mentor' element={<SearchMentor />} />
+        <Route path='/single-mentor/:id' element={<SingleMentor />} />
       </Route>
       <Route path='/login' element={<Login />} />
       <Route path='/login/forgot-password' element={<ForgotPassword />} />

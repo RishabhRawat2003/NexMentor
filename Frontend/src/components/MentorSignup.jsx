@@ -327,6 +327,7 @@ function MentorSignup() {
                     </MenuItem>
                     <MenuItem value="Male">Male</MenuItem>
                     <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Others">Others</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl className='w-[48%]'>

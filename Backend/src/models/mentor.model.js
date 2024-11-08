@@ -57,7 +57,6 @@ const mentorSchema = new Schema({
     number: {
         type: Number,
         trim: true,
-        unique: true
     },
     profilePicture: {
         type: String,

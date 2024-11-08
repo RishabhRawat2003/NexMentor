@@ -32,6 +32,15 @@ const generateAccessAndRefreshToken = async (userId) => {
     }
 }
 
+async function createProfilePicture(firstName, lastName) {
+    try {
+        const response = await axios.get(`https://ui-avatars.com/api/?name=${firstName}+${lastName}/?background=0D8ABC&color=fff`)
+        return response.config.url
+    } catch (error) {
+        console.log("Error while creating profile picture", error);
+    }
+}
+
 // registering student logic
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -59,9 +68,10 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
 
+    const url = await createProfilePicture(firstName, lastName)
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
-    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+    const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now().toString().slice(-4)}`;
 
     const newStudent = new Student({
         firstName,
@@ -70,6 +80,7 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         password,
         otp,
         otpExpiry,
+        profilePicture: url,
         username: generatedUsername
     });
 
@@ -372,7 +383,7 @@ const googleLogin = asyncHandler(async (req, res) => {
         });
 
         if (!student) {
-            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now().toString().slice(-4)}`;
 
             student = new Student({
                 googleId,
@@ -445,7 +456,7 @@ const linkedinLogin = asyncHandler(async (req, res) => {
 
         let student = await Student.findOne({ $or: [{ linkedinId }, { email }] });
         if (!student) {
-            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now()}`;
+            const generatedUsername = `${firstName.toLowerCase()}${lastName.toLowerCase()}${Date.now().toString().slice(-4)}`;
             student = new Student({
                 linkedinId,
                 email,
@@ -523,6 +534,60 @@ const updateProfileDetails = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, student, "Details updated or changed Successfully"));
 });
+
+const logoutUser = asyncHandler(async (req, res) => {
+    await Student.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax'
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required"))
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(401).json(new ApiResponse(401, {}, "New password and confirm Password do not match"))
+    }
+
+    const user = await Student.findById(req.user?._id)
+
+    const isPasswordCorrect = await user.comparePassword(oldPassword)
+
+    if (!isPasswordCorrect) {
+        return res.status(401).json(new ApiResponse(401, {}, "Old Password is Incorrect"))
+    }
+
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password Changed Successfully"))
+
+})
 
 //student buying session package logic
 const createOrder = asyncHandler(async (req, res) => {
@@ -641,59 +706,6 @@ The NeXmentor Team
 })
 
 
-const logoutUser = asyncHandler(async (req, res) => {
-    await Student.findByIdAndUpdate(
-        req.user._id,
-        {
-            $unset: {
-                refreshToken: 1
-            }
-        },
-        {
-            new: true
-        }
-    )
-
-    const options = {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax'
-    }
-
-    return res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "Student Logged Out Successfully"))
-})
-
-const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const { oldPassword, newPassword, confirmPassword } = req.body
-
-    if(!oldPassword || !newPassword || !confirmPassword){
-        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required"))
-    }
-
-    if (newPassword !== confirmPassword) {
-        return res.status(401).json(new ApiResponse(401, {}, "New password and confirm Password do not match"))
-    }
-
-    const user = await Student.findById(req.user?._id)
-
-    const isPasswordCorrect = await user.comparePassword(oldPassword)
-
-    if (!isPasswordCorrect) {
-        return res.status(401).json(new ApiResponse(401, {}, "Old Password is Incorrect"))
-    }
-
-    user.password = newPassword
-    await user.save({ validateBeforeSave: false })
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, {}, "Password Changed Successfully"))
-
-})
 
 // const purchasePackage = asyncHandler(async (req, res) => {
 //     const { packageId, deadline } = req.body;

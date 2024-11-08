@@ -289,7 +289,7 @@ function AccountInformation({ data }) {
                 email: data.email,
                 number: data.number,
                 username: data.username,
-                profilePicture: data.profilePicture || ''
+                profilePicture: data.profilePicture
             });
             setGender(data.gender || '');
             setCurrentClass(data.currentClass || '');

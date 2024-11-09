@@ -173,6 +173,7 @@ function SearchMentor() {
         }
     }
 
+
     async function searchMentor() {
         try {
             const response = await axios.post("/api/v1/mentors/search-mentor", formDetails)
@@ -182,6 +183,7 @@ function SearchMentor() {
             }
         } catch (error) {
             console.log("Error while searching mentor", error);
+            setUser([])
         }
     }
 
@@ -216,7 +218,7 @@ function SearchMentor() {
             <div className='w-full h-auto flex flex-col'>
                 <div className='w-full h-auto flex p-5 justify-between'>
                     <div className='w-full h-auto flex flex-col lg:w-[60vw] xl:w-[70vw]'>
-                        <div className='w-full h-auto shadow-xl shadow-gray-400 px-6 pt-4 border-[1px] flex flex-col rounded-xl lg:py-4 '>
+                        <div className='w-full h-auto shadow-custom  px-6 pt-4 border-[1px] flex flex-col rounded-xl lg:py-4 '>
                             <div className='w-full h-auto flex flex-col gap-3 sm:flex-row sm:items-center'>
                                 <input type="text" placeholder='Search by ID' value={formDetails.username} onChange={(e) => handleChange("username", e.target.value)} className='w-full h-9 border-[1px] border-gray-400 px-2 py-1 rounded-md outline-none sm:h-11' />
                                 <div className='bg-white w-full h-9 px-2 py-1 flex justify-center items-center rounded-md border-[1px] border-gray-400 sm:h-11 sm:w-[60vw] lg:w-96'>
@@ -323,16 +325,16 @@ function SearchMentor() {
                         </div>
                         <div className='w-full h-auto flex flex-wrap gap-3 py-6 justify-center mt-5 sm:items-start xl:gap-8'>
                             {
-                                users
+                                users.length > 0
                                     ? users.map((user, index) => (
-                                        <div key={index} className='w-72 h-auto shadow-md shadow-gray-400 flex flex-col rounded-md font-cg-times'>
-                                            <img src={user.profilePicture} alt="profile Picture" className='w-full h-48 object-cover rounded-t-md' />
+                                        <div key={index} className='w-72 h-auto shadow-custom  flex flex-col rounded-md font-cg-times'>
+                                            <img src={user.profilePicture} alt="profile Picture" className='w-full h-48 object-cover rounded-t-md lg:h-56' />
                                             <div className='w-full h-auto flex justify-between px-2 font-cg-times mt-3 text-xl font-semibold md:text-2xl'><span>{user.firstName} {user.lastName}</span></div>
-                                            <span className='px-2 text-gray-500'>Neet Score : {user.neetScore}</span>
-                                            <NavLink to={`/single-mentor/:${user._id}`} className='bg-[#0092DB] text-white text-center mt-3 py-1.5 rounded-sm rounded-b-md cursor-pointer active:bg-[#0092dbc3] md:hover:bg-[#0092dbc3]'>Book a Session</NavLink>
+                                            <span className='px-2 text-gray-500 mb-3'>Neet Score : {user.neetScore}</span>
+                                            <NavLink to={`/single-mentor/${user._id}`} className='bg-[#0092DB] text-white text-center mt-3 py-1.5 rounded-x-sm rounded-b-md cursor-pointer active:bg-[#0092dbc3] md:hover:bg-[#0092dbc3]'>Book a Session</NavLink>
                                         </div>
                                     ))
-                                    : null
+                                    : <p className='font-cg-times font-semibold h-80 flex justify-center items-center'>No Mentors Found</p>
                             }
                         </div>
                         <div className="w-full h-auto flex justify-center items-center my-4">
@@ -358,7 +360,7 @@ function SearchMentor() {
                         </div>
                     </div>
                     <div className='w-full h-[60vh] hidden lg:w-[35vw] lg:flex xl:w-[26vw] 2xl:h-[52vh]'>
-                        <div className='w-full h-auto flex lg:shadow-xl lg:shadow-gray-400 lg:border-[1px] lg:rounded-xl lg:p-5 lg:font-cg-times lg:flex-col'>
+                        <div className='w-full h-auto flex lg:shadow-custom  lg:border-[1px] lg:rounded-xl lg:p-5 lg:font-cg-times lg:flex-col'>
                             <div className='w-full h-auto flex flex-col gap-2'>
                                 <h1 className='text-xl font-semibold'>Average Budget</h1>
                                 <DualRangeSlider min={100} max={500} step2={100} onRangeChange={handleBudgetChange} />

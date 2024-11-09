@@ -436,6 +436,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
         if (!userId) {
             return res.status(401).json(new ApiResponse(401, {}, "User not found"))
         }
+        await createOrUpdatePackage(userId)
 
         await Mentor.findByIdAndUpdate(
             userId,
@@ -459,7 +460,18 @@ const createOrUpdatePackage = async (mentorId) => {
         throw new Error('Mentor not found');
     }
 
-    const packagePrice = searchedMentor.neetScore > 600 ? 500 : 300;
+    const neetScore = searchedMentor.neetScore
+    let packagePrice
+
+    if (neetScore < 599) {
+        packagePrice = 199
+    } else if (neetScore >= 600 && neetScore <= 640) {
+        packagePrice = 249
+    } else if (neetScore >= 641 && neetScore <= 680) {
+        packagePrice = 299
+    } else {
+        packagePrice = 349
+    }
 
     let existingPackage = await Package.findOne({ mentorId });
 
@@ -499,14 +511,6 @@ const allMentors = asyncHandler(async (req, res) => {
             return res.status(404).json(new ApiResponse(404, {}, "No mentors found"));
         }
 
-        mentors = await Promise.all(mentors.map(async (mentor) => {
-            const updatedPackage = await createOrUpdatePackage(mentor._id);
-
-            await mentor.populate("package");
-
-            return mentor;
-        }));
-
         const totalMentors = await Mentor.countDocuments();
         const totalPages = Math.ceil(totalMentors / limit);
 
@@ -532,7 +536,7 @@ const singleMentor = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Mentor Id is Required")
     }
 
-    const mentor = await Mentor.findById(mentorId).select("-password -refreshToken -address -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId").populate("package")
+    const mentor = await Mentor.findById(mentorId).select("-password -refreshToken -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId").populate("package address")
 
     if (!mentor) {
         return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))

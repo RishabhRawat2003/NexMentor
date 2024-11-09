@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        'custom': '0px 4px 50px 10px #0000001A',
+      },
       fontFamily: {
         'cg-times': ['CG Times', 'serif'], // Add a fallback like 'serif'
       },

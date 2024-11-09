@@ -107,10 +107,22 @@ const mentorSchema = new Schema({
     },
     sessionRequests: [
         {
+            package: {
+                type: Schema.Types.ObjectId,
+                ref: 'Package'
+            },
             student: {
                 type: Schema.Types.ObjectId,
-                ref: 'Student'
+                ref: "Student"
             },
+            purchaseDate: {
+                type: Date,
+                default: Date.now
+            },
+            status: {
+                type: String,
+                trim: true
+            }
         }
     ],
     verifiedFromAdmin: {

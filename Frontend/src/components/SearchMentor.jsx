@@ -5,6 +5,7 @@ import { Range } from "react-range";
 import axios from 'axios'
 import Loading from './utils/Loading'
 import { NavLink } from 'react-router-dom';
+import ErrorPopup from './utils/ErrorPopUp';
 
 function DualRangeSlider({ min, max, step2, onRangeChange }) {
     const [minValue, setMinValue] = useState(min);
@@ -95,6 +96,8 @@ function SearchMentor() {
         totalPages: 1,
         totalMentors: 0,
     });
+    const [errorPopUp, setErrorPopUp] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const indianStatesAndUTs = [
         "Andhra Pradesh",
@@ -170,19 +173,28 @@ function SearchMentor() {
         } catch (error) {
             console.log("Error while fetching Users", error);
             setLoading(false)
+            setErrorMsg(error.response?.data?.message || "An error occurred");
+            setErrorPopUp(true);
         }
     }
 
+    function handleCloseErrorPopUp() {
+        setErrorPopUp(false)
+    }
 
     async function searchMentor() {
         try {
+            setLoading(true)
             const response = await axios.post("/api/v1/mentors/search-mentor", formDetails)
             if (response.data.statusCode === 200) {
-                console.log(response.data.data);
                 setUser(response.data.data)
+                setLoading(false)
             }
         } catch (error) {
             console.log("Error while searching mentor", error);
+            setErrorMsg(error.response?.data?.message || "An error occurred");
+            setErrorPopUp(true);
+            setLoading(false);
             setUser([])
         }
     }
@@ -215,6 +227,8 @@ function SearchMentor() {
             {
                 loading && <Loading />
             }
+            <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
+
             <div className='w-full h-auto flex flex-col'>
                 <div className='w-full h-auto flex p-5 justify-between'>
                     <div className='w-full h-auto flex flex-col lg:w-[60vw] xl:w-[70vw]'>

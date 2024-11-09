@@ -1,3 +1,7 @@
 .field {
     width: 50px;
 }
+
+html {
+    scroll-behavior: smooth;
+}

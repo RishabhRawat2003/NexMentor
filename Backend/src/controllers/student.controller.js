@@ -591,7 +591,15 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
 //student buying session package logic
 const createOrder = asyncHandler(async (req, res) => {
-    const amount = 149 // here comes the amount of the package
+    const { packageId } = req.body
+
+    if (!packageId) {
+        return res.status(401).json(new ApiResponse(401, {}, "Package ID is required"))
+    }
+
+    const packagePrice = await Package.findById(packageId)
+
+    const amount = packagePrice.packagePrice
 
     const option = {
         amount: amount * 100,
@@ -629,7 +637,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
     if (generatedSignature === signature) {
 
-        const packageItem = await Package.findById(packageId).populate('owner');
+        const packageItem = await Package.findById(packageId).populate('mentorId');
         if (!packageItem) {
             console.log("Package not found");
             return res.status(400).json(new ApiResponse(400, {}, "Package not found"));
@@ -639,36 +647,43 @@ const verifyPayment = asyncHandler(async (req, res) => {
             req.user._id,
             {
                 $push: {
-                    purchasedPackages: {
+                    purchasedSessions: {
                         package: packageItem._id,
-                        mentor: packageItem.owner._id,
+                        mentor: packageItem.mentorId._id,
                         status: 'pending'
                     }
                 }
             },
             { new: true }
-        ).populate("purchasedPackages.package purchasedPackages.mentor");
+        ).populate("purchasedSessions.package purchasedSessions.mentor");
 
         if (!student) {
             console.log("Student not found");
             return res.status(404).json(new ApiResponse(404, {}, "Student not found"));
         }
 
-        const mentor = packageItem.owner;
+        const mentor = packageItem.mentorId;
         if (mentor) {
             // Implement notification logic here
             // For example, send an email or save a notification in a notifications collection
-            const notification = await Notification.create({
-                message: `${student.username}  has purchased your package ${packageItem.packageName} for ${packageItem.packagePrice} INR`,
-                recipientId: student._id
-            })
+            const requestToMentor = await Mentor.findByIdAndUpdate(
+                mentor._id,
+                {
+                    $push: {
+                        sessionRequests: {
+                            package: packageItem._id,
+                            student: student._id,
+                            status: 'pending'
+                        }
+                    }
+                },
+                { new: true }
+            ).populate("sessionRequests.package sessionRequests.student");
 
-            if (!notification) {
-                throw new ApiError(500, "Error while sending Notification to mentor")
+            if (!requestToMentor) {
+                console.log("Mentor not found");
             }
 
-            mentor.notification.push(notification)
-            await notification.save()
 
             const mailContent = `
 Dear Mentor,
@@ -690,7 +705,7 @@ Please review and approve this session to proceed with scheduling and payment. O
 Thank you for being a valued mentor on NexMentor. We look forward to seeing you make a positive impact in your student’s learning journey!
 
 Best regards,
-The NeXmentor Team
+The NexMentor Team
 `;
 
             await sendVerificationEmail(mentor.email, mailContent);
@@ -698,7 +713,7 @@ The NeXmentor Team
 
         return res
             .status(200)
-            .json(new ApiResponse(200, student.purchasedPackages.slice(-1)[0], "Payment verified Successfully"))
+            .json(new ApiResponse(200, {}, "Payment verified Successfully"))
     } else {
         throw new ApiError(401, "Payment not verified")
     }

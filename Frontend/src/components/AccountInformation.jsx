@@ -138,7 +138,7 @@ function FieldForUpdateProfile({ userDetails, setUserDetails, gender, setGender,
                     name="number"
                     onChange={(e) => handleChange(e)}
                 />
-                <div className='w-full h-auto flex flex-col justify-between items-center sm:flex-row my-3'>
+                <div className='w-full h-auto gap-5 flex flex-col justify-between items-center sm:flex-row my-3'>
                     <FormControl className='w-full sm:w-[48%]'>
                         <Select
                             value={gender}

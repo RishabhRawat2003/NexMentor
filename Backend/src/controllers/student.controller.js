@@ -692,7 +692,6 @@ We are excited to inform you that a student has purchased your mentoring package
 
 **Package Details:**
 - **Student Name**: ${student.username}
-- **Package Price**: $${packageItem.packagePrice}
 - **Package Name**: ${packageItem.packageName}
 
 Please review and approve this session to proceed with scheduling and payment. Once approved, you have to coordinate with the student to set up the session.
@@ -720,57 +719,54 @@ The NexMentor Team
 
 })
 
+//student session management logic
+const allPurchasedSessions = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const page = parseInt(req.query.page) || 1;  // Default to page 1 if not provided
+    const limit = 10;  // Limit to 10 sessions per page
+    const skip = (page - 1) * limit;
 
+    if (!userId) {
+        return res.status(401).json(new ApiResponse(401, {}, "Unauthorized Access"));
+    }
 
-// const purchasePackage = asyncHandler(async (req, res) => {
-//     const { packageId, deadline } = req.body;
-//     const studentId = req.user._id; // Assuming the student is authenticated
+    try {
+        // Fetch the user and paginate the purchased sessions
+        const user = await Student.findById(userId)
+            .populate({
+                path: "purchasedSessions.package",
+                select: "packageName packagePrice"
+            })
+            .populate({
+                path: "purchasedSessions.mentor",
+                select: "mentorId _id"
+            })
+            .select("purchasedSessions");
 
-//     // Validate deadline
-//     if (!deadline) {
-//         return res.status(400).json({ message: "Deadline is required" });
-//     }
+        if (!user) {
+            return res.status(404).json(new ApiResponse(404, {}, "User not found"));
+        }
 
-//     // Find the package
-//     const package = await Package.findById(packageId).populate('owner');
-//     if (!package) {
-//         return res.status(404).json({ message: "Package not found" });
-//     }
+        // Get total sessions and paginate the sessions
+        const totalSessions = user.purchasedSessions.length;
+        const totalPages = Math.ceil(totalSessions / limit);
 
-//     // Add package with deadline to student's purchasedPackages array
-//     const student = await Student.findByIdAndUpdate(
-//         studentId,
-//         {
-//             $push: {
-//                 purchasedPackages: {
-//                     package: package._id,
-//                     deadline: new Date(deadline),
-//                     mentor: package.owner._id,
-//                 }
-//             }
-//         },
-//         { new: true }
-//     ).populate("purchasedPackages.package purchasedPackages.mentor");
+        const paginatedSessions = user.purchasedSessions.slice(skip, skip + limit);
 
-//     if (!student) {
-//         return res.status(404).json({ message: "Student not found" });
-//     }
+        return res.status(200).json(new ApiResponse(200, {
+            data: paginatedSessions,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalSessions,
+            }
+        }, "Purchased sessions retrieved successfully"));
 
-//     // Notify the mentor about the package purchase
-//     // This can be done through a message, email, or notification system
-//     const mentor = package.owner;
-//     if (mentor) {
-//         // Implement notification logic here
-//         // For example, send an email or save a notification in a notifications collection
-//     }
-
-//     return res.status(200).json({
-//         message: "Package purchased successfully",
-//         purchasedPackage: student.purchasedPackages.slice(-1)[0], // Return the last purchased package
-//     });
-// });
-
-
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(new ApiResponse(500, {}, "An error occurred while retrieving sessions"));
+    }
+});
 
 
 export {
@@ -790,5 +786,6 @@ export {
     verifyPayment,
     createOrder,
     logoutUser,
-    changeCurrentPassword
+    changeCurrentPassword,
+    allPurchasedSessions
 }

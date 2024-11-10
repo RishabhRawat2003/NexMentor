@@ -78,7 +78,7 @@ function DualRangeSlider({ min, max, step2, onRangeChange }) {
 function SearchMentor() {
     const [formDetails, setFormDetails] = useState({
         username: "",
-        yearOfEducation: "",
+        neetExamYear: "",
         minBudget: 100,
         maxBudget: 500,
         city: "",
@@ -208,7 +208,6 @@ function SearchMentor() {
         }
     };
 
-    // Move to the previous page
     const goToPreviousPage = () => {
         if (pagination.currentPage > 1) {
             setPagination((prev) => ({
@@ -238,17 +237,17 @@ function SearchMentor() {
                                 <div className='bg-white w-full h-9 px-2 py-1 flex justify-center items-center rounded-md border-[1px] border-gray-400 sm:h-11 sm:w-[60vw] lg:w-96'>
                                     <select className=' w-full bg-white outline-none rounded-md'
                                         placeholder='Select Year'
-                                        value={formDetails.yearOfEducation}
-                                        onChange={(e) => handleChange("yearOfEducation", e.target.value)}
+                                        value={formDetails.neetExamYear}
+                                        onChange={(e) => handleChange("neetExamYear", e.target.value)}
                                     >
                                         <option value="" disabled hidden>
-                                            Year of Education
+                                            Neet Exam Year
                                         </option>
-                                        <option value="1st year">1st year</option>
-                                        <option value="2nd year">2nd year</option>
-                                        <option value="3rd year">3rd year</option>
-                                        <option value="4th year">4th year</option>
-                                        <option value="Final Year">Final Year</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
                                     </select>
                                 </div>
                                 <div onClick={searchMentor} className='w-full h-auto flex justify-center items-center bg-blue-400 py-1 text-white font-cg-times rounded-md active:bg-blue-500 sm:w-80 sm:h-9 cursor-pointer'>
@@ -344,7 +343,8 @@ function SearchMentor() {
                                         <div key={index} className='w-72 h-auto shadow-custom  flex flex-col rounded-md font-cg-times'>
                                             <img src={user.profilePicture} alt="profile Picture" className='w-full h-48 object-cover rounded-t-md lg:h-56' />
                                             <div className='w-full h-auto flex justify-between px-2 font-cg-times mt-3 text-xl font-semibold md:text-2xl'><span>{user.firstName} {user.lastName}</span></div>
-                                            <span className='px-2 text-gray-500 mb-3'>Neet Score : {user.neetScore}</span>
+                                            <span className='px-2 text-gray-500'>{user.institute}</span>
+                                            <span className='px-2 text-gray-500'>Neet Score : {user.neetScore}</span>
                                             <NavLink to={`/single-mentor/${user._id}`} className='bg-[#0092DB] text-white text-center mt-3 py-1.5 rounded-x-sm rounded-b-md cursor-pointer active:bg-[#0092dbc3] md:hover:bg-[#0092dbc3]'>Book a Session</NavLink>
                                         </div>
                                     ))
@@ -373,7 +373,7 @@ function SearchMentor() {
                             </button>
                         </div>
                     </div>
-                    <div className='w-full h-[60vh] hidden lg:w-[35vw] lg:flex xl:w-[26vw] 2xl:h-[52vh]'>
+                    <div className='w-full h-[400px] hidden lg:w-[35vw] lg:flex xl:w-[26vw] 2xl:h-[400px]'>
                         <div className='w-full h-auto flex lg:shadow-custom  lg:border-[1px] lg:rounded-xl lg:p-5 lg:font-cg-times lg:flex-col'>
                             <div className='w-full h-auto flex flex-col gap-2'>
                                 <h1 className='text-xl font-semibold'>Average Budget</h1>

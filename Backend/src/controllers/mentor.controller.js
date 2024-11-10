@@ -37,7 +37,6 @@ async function createProfilePicture(firstName, lastName) {
         console.log("Error while creating profile picture", error);
     }
 }
-
 // account creation releated logic here
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -495,6 +494,7 @@ const createOrUpdatePackage = async (mentorId) => {
     return existingPackage;
 };
 
+//changes later here that only verified mentors are sended in response
 const allMentors = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 9;
@@ -549,11 +549,11 @@ const singleMentor = asyncHandler(async (req, res) => {
 })
 
 const searchMentor = asyncHandler(async (req, res) => {
-    const { username, yearOfEducation, minBudget, maxBudget, city, state, minNeetScore, maxNeetScore, gender, neetAttempts } = req.body;
+    const { username, neetExamYear, minBudget, maxBudget, city, state, minNeetScore, maxNeetScore, gender, neetAttempts } = req.body;
 
     if (
         username &&
-        !yearOfEducation &&
+        !neetExamYear &&
         !minBudget &&
         !maxBudget &&
         !city &&
@@ -578,7 +578,7 @@ const searchMentor = asyncHandler(async (req, res) => {
     }
     const query = {};
     if (username) query.mentorId = username;
-    if (yearOfEducation) query.yearOfEducation = yearOfEducation;
+    if (neetExamYear) query.neetExamYear = neetExamYear;
     if (minNeetScore || maxNeetScore) query.neetScore = { $gte: minNeetScore || 0, $lte: maxNeetScore || Infinity };
     if (gender) query.gender = gender;
     if (neetAttempts) query.neetAttempt = neetAttempts;

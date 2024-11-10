@@ -9,17 +9,8 @@ import axios from 'axios';
 import AccountInformation from './AccountInformation';
 import { useNavigate } from 'react-router-dom';
 import Loading from './utils/Loading';
+import SessionManagement from './SessionManagement';
 
-function SessionManagement() {
-  return (
-    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
-      <h1 className='font-cg-times text-2xl font-semibold'>Session Management</h1>
-      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
-        <p className='min-h-40'>No Purchased Session yet</p>
-      </div>
-    </div>
-  )
-}
 
 function Chats() {
   return (
@@ -43,13 +34,13 @@ function CompletedSessions() {
   )
 }
 
-function AllTabs({ options, data }) {
+function AllTabs({ options, data, handleToChat }) {
   if (options === 'accountInformation') {
     return <AccountInformation data={data} />
 
   }
   else if (options === 'sessionManagement') {
-    return <SessionManagement />
+    return <SessionManagement handleToChat={handleToChat} />
   }
   else if (options === 'chats') {
     return <Chats />
@@ -132,6 +123,10 @@ function StudentProfile() {
     }
   }
 
+  function handleToChat() {
+    setOptions('chats')
+  }
+
 
   useEffect(() => {
     fetchUserDetails()
@@ -167,7 +162,7 @@ function StudentProfile() {
               </div>
             </div>
           </div>
-          <AllTabs data={userDetails} options={options} />
+          <AllTabs data={userDetails} options={options} handleToChat={handleToChat} />
           <div className='w-full h-auto flex flex-col gap-3 md:hidden'>
             <SessionManagement />
             <Chats />

@@ -772,6 +772,53 @@ const allPurchasedSessions = asyncHandler(async (req, res) => {
     }
 });
 
+const allCompletedSessions = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    if (!userId) {
+        return res.status(401).json(new ApiResponse(401, {}, "Unauthorized Access"));
+    }
+
+    try {
+        const user = await Student.findById(userId)
+            .populate({
+                path: "completeSessions.package",
+                select: "packageName packagePrice"
+            })
+            .populate({
+                path: "completeSessions.mentor",
+                select: "mentorId _id"
+            })
+            .select("completeSessions");
+
+        if (!user) {
+            return res.status(404).json(new ApiResponse(404, {}, "User not found"));
+        }
+
+        const totalSessions = user.completeSessions.length;
+        const totalPages = Math.ceil(totalSessions / limit);
+
+        const paginatedSessions = user.completeSessions.slice(skip, skip + limit);
+
+        return res.status(200).json(new ApiResponse(200, {
+            data: paginatedSessions,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalSessions,
+            }
+        }, "Complete sessions retrieved successfully"));
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(new ApiResponse(500, {}, "An error occurred while retrieving sessions"));
+    }
+
+})
+
 
 export {
     createStudentAccount,
@@ -791,5 +838,6 @@ export {
     createOrder,
     logoutUser,
     changeCurrentPassword,
-    allPurchasedSessions
+    allPurchasedSessions,
+    allCompletedSessions
 }

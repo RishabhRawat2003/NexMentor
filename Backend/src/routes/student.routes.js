@@ -1,5 +1,5 @@
 import Router from 'express'
-import { allPurchasedSessions, changeCurrentPassword, createOrder, createStudentAccount, forgotPassword, googleLogin, linkdinRedirect, linkedinLogin, logoutUser, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
+import { allCompletedSessions, allPurchasedSessions, changeCurrentPassword, createOrder, createStudentAccount, forgotPassword, googleLogin, linkdinRedirect, linkedinLogin, logoutUser, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 const router = Router()
@@ -26,6 +26,7 @@ router.route("/verify-payment").post(verifyJWT, verifyPayment)
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/purchased-sessions").post(verifyJWT,allPurchasedSessions)
+router.route("/complete-sessions").post(verifyJWT,allCompletedSessions)
 
 
 export default router

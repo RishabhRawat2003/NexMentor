@@ -299,9 +299,52 @@ The NexMentor Team
         .json(new ApiResponse(200, {}, "Session Completed Successfully "))
 })
 
+const getAllCompletedSessions = asyncHandler(async (req, res) => {
+    const mentorId = req.user._id
+    const page = parseInt(req.query.page) || 1
+    const limit = 10
+    const skip = (page - 1) * limit
+
+    if (!mentorId) {
+        return res.status(401).json(new ApiResponse(401, {}, "Mentor id is required!"))
+    }
+
+    const completeSessionsArray = await Mentor.findById(mentorId)
+        .populate({
+            path: "completeSessions.package",
+            select: "packageName packagePrice"
+        })
+        .populate({
+            path: "completeSessions.student",
+            select: "username _id"
+        })
+        .select("completeSessions");
+
+    const totalActiveSessions = completeSessionsArray.completeSessions.length
+    const totalPages = Math.ceil(totalActiveSessions / limit)
+
+    const paginatedSessions = completeSessionsArray.completeSessions.slice(skip, skip + limit);
+
+    if (!completeSessionsArray) {
+        return res.status(404).json(new ApiResponse(404, {}, "No active sessions found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {
+            data: paginatedSessions,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalActiveSessions,
+            }
+        }, "All Complete sessions fetched"))
+})
+
 export {
     getAllSessionRequests,
     acceptSessionRequests,
     getAllActiveSessions,
-    changeStatusToCompleted
+    changeStatusToCompleted,
+    getAllCompletedSessions
 }

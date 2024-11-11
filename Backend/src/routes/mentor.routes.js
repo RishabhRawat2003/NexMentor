@@ -2,6 +2,7 @@ import Router from 'express'
 import { allMentors, createAccount, createOrder, forgotPassword, mentorAcademicDetails, mentorDetails, mentorLogin, mentorLogout, removeMentorIfNotVerified, resendOtp, resetPassword, searchMentor, singleMentor, verifyOTP, verifyPayment } from '../controllers/mentor.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
+import { acceptSessionRequests, getAllActiveSessions, getAllSessionRequests } from '../controllers/mentorDashboard.controller.js'
 const router = Router()
 
 
@@ -20,8 +21,15 @@ router.route('/all-mentors').get(allMentors)
 router.route('/single-mentor').post(singleMentor)
 router.route('/search-mentor').post(searchMentor)
 
-//secure routes 
+
+//secure routes Dashboard routes
 router.route("/mentor-details").post(verifyJWT, mentorDetails)
+router.route('/all-sessions-requests').post(verifyJWT, getAllSessionRequests)
+router.route('/accept-sessions-request').post(verifyJWT, acceptSessionRequests)
+router.route('/all-active-sessions').post(verifyJWT, getAllActiveSessions)
+
+
+
 
 
 export default router

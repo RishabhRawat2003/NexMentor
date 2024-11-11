@@ -62,10 +62,6 @@ const mentorSchema = new Schema({
         type: String,
         default: '' // make a default image
     },
-    ratePerSession: {
-        type: Number,
-        default: 500 // this need to be changed as per instructions
-    },
     neetScore: {
         type: Number,
         default: 0,
@@ -116,8 +112,60 @@ const mentorSchema = new Schema({
                 ref: "Student"
             },
             purchaseDate: {
-                type: Date,
-                default: Date.now
+                type: String,
+                trim: true
+            },
+            status: {
+                type: String,
+                trim: true
+            },
+            purchasedSessionId: {
+                type: String,
+                trim: true
+            }
+        }
+    ],
+    activeSessions: [
+        {
+            package: {
+                type: Schema.Types.ObjectId,
+                ref: 'Package'
+            },
+            student: {
+                type: Schema.Types.ObjectId,
+                ref: "Student"
+            },
+            purchaseDate: {
+                type: String,
+                trim: true
+            },
+            purchasedSessionId: {
+                type: String,
+                trim: true
+            },
+            status: {
+                type: String,
+                trim: true
+            }
+        }
+    ],
+    completeSessions: [
+        {
+            package: {
+                type: Schema.Types.ObjectId,
+                ref: 'Package'
+            },
+            student: {
+                type: Schema.Types.ObjectId,
+                ref: "Student"
+            },
+            purchaseDate: {
+                type: String,
+                trim: true
+            },
+            purchasedSessionId: {
+                type: String,
+                trim: true
             },
             status: {
                 type: String,

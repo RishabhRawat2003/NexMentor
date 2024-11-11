@@ -662,6 +662,10 @@ const verifyPayment = asyncHandler(async (req, res) => {
             return res.status(404).json(new ApiResponse(404, {}, "Student not found"));
         }
 
+        const newSession = student.purchasedSessions[student.purchasedSessions.length - 1];
+        const newSessionId = newSession._id;
+        const newSessionPurchasedDate = newSession.purchaseDate
+
         const mentor = packageItem.mentorId;
         if (mentor) {
             // Implement notification logic here
@@ -673,7 +677,9 @@ const verifyPayment = asyncHandler(async (req, res) => {
                         sessionRequests: {
                             package: packageItem._id,
                             student: student._id,
-                            status: 'pending'
+                            purchasedSessionId: newSessionId,
+                            status: 'pending',
+                            purchaseDate: newSessionPurchasedDate
                         }
                     }
                 },
@@ -722,8 +728,8 @@ The NexMentor Team
 //student session management logic
 const allPurchasedSessions = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const page = parseInt(req.query.page) || 1;  // Default to page 1 if not provided
-    const limit = 10;  // Limit to 10 sessions per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
     const skip = (page - 1) * limit;
 
     if (!userId) {
@@ -731,7 +737,6 @@ const allPurchasedSessions = asyncHandler(async (req, res) => {
     }
 
     try {
-        // Fetch the user and paginate the purchased sessions
         const user = await Student.findById(userId)
             .populate({
                 path: "purchasedSessions.package",
@@ -747,7 +752,6 @@ const allPurchasedSessions = asyncHandler(async (req, res) => {
             return res.status(404).json(new ApiResponse(404, {}, "User not found"));
         }
 
-        // Get total sessions and paginate the sessions
         const totalSessions = user.purchasedSessions.length;
         const totalPages = Math.ceil(totalSessions / limit);
 

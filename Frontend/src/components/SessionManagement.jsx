@@ -101,7 +101,7 @@ function SessionManagement({handleToChat}) {
                                                         <div className='w-full h-auto flex items-center justify-center'>
                                                             <span className='w-5 h-5 bg-[#0092DB] rounded-full'></span>
                                                             <span className={`${item.status === 'pending' ? 'bg-[#999999]' : 'bg-[#0092DB]'} w-[37%] h-[1px] sm:w-[44%] md:w-[42%] lg:w-[43%] xl:w-[45%]`} ></span>
-                                                            <span className='w-5 h-5 bg-[#999999] rounded-full'></span>
+                                                            <span className={`${item.status === 'pending' ? 'bg-[#999999]' : 'bg-[#0092DB]'} w-5 h-5 rounded-full`}></span>
                                                             <span className={`${item.status === 'complete' ? 'bg-[#0092DB]' : 'bg-[#999999]'} w-[37%] h-[1px] sm:w-[44%] md:w-[42%] lg:w-[43%] xl:w-[45%] `} ></span>
                                                             <span className='w-5 h-5 bg-[#999999] rounded-full'></span>
                                                         </div>

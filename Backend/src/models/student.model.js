@@ -98,6 +98,30 @@ const studentSchema = new Schema({
             ref: 'Notification'
         }
     ],
+    completeSessions: [
+        {
+            package: {
+                type: Schema.Types.ObjectId,
+                ref: 'Package'
+            },
+            mentor: {
+                type: Schema.Types.ObjectId,
+                ref: "Mentor"
+            },
+            purchaseDate: {
+                type: String,
+                trim: true
+            },
+            status: {
+                type: String,
+                trim: true
+            },
+            purchasedSessionId: {
+                type: String,
+                trim: true
+            }
+        }
+    ],
     resetPasswordToken: {
         type: String
     },

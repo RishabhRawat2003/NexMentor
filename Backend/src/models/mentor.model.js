@@ -167,6 +167,9 @@ const mentorSchema = new Schema({
                 type: String,
                 trim: true
             },
+            imageOfProof: {
+                type: String
+            },
             status: {
                 type: String,
                 trim: true

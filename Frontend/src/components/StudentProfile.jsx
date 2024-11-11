@@ -10,7 +10,7 @@ import AccountInformation from './AccountInformation';
 import { useNavigate } from 'react-router-dom';
 import Loading from './utils/Loading';
 import SessionManagement from './SessionManagement';
-
+import CompletedSessions from './CompletedSessions';
 
 function Chats() {
   return (
@@ -23,16 +23,6 @@ function Chats() {
   )
 }
 
-function CompletedSessions() {
-  return (
-    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
-      <h1 className='font-cg-times text-2xl font-semibold'>Completed Sessions</h1>
-      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
-        <p className='h-40'>No Session Found Yet</p>
-      </div>
-    </div>
-  )
-}
 
 function AllTabs({ options, data, handleToChat }) {
   if (options === 'accountInformation') {

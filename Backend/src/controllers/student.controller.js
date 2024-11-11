@@ -819,6 +819,35 @@ const allCompletedSessions = asyncHandler(async (req, res) => {
 
 })
 
+const giveFeedBack = asyncHandler(async (req, res) => {
+    const { mentorId, rating } = req.body
+    const userId = req.user._id
+
+    if (!mentorId || !rating) {
+        return res.status(400).json(new ApiResponse(400, {}, "mentorId and rating is required"))
+    }
+
+    const mentor = await Mentor.findByIdAndUpdate(
+        mentorId,
+        {
+            $push: {
+                owner: userId,
+                rating
+            }
+        },
+        { new: true }
+    )
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Feedback given successfully"))
+
+})
+
 
 export {
     createStudentAccount,
@@ -839,5 +868,6 @@ export {
     logoutUser,
     changeCurrentPassword,
     allPurchasedSessions,
-    allCompletedSessions
+    allCompletedSessions,
+    giveFeedBack
 }

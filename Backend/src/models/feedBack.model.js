@@ -4,13 +4,8 @@ const feedbackSchema = new Schema(
     {
         owner: {
             type: Schema.Types.ObjectId,
-            ref: ['Mentor', 'Student'],
+            ref: 'Student',
             required: true
-        },
-        content: {
-            type: String,
-            required: true,
-            trim: true
         },
         rating: {
             type: Number,

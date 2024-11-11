@@ -5,3 +5,11 @@
 html {
     scroll-behavior: smooth;
 }
+
+.disable-scrollbar {
+    scrollbar-width: none; 
+}
+
+.disable-scrollbar::-webkit-scrollbar { 
+    display: none;
+}

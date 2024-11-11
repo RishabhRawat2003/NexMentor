@@ -62,8 +62,8 @@ function SessionManagement({handleToChat}) {
             }
             <div className='w-full h-auto flex flex-col gap-3 md:w-[60vw] lg:w-[80vw]'>
                 <h1 className='font-cg-times text-2xl font-semibold'>Session Management</h1>
-                <div className='w-full h-auto max-h-[100vh] flex flex-col justify-between bg-gray-100 pb-3 gap-3 font-cg-times rounded-md sm:text-base md:text-lg lg:text-xl 2xl:h-[93vh]'>
-                    <div className='w-full h-auto overflow-y-scroll'>
+                <div className='w-full h-auto min-h-80 max-h-[100vh] flex flex-col justify-between bg-gray-100 pb-3 gap-3 font-cg-times rounded-md sm:text-base md:text-lg lg:text-xl 2xl:h-[93vh]'>
+                    <div className='disable-scrollbar w-full h-auto overflow-y-scroll'>
                         <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
                             <span className='w-1/12 text-center'>S.No</span>
                             <span className='w-4/12 text-center'>Package Name</span>
@@ -117,7 +117,7 @@ function SessionManagement({handleToChat}) {
                                         </div>
                                     </div>
                                 ))
-                                : <p className='p-4 text-center text-gray-500'>No Purchased Session yet</p>
+                                : <p className='p-4 text-center text-gray-500 h-80'>No Purchased Session yet</p>
                         }
                     </div>
                     {

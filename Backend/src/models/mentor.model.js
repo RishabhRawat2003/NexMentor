@@ -189,8 +189,15 @@ const mentorSchema = new Schema({
     },
     feedBack: [
         {
-            type: Schema.Types.ObjectId,
-            ref: 'Feedback'
+            owner: {
+                type: Schema.Types.ObjectId,
+                ref: 'Student',
+            },
+            rating: {
+                type: Number,
+                min: 1,
+                max: 5
+            }
         }
     ],
     notifications: [

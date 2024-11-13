@@ -831,8 +831,10 @@ const giveFeedBack = asyncHandler(async (req, res) => {
         mentorId,
         {
             $push: {
-                owner: userId,
-                rating
+                feedBack: {
+                    owner: userId,
+                    rating
+                }
             }
         },
         { new: true }
@@ -846,6 +848,35 @@ const giveFeedBack = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, {}, "Feedback given successfully"))
 
+})
+
+const isFeedbackAlreadyGiven = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+    const studentId = req.user._id
+
+    if (!mentorId) {
+        return res.status(400).json(new ApiResponse(400, {}, "mentorId is required"))
+    }
+
+    const mentorFeedbackArr = await Mentor.findById(mentorId).populate("feedBack")
+
+    if (!mentorFeedbackArr) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    let isStudent = false
+
+    if (mentorFeedbackArr.feedBack.length > 0) {
+        mentorFeedbackArr.feedBack.map((item, index) => {
+            if (item.owner.toString() === studentId.toString()) {
+                isStudent = true;
+            }
+        })
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, isStudent, "Data fetched if student already given feedback"))
 })
 
 
@@ -869,5 +900,6 @@ export {
     changeCurrentPassword,
     allPurchasedSessions,
     allCompletedSessions,
-    giveFeedBack
+    giveFeedBack,
+    isFeedbackAlreadyGiven
 }

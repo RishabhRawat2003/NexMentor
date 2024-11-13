@@ -5,10 +5,39 @@ import Loading from './utils/Loading';
 import axios from 'axios';
 import { MdOutlineFeedback } from "react-icons/md";
 
+
+const StarRating = ({ onRating }) => {
+  const [rating, setRating] = useState(0);
+
+  const handleRating = (star) => {
+    setRating(star);
+    onRating(star);
+  };
+
+  return (
+    <div className="flex justify-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          onClick={() => handleRating(star)}
+          className={`cursor-pointer text-3xl ${star <= rating ? 'text-yellow-500' : 'text-gray-400'}`}
+        >
+          ★
+        </span>
+      ))
+      }
+    </div >
+  );
+};
+
 function CompletedSessions() {
   const [loading, setLoading] = useState(false)
   const [completedSessions, setCompletedSessions] = useState([])
   const [dropdown, setDropDown] = useState('')
+  const [feedBackStatus, setFeedBackStatus] = useState(false)
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [feedBackPopUp, setFeedBackPopUp] = useState(false)
+  const [selectedMentorId, setSelectedMentorId] = useState('')
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -48,22 +77,66 @@ function CompletedSessions() {
     }
   };
 
-  function handleFeedback() {
-    console.log("FeedBack");
+  async function handleFeedback(id) {
+    try {
+      const response = await axios.post("/api/v1/students/is-feedback-given", { mentorId: id })
+      console.log(response.data.data);
+      
+      setFeedBackStatus(response.data.data)
+      setFeedBackPopUp(true)
+      setSelectedMentorId(id)
+    } catch (error) {
+      console.log("error while fetching data about student Feedback", error);
+    }
   }
 
   useEffect(() => {
     fetchCompletedSessions(pagination.currentPage)
   }, [pagination.currentPage])
 
+  const submitFeedback = async () => {
+    try {
+      const response = await axios.post("/api/v1/students/give-feedback", { mentorId: selectedMentorId, rating: selectedRating })
+      console.log(response.data);
+      setSelectedMentorId('')
+      setFeedBackPopUp(false)
+    } catch (error) {
+      console.log("Error while submitting feedback", error);
+      setFeedBackPopUp(false);
+    }
+  };
 
   return (
     <>
       {
         loading && <Loading />
       }
+      {feedBackPopUp
+        ? feedBackStatus
+          ? <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-4 rounded-lg shadow-md w-80">
+              <h2 className="text-center text-lg font-semibold">Thanks For Your Feedback</h2>
+              <h2 className="text-center mt-2">For Details FeedBack click below</h2>
+              <p className='text-center text-blue-500 font-cg-times'>LINK HERE</p>
+              <div className="flex justify-center mt-4">
+                <button onClick={submitFeedback} className="px-4 py-2 bg-blue-500 text-white rounded-md">Ok</button>
+              </div>
+            </div>
+          </div>
+          : <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-4 rounded-lg shadow-md w-80">
+              <h2 className="text-center text-lg font-semibold">Rate Your Session</h2>
+              <StarRating onRating={(star) => setSelectedRating(star)} />
+              <div className="flex justify-center mt-4">
+                <button onClick={submitFeedback} className="px-4 py-2 bg-blue-500 text-white rounded-md">Submit</button>
+                <button onClick={() => { setFeedBackPopUp(false), setSelectedMentorId('') }} className="ml-2 px-4 py-2 bg-gray-500 text-white rounded-md">Close</button>
+              </div>
+            </div>
+          </div>
+        : null
+      }
       <div className='w-full h-auto flex flex-col gap-3 md:w-[60vw] lg:w-[80vw]'>
-        <h1 className='font-cg-times text-2xl font-semibold'>Completed Management</h1>
+        <h1 className='font-cg-times text-2xl font-semibold'>Completed Sessions</h1>
         <div className='w-full h-auto min-h-80 max-h-[100vh] flex flex-col justify-between bg-gray-100 pb-3 gap-3 font-cg-times rounded-md sm:text-base md:text-lg lg:text-xl 2xl:h-[93vh]'>
           <div className='disable-scrollbar w-full h-auto overflow-y-scroll'>
             <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
@@ -86,7 +159,7 @@ function CompletedSessions() {
                       <span className='w-4/12 text-center'>{item.package.packageName}</span>
                       <span className='sm:w-4/12 sm:text-center hidden sm:block'>{item.status}</span>
                       <span className='w-3/5 text-center sm:w-4/12'>{item.mentor.mentorId}</span>
-                      <span onClick={handleFeedback} className='w-1/12 text-center'><MdOutlineFeedback size={20} className={`${item.status === 'complete' ? 'cursor-pointer text-blue-500' : 'cursor-not-allowed'} `} /></span>
+                      <span onClick={() => handleFeedback(item.mentor._id)} className='w-1/12 text-center'><MdOutlineFeedback size={20} className={`${item.status === 'complete' ? 'cursor-pointer text-blue-500' : 'cursor-not-allowed'} `} /></span>
                       <span className='w-1/12 text-center hidden xl:block'>
                         {
                           dropdown === index

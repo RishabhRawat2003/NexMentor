@@ -23,7 +23,6 @@ function Chats() {
   )
 }
 
-
 function AllTabs({ options, data, handleToChat }) {
   if (options === 'accountInformation') {
     return <AccountInformation data={data} />
@@ -116,7 +115,6 @@ function StudentProfile() {
   function handleToChat() {
     setOptions('chats')
   }
-
 
   useEffect(() => {
     fetchUserDetails()

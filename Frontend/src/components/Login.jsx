@@ -48,9 +48,9 @@ function Login() {
         localStorage.setItem("userId", JSON.stringify(response.data.data))
         navigate('/search-mentor');
       } else {
-        // localStorage.setItem("userType", JSON.stringify("mentor"))
-        // localStorage.setItem("userId", JSON.stringify(response.data.data._id))
-        // navigate('/student-profile'); will navigate this to mentor dashboard
+        localStorage.setItem("userType", JSON.stringify("mentor"))
+        localStorage.setItem("userId", JSON.stringify(response.data.data._id))
+        navigate('/mentor-dashboard')
       }
       setLoginDetails({ email: '', password: '' });
     } catch (error) {

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import Loading from './utils/Loading'
 import ErrorPopup from './utils/ErrorPopUp'
+import { StarRating } from './SearchMentor'
 
 
 function SingleMentor() {
@@ -103,12 +104,21 @@ function SingleMentor() {
           <div className='w-full h-auto flex flex-col py-3 gap-8 scroll-smooth'>
             <div className='w-full h-auto flex flex-col md:flex-row md:justify-between md:px-3 lg:px-20 2xl:px-32 gap-7'>
               <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[60vh] lg:w-[25vw] lg:h-[55vh] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
-                <div className='w-auto md:w-full md:h-40 md:object-cover lg:h-52 md:rounded-t-lg md:py-1'>
+                <div className='w-auto md:w-full flex justify-center items-center md:h-40 md:object-cover lg:h-52 md:rounded-t-lg md:py-1'>
                   <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto' />
                 </div>
                 <div className='w-full h-auto flex flex-col p-2 font-cg-times justify-between md:h-full 2xl:mt-5'>
                   <div className='w-full h-auto flex flex-col'>
                     <div className='w-full h-auto flex flex-col font-semibold sm:flex-row text-lg sm:text-xl lg:text-2xl'>{user.firstName} {user.lastName}</div>
+                    <div className='flex items-center'>
+                      <StarRating
+                        rating={
+                          user.feedBack.length > 0
+                            ? Math.round(user.feedBack.reduce((acc, item) => acc + item.rating, 0) / user.feedBack.length)
+                            : user.neetScore >= 681 ? 5 : user.neetScore >= 641 && user.neetScore >= 680 ? 4 : 3
+                        }
+                      />
+                    </div>
                     <div className='text-xs text-gray-500 flex justify-between sm:text-sm mt-3'><span>Neet Score : {user.neetScore}</span> <span>{user.gender}</span></div>
                     <div className='text-xs text-gray-500 flex sm:text-sm mt-1'>{user.institute}, {user.address?.state}</div>
                   </div>

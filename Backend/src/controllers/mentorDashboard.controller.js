@@ -57,7 +57,7 @@ const getAllSessionRequests = asyncHandler(async (req, res) => {
 
 const acceptSessionRequests = asyncHandler(async (req, res) => {
     const { requestId, studentId, mentorId } = req.body
-    // const mentorId = req.user._id
+    // const mentorId = req.user._id // change this after making frontend of mentor dashboard
 
 
     if (!requestId || !studentId) {
@@ -179,7 +179,7 @@ const getAllActiveSessions = asyncHandler(async (req, res) => {
 })
 
 const changeStatusToCompleted = asyncHandler(async (req, res) => {
-    // const mentorId = req.user._id
+    // const mentorId = req.user._id // change this after making frontend of mentor dashboard
     const { requestId, studentId, mentorId } = req.body
 
     if (!requestId || !studentId) {

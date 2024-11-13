@@ -6,6 +6,8 @@ import axios from 'axios'
 import Loading from './utils/Loading'
 import { NavLink } from 'react-router-dom';
 import ErrorPopup from './utils/ErrorPopUp';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+
 
 function DualRangeSlider({ min, max, step2, onRangeChange }) {
     const [minValue, setMinValue] = useState(min);
@@ -74,6 +76,23 @@ function DualRangeSlider({ min, max, step2, onRangeChange }) {
         </div>
     );
 }
+
+export const StarRating = ({ rating }) => {
+    return (
+        <div className="flex items-center">
+            {[...Array(5)].map((_, index) => (
+                <span key={index}>
+                    {index < rating ? (
+                        <FaStar size={15} className="text-yellow-500" />
+                    ) : (
+                        <FaRegStar size={15} className="text-gray-300" />
+                    )}
+                </span>
+            ))}
+        </div>
+    );
+};
+
 
 function SearchMentor() {
     const [formDetails, setFormDetails] = useState({
@@ -342,7 +361,18 @@ function SearchMentor() {
                                     ? users.map((user, index) => (
                                         <div key={index} className='w-72 h-auto shadow-custom  flex flex-col rounded-md font-cg-times'>
                                             <img src={user.profilePicture} alt="profile Picture" className='w-full h-48 object-cover rounded-t-md lg:h-56' />
-                                            <div className='w-full h-auto flex justify-between px-2 font-cg-times mt-3 text-xl font-semibold md:text-2xl'><span>{user.firstName} {user.lastName}</span></div>
+                                            <div className='w-full h-auto flex items-center justify-between px-2 font-cg-times mt-3 text-lg font-semibold md:text-xl'>
+                                                <span>{user.firstName} {user.lastName}</span>
+                                                <div className='flex items-center'>
+                                                    <StarRating
+                                                        rating={
+                                                            user.feedBack.length > 0
+                                                                ? Math.round(user.feedBack.reduce((acc, item) => acc + item.rating, 0) / user.feedBack.length)
+                                                                : user.neetScore >= 681 ? 5 : user.neetScore >= 641 && user.neetScore >= 680 ? 4 : 3
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
                                             <span className='px-2 text-gray-500'>{user.institute}</span>
                                             <span className='px-2 text-gray-500'>Neet Score : {user.neetScore}</span>
                                             <NavLink to={`/single-mentor/${user._id}`} className='bg-[#0092DB] text-white text-center mt-3 py-1.5 rounded-x-sm rounded-b-md cursor-pointer active:bg-[#0092dbc3] md:hover:bg-[#0092dbc3]'>Book a Session</NavLink>

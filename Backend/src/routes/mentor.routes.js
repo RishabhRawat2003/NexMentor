@@ -21,13 +21,14 @@ router.route('/all-mentors').get(allMentors)
 router.route('/single-mentor').post(singleMentor)
 router.route('/search-mentor').post(searchMentor)
 
+router.route('/accept-sessions-request').post(acceptSessionRequests) // change this to secure routes after making frontend of mentor dashboard
+router.route("/change-status-completed").post(upload.fields([{ name: 'imageOfProof' }]), changeStatusToCompleted) // change this to secure routes after making frontend of mentor dashboard
+
 //secure routes Dashboard routes
 router.route("/mentor-details").post(verifyJWT, mentorDetails)
 router.route('/all-sessions-requests').post(verifyJWT, getAllSessionRequests)
 router.route('/accept-sessions-request').post(verifyJWT, acceptSessionRequests)
 router.route('/all-active-sessions').post(verifyJWT, getAllActiveSessions)
-router.route('/accept-sessions-request').post(verifyJWT, acceptSessionRequests)
-router.route("/change-status-completed").post(verifyJWT, upload.fields([{ name: 'imageOfProof' }]), changeStatusToCompleted)
 router.route("/all-complete-sessions").post(verifyJWT, getAllCompletedSessions)
 
 

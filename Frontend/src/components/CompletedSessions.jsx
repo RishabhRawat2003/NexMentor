@@ -81,7 +81,7 @@ function CompletedSessions() {
     try {
       const response = await axios.post("/api/v1/students/is-feedback-given", { mentorId: id })
       console.log(response.data.data);
-      
+
       setFeedBackStatus(response.data.data)
       setFeedBackPopUp(true)
       setSelectedMentorId(id)
@@ -96,10 +96,14 @@ function CompletedSessions() {
 
   const submitFeedback = async () => {
     try {
-      const response = await axios.post("/api/v1/students/give-feedback", { mentorId: selectedMentorId, rating: selectedRating })
-      console.log(response.data);
+      if (!feedBackStatus) {
+        const response = await axios.post("/api/v1/students/give-feedback", { mentorId: selectedMentorId, rating: selectedRating })
+        console.log(response.data);
+      }
       setSelectedMentorId('')
       setFeedBackPopUp(false)
+      setSelectedRating(0)
+
     } catch (error) {
       console.log("Error while submitting feedback", error);
       setFeedBackPopUp(false);

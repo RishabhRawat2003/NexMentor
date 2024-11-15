@@ -96,7 +96,9 @@ For your security, this OTP is valid for only 5 minutes. If you did not request 
 Thank you,
 The NexMentor Team`;
 
-    await sendVerificationEmail(email, mailContent);
+    const message = 'Email Verification - OTP'
+
+    await sendVerificationEmail(email, mailContent, message);
 
     return res
         .status(200)
@@ -202,7 +204,9 @@ For your security, this OTP is valid for only 5 minutes. If you did not request 
 Thank you,
 The NexMentor Team`;
 
-    await sendVerificationEmail(mentor.email, mailContent);
+    const message = 'Email Verification - OTP'
+
+    await sendVerificationEmail(mentor.email, mailContent, message);
 
     return res
         .status(200)

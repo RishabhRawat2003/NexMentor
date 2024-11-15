@@ -5,73 +5,157 @@ import { LuShoppingCart } from "react-icons/lu";
 import { HiUsers } from "react-icons/hi2";
 import { IoSearch } from "react-icons/io5";
 import Header from './Header';
+import axios from 'axios';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
+import Loading from '../utils/Loading'
 
+export const StarRating = ({ rating }) => {
+    return (
+        <div className="flex items-center justify-center">
+            {[...Array(5)].map((_, index) => (
+                <span key={index}>
+                    {index < rating ? (
+                        <FaStar size={15} className="text-yellow-500" />
+                    ) : (
+                        <FaRegStar size={15} className="text-gray-300" />
+                    )}
+                </span>
+            ))}
+        </div>
+    );
+};
 
 
 function MentorDashboard() {
-    const [localSidebarState,setLocalSidebarState] = useState(false)
+    const [localSidebarState, setLocalSidebarState] = useState(false)
+    const [userData, setUserData] = useState({})
+    const [loading, setLoading] = useState(false)
+    const [completedSessions, setCompletedSessions] = useState([])
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        totalPages: 1,
+        totalMentors: 0,
+    });
 
-    function handleStateChange(){
-        setLocalSidebarState((prev)=> !prev)
+
+    function getUserData(data) {
+        setUserData(data)
     }
 
+    async function fetchCompletedSession() {
+        try {
+            setLoading(true)
+            const response = await axios.post("/api/v1/mentors/all-complete-sessions")
+            if (response.data.statusCode === 200) {
+                setCompletedSessions(response.data.data.data)
+                setPagination(response.data.data.pagination)
+                setLoading(false)
+            }
+        } catch (error) {
+            console.log("Error While fetching completed Sessions", error);
+            setLoading(false)
+        }
+    }
+
+    function handleStateChange() {
+        setLocalSidebarState((prev) => !prev)
+    }
+
+    useEffect(() => {
+        fetchCompletedSession()
+    }, [])
+
     return (
-        <div className='w-full h-auto flex flex-col bg-[#F4F4F4] lg:w-[70%] xl:w-[75%] 2xl:w-[80%]'>
-            <Header handleStateChange={handleStateChange} />
-            <div className='w-full h-auto flex flex-wrap justify-center gap-4 mt-5'>
-                <div className='w-[230px] h-auto rounded-3xl p-3 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
-                    <div className='w-full h-auto flex justify-between items-center gap-4'>
-                        <span className='text-xl text-[#797D8C] xl:text-2xl'>Active Sessions</span>
-                        <MdOutlineShoppingCartCheckout size={20} className='xl:size-7' />
+        <>
+            {
+                loading
+                    ? <Loading />
+                    : <div className='w-full h-auto flex flex-col bg-[#F4F4F4] lg:w-[70%] xl:w-[75%] 2xl:w-[80%]'>
+                        <Header getData={getUserData} handleStateChange={handleStateChange} />
+                        <div className='w-full h-auto flex flex-wrap justify-center gap-4 mt-5'>
+                            <div className='w-[230px] h-auto rounded-3xl p-3 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
+                                <div className='w-full h-auto flex justify-between items-center gap-4'>
+                                    <span className='text-xl text-[#797D8C] xl:text-2xl'>Active Sessions</span>
+                                    <MdOutlineShoppingCartCheckout size={20} className='xl:size-7' />
+                                </div>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{userData?.activeSessions?.length}</span>
+                                <NavLink to='/mentor-dashboard/sessions' className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</NavLink>
+                            </div>
+                            <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
+                                <div className='w-full h-auto flex justify-between items-center gap-4'>
+                                    <span className='text-xl text-[#797D8C] xl:text-2xl'>Total Earnings</span>
+                                    <BsGraphUpArrow size={20} className='xl:size-7' />
+                                </div>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10k</span>
+                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
+                            </div>
+                            <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
+                                <div className='w-full h-auto flex justify-between items-center gap-4'>
+                                    <span className='text-xl text-[#797D8C] xl:text-2xl'>Total Sessions</span>
+                                    <LuShoppingCart size={20} className='xl:size-7' />
+                                </div>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{userData?.completeSessions?.length}</span>
+                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
+                            </div>
+                            <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
+                                <div className='w-full h-auto flex justify-between items-center gap-4'>
+                                    <span className='text-xl text-[#797D8C] xl:text-2xl'>Referred People</span>
+                                    <HiUsers size={20} className='xl:size-7' />
+                                </div>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10</span>
+                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
+                            </div>
+                        </div>
+                        <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 min-h-[90vh] max-h-[90vh] h-80 flex flex-col py-6 bg-white xl:px-5`}>
+                            <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
+                                <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Completed Sessions</span>
+                                <div className='border-[1px] border-[#979797] w-auto h-auto px-3 flex items-center gap-3 rounded-xl'>
+                                    <IoSearch size={20} />
+                                    <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
+                                </div>
+                            </div>
+                            <div className='w-full h-auto flex flex-col mt-4'>
+                                <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
+                                    <span className='w-1/12 text-center'>S.No</span>
+                                    <span className='w-4/12 text-center'>Package Name</span>
+                                    <span className='sm:w-4/12 sm:text-center hidden sm:block'>Service Status</span>
+                                    <span className='w-4/6 text-center sm:w-4/12'>Student</span>
+                                    <span className='w-4/12 text-center hidden xl:block'>Feedbacks</span>
+                                </div>
+                                {
+                                    completedSessions.length > 0
+                                        ? completedSessions.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className={`flex flex-col font-cg-times justify-between p-2 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                                            >
+                                                <div className='w-full h-auto flex justify-between text-xs lg:text-base items-center'>
+                                                    <span className='w-1/12 text-center'>{index + 1}</span>
+                                                    <span className='w-4/12 text-center'>{item.package.packageName}</span>
+                                                    <span className='sm:w-4/12 sm:text-center hidden sm:block'>{item.status}</span>
+                                                    <span className='w-4/6 text-center sm:w-4/12'>{item.student.username}</span>
+                                                    <span className='w-4/12 text-center hidden xl:block'>
+                                                        <StarRating
+                                                            rating={
+                                                                userData.feedBack.length > 0
+                                                                    ? Math.round(userData.feedBack.reduce((acc, item2) => acc + item2.rating, 0) / userData.feedBack.length)
+                                                                    : null
+                                                            }
+                                                        />
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        ))
+                                        : <p className='p-4 text-center text-gray-500 h-80'>No Completed Session yet</p>
+                                }
+                            </div>
+                        </div>
                     </div>
-                    <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10</span>
-                    <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
-                </div>
-                <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
-                    <div className='w-full h-auto flex justify-between items-center gap-4'>
-                        <span className='text-xl text-[#797D8C] xl:text-2xl'>Total Earnings</span>
-                        <BsGraphUpArrow size={20} className='xl:size-7' />
-                    </div>
-                    <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10k</span>
-                    <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
-                </div>
-                <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
-                    <div className='w-full h-auto flex justify-between items-center gap-4'>
-                        <span className='text-xl text-[#797D8C] xl:text-2xl'>Total Sessions</span>
-                        <LuShoppingCart size={20} className='xl:size-7' />
-                    </div>
-                    <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10</span>
-                    <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
-                </div>
-                <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
-                    <div className='w-full h-auto flex justify-between items-center gap-4'>
-                        <span className='text-xl text-[#797D8C] xl:text-2xl'>Referred People</span>
-                        <HiUsers size={20} className='xl:size-7' />
-                    </div>
-                    <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10</span>
-                    <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
-                </div>
-            </div>
-            <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 max-h-[90vh] h-80 flex flex-col py-6 bg-white xl:px-5`}>
-                <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
-                    <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Completed Sessions</span>
-                    <div className='border-[1px] border-[#979797] w-auto h-auto px-3 flex items-center gap-3 rounded-xl'>
-                        <IoSearch size={20} />
-                        <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
-                    </div>
-                </div>
-                <div className='w-full h-auto flex flex-col mt-4'>
-                    <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
-                        <span className='w-1/12 text-center'>S.No</span>
-                        <span className='w-4/12 text-center'>Package Name</span>
-                        <span className='sm:w-4/12 sm:text-center hidden sm:block'>Service Status</span>
-                        <span className='w-4/6 text-center sm:w-4/12'>Student</span>
-                        <span className='w-1/12 text-center hidden xl:block'></span>
-                        <span className='w-1/12 text-center hidden xl:block'></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+            }
+
+        </>
     )
 }
 

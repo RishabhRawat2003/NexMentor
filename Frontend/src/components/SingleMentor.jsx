@@ -113,7 +113,7 @@ function SingleMentor() {
                     <div className='flex items-center'>
                       <StarRating
                         rating={
-                          user.feedBack.length > 0
+                          user.feedBack?.length > 0
                             ? Math.round(user.feedBack.reduce((acc, item) => acc + item.rating, 0) / user.feedBack.length)
                             : user.neetScore >= 681 ? 5 : user.neetScore >= 641 && user.neetScore >= 680 ? 4 : 3
                         }

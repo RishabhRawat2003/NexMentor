@@ -56,8 +56,8 @@ const getAllSessionRequests = asyncHandler(async (req, res) => {
 })
 
 const acceptSessionRequests = asyncHandler(async (req, res) => {
-    const { requestId, studentId, mentorId } = req.body
-    // const mentorId = req.user._id // change this after making frontend of mentor dashboard
+    const { requestId, studentId } = req.body
+    const mentorId = req.user._id
 
 
     if (!requestId || !studentId) {
@@ -125,8 +125,9 @@ If you have any questions or need further assistance, feel free to reach out to 
 Best regards,
 The NexMentor Team
 `;
+    const message = 'Session Requested Accespted'
 
-    await sendVerificationEmail(student.email, mailContent);
+    await sendVerificationEmail(student.email, mailContent, message);
     // Add here to mail student that mentor has accepted the request you can chat with him and decide a session timing
 
     return res
@@ -179,8 +180,8 @@ const getAllActiveSessions = asyncHandler(async (req, res) => {
 })
 
 const changeStatusToCompleted = asyncHandler(async (req, res) => {
-    // const mentorId = req.user._id // change this after making frontend of mentor dashboard
-    const { requestId, studentId, mentorId } = req.body
+    const mentorId = req.user._id
+    const { requestId, studentId } = req.body
 
     if (!requestId || !studentId) {
         return res.status(401).json(new ApiResponse(401, {}, "Request id and student id is required"))
@@ -291,8 +292,9 @@ Thank you for your attention, and please don’t hesitate to reach out if you ne
 Best regards,
 The NexMentor Team
 `;
+    const message = 'Session Marked as Completed'
 
-    await sendVerificationEmail(completeSession.email, mailContent);
+    await sendVerificationEmail(completeSession.email, mailContent, message);
 
     return res
         .status(200)

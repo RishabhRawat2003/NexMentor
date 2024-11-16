@@ -2,7 +2,7 @@ import Router from 'express'
 import { allMentors, createAccount, createOrder, forgotPassword, mentorAcademicDetails, mentorDetails, mentorLogin, mentorLogout, removeMentorIfNotVerified, resendOtp, resetPassword, searchMentor, singleMentor, verifyOTP, verifyPayment } from '../controllers/mentor.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
-import { acceptSessionRequests, changeStatusToCompleted, getAllActiveSessions, getAllCompletedSessions, getAllSessionRequests } from '../controllers/mentorDashboard.controller.js'
+import { acceptSessionRequests, changeCurrentPassword, changeStatusToCompleted, getAllActiveSessions, getAllCompletedSessions, getAllSessionRequests, logoutUser, updateAccountDetails } from '../controllers/mentorDashboard.controller.js'
 const router = Router()
 
 
@@ -29,6 +29,9 @@ router.route('/all-active-sessions').post(verifyJWT, getAllActiveSessions)
 router.route("/all-complete-sessions").post(verifyJWT, getAllCompletedSessions)
 router.route('/accept-sessions-request').post(verifyJWT, acceptSessionRequests)
 router.route("/change-status-completed").post(verifyJWT, upload.fields([{ name: 'imageOfProof' }]), changeStatusToCompleted)
+router.route("/mentor-update-details").post(verifyJWT, upload.fields([{ name: 'profilePicture' }]), updateAccountDetails)
+router.route("/mentor-logout").post(verifyJWT,logoutUser)
+router.route("/change-current-password").post(verifyJWT,changeCurrentPassword)
 
 
 

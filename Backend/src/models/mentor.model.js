@@ -211,6 +211,9 @@ const mentorSchema = new Schema({
     },
     resetPasswordExpire: {
         type: Date
+    },
+    about:{
+        type:String
     }
 }, {
     timestamps: true

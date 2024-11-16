@@ -343,10 +343,124 @@ const getAllCompletedSessions = asyncHandler(async (req, res) => {
         }, "All Complete sessions fetched"))
 })
 
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const {
+        firstName,
+        lastName,
+        number,
+        email,
+        gender,
+        city,
+        state,
+        yearOfEducation,
+        about
+    } = req.body;
+
+    const updateFields = {};
+
+    if (firstName) updateFields.firstName = firstName;
+    if (lastName) updateFields.lastName = lastName;
+    if (number) updateFields.number = number;
+    if (email) updateFields.email = email;
+    if (yearOfEducation) updateFields.yearOfEducation = yearOfEducation;
+    if (gender) updateFields.gender = gender;
+    if (about) updateFields.about = about;
+
+    if (city || state) {
+        updateFields.address = {
+            ...(updateFields.address || {}),
+            ...(city && { city }),
+            ...(state && { state }),
+        };
+    }
+
+    if (!firstName || !lastName || !email) {
+        return res.status(400).json(new ApiResponse(400, {}, "All fields are required "))
+    }
+
+    if (req.files?.profilePicture) {
+        const profileImageFile = req.files.profilePicture[0];
+        const profileImageUpload = await uploadOnCloudinary(profileImageFile.path);
+        if (profileImageUpload?.secure_url) {
+            updateFields.profilePicture = profileImageUpload.secure_url;
+        }
+    }
+
+    const mentor = await Mentor.findByIdAndUpdate(
+        req.user._id,
+        { $set: updateFields },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"));
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, mentor, "Details updated or changed Successfully"));
+})
+
+const logoutUser = asyncHandler(async (req, res) => {
+    await Mentor.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: false,
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "Mentor Logged Out Successfully"))
+})
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword, confirmPassword } = req.body
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        return res.status(401).json(new ApiResponse(401, {}, "All Fields are required"))
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(401).json(new ApiResponse(401, {}, "New password and confirm Password do not match"))
+    }
+
+    const user = await Mentor.findById(req.user?._id)
+
+    const isPasswordCorrect = await user.comparePassword(oldPassword)
+
+    if (!isPasswordCorrect) {
+        return res.status(401).json(new ApiResponse(401, {}, "Old Password is Incorrect"))
+    }
+
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password Changed Successfully"))
+
+})
+
 export {
     getAllSessionRequests,
     acceptSessionRequests,
     getAllActiveSessions,
     changeStatusToCompleted,
-    getAllCompletedSessions
+    getAllCompletedSessions,
+    updateAccountDetails,
+    logoutUser,
+    changeCurrentPassword
 }

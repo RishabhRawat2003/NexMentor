@@ -266,7 +266,7 @@ const mentorLogin = asyncHandler(async (req, res) => {
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(200, {}, "Login Successfully"))
+        .json(new ApiResponse(200, existedMentor._id, "Login Successfully"))
 })
 
 const mentorDetails = asyncHandler(async (req, res) => {

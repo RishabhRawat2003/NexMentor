@@ -4,7 +4,7 @@ import { MdManageSearch } from "react-icons/md";
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { GrCompliance } from "react-icons/gr";
 import { IoIosLogOut } from "react-icons/io";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, FormControl, Select, MenuItem } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import axios from 'axios';
 import AccountInformation from './AccountInformation';
 import { useNavigate } from 'react-router-dom';
@@ -90,6 +90,7 @@ function StudentProfile() {
       }
     } catch (error) {
       console.log("Error while logging out !!", error);
+      setLoading(false)
     }
   };
 

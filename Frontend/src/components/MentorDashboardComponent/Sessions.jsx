@@ -115,6 +115,9 @@ function Sessions() {
                   <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
                 </div>
               </div>
+              <div className='w-full h-auto flex gap-2 mt-4 items-center text-xs lg:text-base'>
+                <p><span className='font-semibold'>Note : </span>Take Screenshots when you are in session with student as a Image of proof. You have to upload it before marking student sessions as completed.</p>
+              </div>
               <div className='w-full h-auto flex flex-col mt-4'>
                 <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
                   <span className='w-1/12 text-center'>S.No</span>

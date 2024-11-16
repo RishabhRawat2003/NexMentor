@@ -36,6 +36,45 @@ function Signup() {
   const loginParam = useSelector((state) => state.data.loginParam);
   const navigate = useNavigate()
 
+  const indianStatesAndUTs = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands - UT",
+    "Chandigarh - UT",
+    "Dadra and Nagar Haveli and Daman and Diu - UT",
+    "Delhi - UT",
+    "Jammu and Kashmir - UT",
+    "Ladakh - UT",
+    "Lakshadweep - UT",
+    "Puducherry - UT"
+  ];
+
   const handleClose = async (verified) => {
     if (verified) {
       setAccountCreatedPopUp(true);
@@ -120,7 +159,7 @@ function Signup() {
       )}
       <ErrorPopup open={errorPopUp} handleClose={handleCloseErrorPopUp} errorMessage={errorMsg} />
       <header className='w-full h-auto flex items-center p-5 xl:hidden'>
-        <img src={Logo} alt="neXmentor Logo" className='w-40 sm:w-52 md:w-60'/>
+        <img src={Logo} alt="neXmentor Logo" className='w-40 sm:w-52 md:w-60' />
       </header>
       <div className='w-full h-auto flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-20'>
         <div className='w-full h-auto flex flex-col justify-center items-center mt-2 gap-2 font-cg-times xl:hidden'>
@@ -237,16 +276,22 @@ function Signup() {
                     value={accountData.mentor.email}
                     onChange={(e) => handleChange(e)}
                   />
-                  <div className='w-full h-auto flex justify-between'>
-                    <TextField
-                      label="State"
-                      variant="outlined"
-                      margin="normal"
-                      className='w-[48%]'
+                  <div className='w-full h-auto flex justify-between items-center'>
+                    <select className=' w-[48%] bg-white border-[1px] border-gray-400 mt-2 h-[56px] px-2 text-gray-600 outline-none rounded-[4px]'
+                      placeholder='Select State'
                       name='state'
                       value={accountData.mentor.state}
                       onChange={(e) => handleChange(e)}
-                    />
+                    >
+                      <option value="" disabled hidden>
+                        Select State
+                      </option>
+                      {
+                        indianStatesAndUTs.map((item, index) => (
+                          <option key={index} value={item}>{item}</option>
+                        ))
+                      }
+                    </select>
                     <TextField
                       label="City"
                       variant="outlined"

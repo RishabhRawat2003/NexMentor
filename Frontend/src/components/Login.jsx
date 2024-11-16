@@ -49,7 +49,7 @@ function Login() {
         navigate('/search-mentor');
       } else {
         localStorage.setItem("userType", JSON.stringify("mentor"))
-        localStorage.setItem("userId", JSON.stringify(response.data.data._id))
+        localStorage.setItem("userId", JSON.stringify(response.data.data))
         navigate('/mentor-dashboard')
       }
       setLoginDetails({ email: '', password: '' });

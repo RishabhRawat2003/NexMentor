@@ -105,7 +105,7 @@ function SingleMentor() {
             <div className='w-full h-auto flex flex-col md:flex-row md:justify-between md:px-3 lg:px-20 2xl:px-32 gap-7'>
               <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[60vh] lg:w-[25vw] lg:h-[55vh] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
                 <div className='w-auto md:w-full flex justify-center items-center md:h-40 md:object-cover lg:h-52 md:rounded-t-lg md:py-1'>
-                  <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto' />
+                  <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto object-cover' />
                 </div>
                 <div className='w-full h-auto flex flex-col p-2 font-cg-times justify-between md:h-full 2xl:mt-5'>
                   <div className='w-full h-auto flex flex-col'>

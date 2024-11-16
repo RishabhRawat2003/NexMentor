@@ -65,6 +65,10 @@ function ApprovalSection() {
             <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
           </div>
         </div>
+        <div className='w-full h-auto flex gap-2 mt-4 items-center text-sm lg:text-base'>
+          <span className='font-semibold'>Note :</span>
+          <span className='flex items-center gap-1'>Click <MdOutlineDone className='text-blue-500 ' /> to accept the request</span>
+        </div>
         <div className='w-full h-auto flex flex-col mt-4'>
           <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
             <span className='w-1/12 text-center'>S.No</span>

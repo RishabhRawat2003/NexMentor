@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import { FormControl, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import Loading from '../utils/Loading';
+import { IoCloseCircle } from "react-icons/io5";
 
 function ProfileSetting() {
   const [localSidebarState, setLocalSidebarState] = useState(false)
@@ -23,6 +24,7 @@ function ProfileSetting() {
   const [previewImage, setPreviewImage] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -47,6 +49,7 @@ function ProfileSetting() {
       about: e.about
     })
     setPreviewImage(e.profilePicture)
+    setSelectedLanguages(e.languages)
   }
 
   const indianStatesAndUTs = [
@@ -88,6 +91,27 @@ function ProfileSetting() {
     "Puducherry - UT"
   ];
 
+  const indianLanguages = [
+    "English",
+    "Assamese",
+    "Bengali",
+    "Gujarati",
+    "Hindi",
+    "Kannada",
+    "Kashmiri",
+    "Maithili",
+    "Malayalam",
+    "Manipuri",
+    "Marathi",
+    "Nepali",
+    "Odia",
+    "Punjabi",
+    "Sanskrit",
+    "Sindhi",
+    "Tamil",
+    "Telugu"
+  ];
+
   function handleStateChange() {
     setLocalSidebarState((prev) => !prev)
   }
@@ -106,6 +130,12 @@ function ProfileSetting() {
       formData.append('gender', updateDetails.gender);
       formData.append('about', updateDetails.about);
 
+      if (selectedLanguages.length > 0) {
+        selectedLanguages.forEach(language => {
+          formData.append('languages[]', language);
+        });
+      }
+
       if (selectedImage) formData.append('profilePicture', selectedImage)
 
       const response = await axios.post("/api/v1/mentors/mentor-update-details", formData, {
@@ -123,6 +153,24 @@ function ProfileSetting() {
       setLoading(false)
     }
   }
+
+  const handleSelect = (e) => {
+    const { value } = e.target;
+
+    if (selectedLanguages.includes(value)) {
+      return; // Ignore duplicates
+    }
+
+    if (selectedLanguages.length < 3) {
+      setSelectedLanguages((prev) => [...prev, value]); // Add new language
+    } else {
+      alert("You can select up to 3 languages only.");
+    }
+  };
+
+  const removeLanguage = (language) => {
+    setSelectedLanguages((prev) => prev.filter((lang) => lang !== language)); // Remove language
+  };
 
   return (
     <>
@@ -168,6 +216,46 @@ function ProfileSetting() {
                 value={updateDetails.number}
                 onChange={(e) => setUpdateDetails({ ...updateDetails, number: e.target.value })}
               />
+            </div>
+            <div className="relative w-full border my-3 border-gray-300 rounded-lg shadow-md">
+              {/* Display selected languages inside the input-like field */}
+              <div className="flex flex-wrap items-center gap-2 p-3">
+                {selectedLanguages.map((language, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    {language}
+                    <IoCloseCircle
+                      size={18}
+                      className="ml-2 cursor-pointer text-blue-600 hover:text-blue-800"
+                      onClick={() => removeLanguage(language)}
+                    />
+                  </span>
+                ))}
+                {selectedLanguages.length === 0 && (
+                  <span className="text-gray-400">Select up to 3 languages...</span>
+                )}
+              </div>
+              {/* Dropdown to select languages */}
+              <select
+                onChange={handleSelect}
+                className="w-full px-3 py-2 border-t bg-[#F4F4F4] border-gray-300 rounded-b-lg focus:outline-none"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  -- Choose a Language --
+                </option>
+                {indianLanguages.map((language, index) => (
+                  <option
+                    key={index}
+                    value={language}
+                    disabled={selectedLanguages.includes(language)}
+                  >
+                    {language}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className='w-full h-auto flex justify-between items-center'>
               <TextField

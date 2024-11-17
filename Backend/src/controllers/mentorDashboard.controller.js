@@ -125,7 +125,7 @@ If you have any questions or need further assistance, feel free to reach out to 
 Best regards,
 The NexMentor Team
 `;
-    const message = 'Session Requested Accespted'
+    const message = 'Session Requested Accepted'
 
     await sendVerificationEmail(student.email, mailContent, message);
     // Add here to mail student that mentor has accepted the request you can chat with him and decide a session timing
@@ -353,11 +353,16 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         city,
         state,
         yearOfEducation,
-        about
+        about,
+        languages // Add languages to the destructured fields
     } = req.body;
+
+    console.log(languages);
+    
 
     const updateFields = {};
 
+    // Update mentor details if the fields are present in the request body
     if (firstName) updateFields.firstName = firstName;
     if (lastName) updateFields.lastName = lastName;
     if (number) updateFields.number = number;
@@ -366,6 +371,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     if (gender) updateFields.gender = gender;
     if (about) updateFields.about = about;
 
+    // Handle city and state together as an address
     if (city || state) {
         updateFields.address = {
             ...(updateFields.address || {}),
@@ -374,10 +380,18 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         };
     }
 
-    if (!firstName || !lastName || !email) {
-        return res.status(400).json(new ApiResponse(400, {}, "All fields are required "))
+    // Handle languages field, if provided
+    if (Array.isArray(languages) && languages.length > 0) {
+        // Ensure that languages is an array and not empty
+        updateFields.languages = languages;
     }
 
+    // Validation: Check if required fields are missing
+    if (!firstName || !lastName || !email) {
+        return res.status(400).json(new ApiResponse(400, {}, "All fields are required"));
+    }
+
+    // If a profile picture is uploaded, handle the file upload
     if (req.files?.profilePicture) {
         const profileImageFile = req.files.profilePicture[0];
         const profileImageUpload = await uploadOnCloudinary(profileImageFile.path);
@@ -386,20 +400,22 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         }
     }
 
+    // Find and update the mentor details in the database
     const mentor = await Mentor.findByIdAndUpdate(
         req.user._id,
         { $set: updateFields },
         { new: true }
     ).select("-password -refreshToken");
 
+    // If mentor is not found, return an error response
     if (!mentor) {
         return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"));
     }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, mentor, "Details updated or changed Successfully"));
-})
+    // Send success response with updated mentor details
+    return res.status(200).json(new ApiResponse(200, mentor, "Details updated or changed successfully"));
+});
+
 
 const logoutUser = asyncHandler(async (req, res) => {
     await Mentor.findByIdAndUpdate(

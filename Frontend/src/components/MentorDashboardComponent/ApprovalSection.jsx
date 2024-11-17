@@ -7,6 +7,8 @@ import Loading from '../utils/Loading'
 
 function ApprovalSection() {
   const [sessionRequests, setSessionsRequests] = useState([])
+  const [originalSessionRequests, setOriginalSessionRequests] = useState([]);
+  const [searchStudent, setSearchStudent] = useState('')
   const [loading, setLoading] = useState(false)
   const [localSidebarState, setLocalSidebarState] = useState(false)
   const [pagination, setPagination] = useState({
@@ -19,18 +21,37 @@ function ApprovalSection() {
     setLocalSidebarState((prev) => !prev)
   }
 
-  async function fetchSessionRequests() {
+  async function fetchSessionRequests(page = 1) {
     try {
       setLoading(true)
-      const response = await axios.post("/api/v1/mentors/all-sessions-requests")
+      const response = await axios.post(`/api/v1/mentors/all-sessions-requests?page=${page}`)
       if (response.data.statusCode === 200) {
         setSessionsRequests(response.data.data.data)
+        setOriginalSessionRequests(response.data.data.data);
         setPagination(response.data.data.pagination)
         setLoading(false)
       }
     } catch (error) {
       console.log("Error while fetching session requests", error);
       setLoading(false)
+    }
+  }
+
+  function searchStudentFromSessionRequests(studentId) {
+    if (studentId.length > 3) {
+      const filteredSessionsRequests = originalSessionRequests.filter(
+        // [CHANGED] Use originalCompletedSessions for filtering
+        (session) => session.student.username === studentId
+      );
+      setSessionsRequests(filteredSessionsRequests);
+    } else if (studentId === '') {
+      // [ADDED] Reset to original sessions when search input is cleared
+      setSessionsRequests(originalSessionRequests);
+    }
+  }
+  function handlekeyDown(event) {
+    if (event.key === "Enter") {
+      searchStudentFromSessionRequests(searchStudent);
     }
   }
 
@@ -49,9 +70,34 @@ function ApprovalSection() {
     }
   }
 
+  const goToNextPage = () => {
+    if (pagination.currentPage < pagination.totalPages) {
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: prev.currentPage + 1,
+      }));
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (pagination.currentPage > 1) {
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: prev.currentPage - 1,
+      }));
+    }
+  };
+
   useEffect(() => {
-    fetchSessionRequests()
-  }, [])
+    if (searchStudent === '') {
+      setSessionsRequests(originalSessionRequests);
+    }
+  }, [searchStudent, originalSessionRequests]);
+
+
+  useEffect(() => {
+    fetchSessionRequests(pagination.currentPage)
+  }, [pagination.currentPage])
 
 
   return (
@@ -61,13 +107,13 @@ function ApprovalSection() {
         <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
           <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Sessions Requests</span>
           <div className='border-[1px] border-[#979797] w-auto h-auto px-3 flex items-center gap-3 rounded-xl'>
-            <IoSearch size={20} />
-            <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
+            <IoSearch onClick={() => searchStudentFromSessionRequests(searchStudent)} size={20} />
+            <input type="text" value={searchStudent} onKeyDown={handlekeyDown} onChange={(e) => setSearchStudent(e.target.value)} placeholder='Search by username' className='outline-none h-auto w-full py-2' />
           </div>
         </div>
         <div className='w-full h-auto flex gap-2 mt-4 items-center text-sm lg:text-base'>
           <span className='font-semibold'>Note :</span>
-          <span className='flex items-center gap-1'>Click <MdOutlineDone className='text-blue-500 ' /> to accept the request</span>
+          <span className='flex items-center gap-1'>Click <MdOutlineDone className='text-blue-500 ' /> to accept the request. After accepting the request, chat with student to schedule the session.</span>
         </div>
         <div className='w-full h-auto flex flex-col mt-4'>
           <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>
@@ -99,6 +145,31 @@ function ApprovalSection() {
                 : <p className='p-4 text-center text-gray-500 h-80'>No Session Requests yet</p>
           }
         </div>
+        {
+          sessionRequests.length > 10 && (
+            <div className="w-full h-auto flex justify-center items-center my-4">
+              <button
+                onClick={goToPreviousPage}
+                disabled={pagination.currentPage === 1}
+                className={`px-4 py-2 mx-2 rounded-md text-white transition duration-300 
+            ${pagination.currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+              >
+                Previous
+              </button>
+              <span className="mx-4 text-lg font-medium text-gray-700">
+                Page {pagination.currentPage} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={pagination.currentPage === pagination.totalPages}
+                className={`px-4 py-2 mx-2 rounded-md text-white transition duration-300 
+            ${pagination.currentPage === pagination.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+              >
+                Next
+              </button>
+            </div>
+          )
+        }
       </div>
     </div>
   )

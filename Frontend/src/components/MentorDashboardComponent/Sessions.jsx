@@ -7,6 +7,8 @@ import Loading from '../utils/Loading';
 
 function Sessions() {
   const [activeSessions, setActiveSessions] = useState([]);
+  const [originalActiveSessions, setOriginalActiveSessions] = useState([]);
+  const [searchStudent, setSearchStudent] = useState('')
   const [localSidebarState, setLocalSidebarState] = useState(false)
   const [completePopUp, setCompletePopUp] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -26,12 +28,13 @@ function Sessions() {
     setLocalSidebarState((prev) => !prev)
   }
 
-  async function fetchActiveSessions() {
+  async function fetchActiveSessions(page = 1) {
     try {
       setLoading(true)
-      const response = await axios.post("/api/v1/mentors/all-active-sessions")
+      const response = await axios.post(`/api/v1/mentors/all-active-sessions?page=${page}`)
       if (response.data.statusCode === 200) {
         setActiveSessions(response.data.data.data)
+        setOriginalActiveSessions(response.data.data.data);
         setPagination(response.data.data.pagination)
         setLoading(false)
       }
@@ -39,6 +42,24 @@ function Sessions() {
     } catch (error) {
       console.log("Error while fetching Active Sessions", error);
       setLoading(false)
+    }
+  }
+
+  function searchStudentFromActiveSessions(studentId) {
+    if (studentId.length > 3) {
+      const filteredActiveSessions = originalActiveSessions.filter(
+        // [CHANGED] Use originalCompletedSessions for filtering
+        (session) => session.student.username === studentId
+      );
+      setActiveSessions(filteredActiveSessions);
+    } else if (studentId === '') {
+      // [ADDED] Reset to original sessions when search input is cleared
+      setActiveSessions(originalActiveSessions);
+    }
+  }
+  function handlekeyDown(event) {
+    if (event.key === "Enter") {
+      searchStudentFromActiveSessions(searchStudent);
     }
   }
 
@@ -80,7 +101,7 @@ function Sessions() {
       if (response.data.statusCode === 200) {
         fetchActiveSessions()
         setCompletePopUp(false)
-        selectedImage(null)
+        setSelectedImage(null)
         setLoading(false)
         setSingleRequestData({
           requestId: '',
@@ -96,9 +117,33 @@ function Sessions() {
     }
   }
 
+  const goToNextPage = () => {
+    if (pagination.currentPage < pagination.totalPages) {
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: prev.currentPage + 1,
+      }));
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (pagination.currentPage > 1) {
+      setPagination((prev) => ({
+        ...prev,
+        currentPage: prev.currentPage - 1,
+      }));
+    }
+  };
+
   useEffect(() => {
-    fetchActiveSessions()
-  }, [])
+    if (searchStudent === '') {
+      setActiveSessions(originalActiveSessions);
+    }
+  }, [searchStudent, originalActiveSessions]);
+
+  useEffect(() => {
+    fetchActiveSessions(pagination.currentPage)
+  }, [pagination.currentPage])
 
   return (
     <>
@@ -111,8 +156,8 @@ function Sessions() {
               <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
                 <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Active Sessions</span>
                 <div className='border-[1px] border-[#979797] w-auto h-auto px-3 flex items-center gap-3 rounded-xl'>
-                  <IoSearch size={20} />
-                  <input type="text" placeholder='Search by username' className='outline-none h-auto w-full py-2' />
+                  <IoSearch onClick={() => searchStudentFromActiveSessions(searchStudent)} size={20} />
+                  <input type="text" value={searchStudent} onKeyDown={handlekeyDown} onChange={(e) => setSearchStudent(e.target.value)} placeholder='Search by username' className='outline-none h-auto w-full py-2' />
                 </div>
               </div>
               <div className='w-full h-auto flex gap-2 mt-4 items-center text-xs lg:text-base'>
@@ -146,6 +191,31 @@ function Sessions() {
                     : <p className='p-4 text-center text-gray-500 h-80'>No Active Sessions yet</p>
                 }
               </div>
+              {
+                activeSessions.length > 10 && (
+                  <div className="w-full h-auto flex justify-center items-center my-4">
+                    <button
+                      onClick={goToPreviousPage}
+                      disabled={pagination.currentPage === 1}
+                      className={`px-4 py-2 mx-2 rounded-md text-white transition duration-300 
+            ${pagination.currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+                    >
+                      Previous
+                    </button>
+                    <span className="mx-4 text-lg font-medium text-gray-700">
+                      Page {pagination.currentPage} of {pagination.totalPages}
+                    </span>
+                    <button
+                      onClick={goToNextPage}
+                      disabled={pagination.currentPage === pagination.totalPages}
+                      className={`px-4 py-2 mx-2 rounded-md text-white transition duration-300 
+            ${pagination.currentPage === pagination.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )
+              }
             </div>
           </div>
       }

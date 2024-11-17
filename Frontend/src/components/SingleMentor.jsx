@@ -103,9 +103,9 @@ function SingleMentor() {
         : (
           <div className='w-full h-auto flex flex-col py-3 gap-8 scroll-smooth'>
             <div className='w-full h-auto flex flex-col md:flex-row md:justify-between md:px-3 lg:px-20 2xl:px-32 gap-7'>
-              <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[60vh] lg:w-[25vw] lg:h-[55vh] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
+              <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[50vh] lg:w-[25vw] lg:h-[55vh] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
                 <div className='w-auto md:w-full flex justify-center items-center md:h-40 md:object-cover lg:h-52 md:rounded-t-lg md:py-1'>
-                  <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto object-cover' />
+                  <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto object-cover border-[1px] border-bg-gray-500' />
                 </div>
                 <div className='w-full h-auto flex flex-col p-2 font-cg-times justify-between md:h-full 2xl:mt-5'>
                   <div className='w-full h-auto flex flex-col'>
@@ -119,8 +119,22 @@ function SingleMentor() {
                         }
                       />
                     </div>
-                    <div className='text-xs text-gray-500 flex justify-between sm:text-sm mt-3'><span>Neet Score : {user.neetScore}</span> <span>{user.gender}</span></div>
+                    <div className='flex items-center gap-2 my-2 lg:hidden'>
+                      {
+                        user.languages?.map((language, index) => (
+                          <span key={index} className='text-xs bg-[#0092DB4D] px-3 py-0.5 rounded-full'>{language}</span>
+                        ))
+                      }
+                    </div>
+                    <div className='text-xs text-gray-500 flex justify-between sm:text-sm lg:mt-3'><span>Neet Score : {user.neetScore}</span> <span>{user.gender}</span></div>
                     <div className='text-xs text-gray-500 flex sm:text-sm mt-1'>{user.institute}, {user.address?.state}</div>
+                    <div className='hidden lg:flex lg:items-center lg:gap-2 lg:mt-4'>
+                      {
+                        user.languages?.map((language, index) => (
+                          <span key={index} className='text-xs bg-[#0092DB4D] px-3 py-0.5 rounded-full xl:px-4 xl:text-sm'>{language}</span>
+                        ))
+                      }
+                    </div>
                   </div>
                   <a href='#package' className='w-full h-auto bg-[#0092DB] flex justify-center items-center text-white py-1 mt-2 cursor-pointer md:py-1.5 md:hover:bg-[#0092dbb6] active:bg-[#0092dbb6] rounded-sm'>Book Session</a>
                 </div>
@@ -131,7 +145,7 @@ function SingleMentor() {
             </div>
             <div className='w-[90%] h-auto mx-auto flex flex-col rounded-md shadow-custom p-2 gap-2 md:p-6'>
               <div className='font-cg-times text-sm sm:text-base md:text-lg xl:text-2xl'><span className='text-[#0092DB]'>About</span> <span>{user.firstName} {user.lastName}</span></div>
-              <div className='text-xs text-[#2E2E2E] font-cg-times sm:text-sm md:text-base xl:text-lg'>{user.about ? user.about : 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sapiente ad itaque hic dolorum possimus, est quia assumenda velit similique officia eligendi reprehenderit eum vero ut tenetur optio, dignissimos repellendus incidunt accusamus neque ullam. Quia assumenda reprehenderit commodi culpa, aperiam tempora libero ab, odio mollitia cum placeat dolore rerum quos possimus?'} </div>
+              <div className='text-xs text-[#2E2E2E] font-cg-times sm:text-sm md:text-base xl:text-lg'>{user.about ? user.about : ''} </div>
             </div>
             <div className='w-[90%] mx-auto rounded-md h-auto flex flex-col shadow-custom p-4 mb-10 gap-5'>
               <h1 className='text-center font-cg-times md:text-lg xl:text-2xl'>Packages</h1>

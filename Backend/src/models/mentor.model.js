@@ -212,9 +212,19 @@ const mentorSchema = new Schema({
     resetPasswordExpire: {
         type: Date
     },
-    about:{
-        type:String
-    }
+    about: {
+        type: String
+    },
+    languages: {
+        type: [String],
+        required: true,
+        validate: {
+            validator: function (arr) {
+                return arr.length <= 3;
+            },
+            message: "You can select up to 3 languages only.",
+        },
+    },
 }, {
     timestamps: true
 })

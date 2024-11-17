@@ -160,9 +160,9 @@ function CompletedSessions() {
                   >
                     <div className='w-full h-auto flex justify-between text-xs lg:text-base items-center'>
                       <span className='w-1/12 text-center'>{index + 1}</span>
-                      <span className='w-4/12 text-center'>{item.package.packageName}</span>
+                      <span className='w-4/12 text-center'>{item.package?.packageName}</span>
                       <span className='sm:w-4/12 sm:text-center hidden sm:block'>{item.status}</span>
-                      <span className='w-3/5 text-center sm:w-4/12'>{item.mentor.mentorId}</span>
+                      <span className='w-3/5 text-center sm:w-4/12'>{item.mentor?.mentorId}</span>
                       <span onClick={() => handleFeedback(item.mentor._id)} className='w-1/12 text-center'><MdOutlineFeedback size={20} className={`${item.status === 'complete' ? 'cursor-pointer text-blue-500' : 'cursor-not-allowed'} `} /></span>
                       <span className='w-1/12 text-center hidden xl:block'>
                         {

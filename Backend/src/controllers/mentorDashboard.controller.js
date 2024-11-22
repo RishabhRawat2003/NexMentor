@@ -199,6 +199,7 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
             select: "username _id"
         })
         .select("activeSessions");
+
     const activeSessionsArray = mentor.activeSessions
     let indexOfActiveSession
     activeSessionsArray.map((item, index) => {
@@ -210,6 +211,18 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
 
     if (!req.files.imageOfProof) {
         return res.status(401).json(new ApiResponse(401, {}, "Image of proof is required"))
+    }
+
+    let amount = ''
+
+    if (requestItem.package.packagePrice === 349) {
+        amount = 210
+    } else if (requestItem.package.packagePrice === 299) {
+        amount = 180
+    } else if (requestItem.package.packagePrice === 249) {
+        amount = 150
+    } else if (requestItem.package.packagePrice === 199) {
+        amount = 120
     }
 
     const imageOfProofFile = req.files.imageOfProof[0];
@@ -226,6 +239,10 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
                     imageOfProof: imageOfProofFileUpload.secure_url,
                     status: 'complete'
                 }
+            },
+            $inc: {
+                wallet: amount,
+                totalEarnings: amount
             }
         },
         { new: true }
@@ -360,9 +377,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         languages // Add languages to the destructured fields
     } = req.body;
 
-    console.log(languages);
-
-
     const updateFields = {};
 
     // Update mentor details if the fields are present in the request body
@@ -495,6 +509,36 @@ const deleteChatsAndConversations = async (studentId, mentorId) => {
 
 }
 
+const updatePaymentDetails = asyncHandler(async (req, res) => {
+    const { paymentMethod, paymentInfo } = req.body
+
+    if (!paymentMethod || !paymentInfo) {
+        return res.status(400).json(new ApiResponse(400, {}, "Payment Method and Payment Info are required"))
+    }
+
+    const mentor = await Mentor.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                paymentDetails: {
+                    paymentMethod,
+                    paymentInfo
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor Not Found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Payment Details Updated Successfully"))
+
+})
+
 export {
     getAllSessionRequests,
     acceptSessionRequests,
@@ -503,5 +547,6 @@ export {
     getAllCompletedSessions,
     updateAccountDetails,
     logoutUser,
-    changeCurrentPassword
+    changeCurrentPassword,
+    updatePaymentDetails
 }

@@ -225,6 +225,22 @@ const mentorSchema = new Schema({
             message: "You can select up to 3 languages only.",
         },
     },
+    paymentDetails: {
+        paymentMethod: {
+            type: String,
+        },
+        paymentInfo: {
+            type: String,
+        }
+    },
+    wallet: {
+        type: Number,
+        default: 0
+    },
+    totalEarnings: {
+        type: Number,
+        default: 0
+    },
 }, {
     timestamps: true
 })

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { setToggleSidebar } from '../store/SidebarSlice';
 import { IoClose } from "react-icons/io5";
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
 
 function Header({ handleStateChange, getData }) {
     const [sideBar, setSideBar] = useState(false)
@@ -47,8 +48,8 @@ function Header({ handleStateChange, getData }) {
                 <span className='font-[inter] font-semibold text-xl lg:text-3xl'>Dashboard</span>
             </div>
             <div className='flex w-auto h-auto gap-4 items-center lg:gap-8'>
-                <IoNotificationsOutline size={25} />
-                <IoMailOutline size={25} />
+                <NavLink to='/mentor-dashboard/notifications'><IoNotificationsOutline size={25} /></NavLink>
+                <NavLink to='/mentor-dashboard/chat'><IoMailOutline size={25} /></NavLink>
                 <span className=''><img src={userDetails?.profilePicture} alt="profile Picture" className='h-9 w-9 bg-gray-200 rounded-full border-[1px] object-cover border-blue-500 xl:w-12 xl:h-12' /></span>
             </div>
         </div>

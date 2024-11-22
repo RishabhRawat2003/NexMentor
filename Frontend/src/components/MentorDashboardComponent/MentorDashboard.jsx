@@ -41,6 +41,14 @@ function MentorDashboard() {
     });
 
 
+    function formatNumber(num) {
+        if (num >= 1000) {
+            const truncated = Math.floor(num / 100); // Truncate to the nearest 100
+            return (truncated / 10).toFixed(1).replace(/\.0$/, '') + 'k';
+        }
+        return num;
+    }
+
     function getUserData(data) {
         setUserData(data)
     }
@@ -73,6 +81,7 @@ function MentorDashboard() {
             setCompletedSessions(originalCompletedSessions);
         }
     }
+
     function handlekeyDown(event) {
         if (event.key === "Enter") {
             searchStudentFromCompletedSession(searchStudent);
@@ -107,7 +116,6 @@ function MentorDashboard() {
         }
     }, [searchStudent, originalCompletedSessions]);
 
-
     useEffect(() => {
         fetchCompletedSession(pagination.currentPage)
     }, [pagination.currentPage])
@@ -133,7 +141,7 @@ function MentorDashboard() {
                                     <span className='text-xl text-[#797D8C] xl:text-2xl'>Total Earnings</span>
                                     <BsGraphUpArrow size={20} className='xl:size-7' />
                                 </div>
-                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10k</span>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{formatNumber(userData?.totalEarnings)}</span>
                                 <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
                             </div>
                             <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>

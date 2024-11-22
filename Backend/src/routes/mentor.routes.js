@@ -2,7 +2,7 @@ import Router from 'express'
 import { allMentors, createAccount, createOrder, forgotPassword, mentorAcademicDetails, mentorDetails, mentorLogin, mentorLogout, removeMentorIfNotVerified, resendOtp, resetPassword, searchMentor, singleMentor, verifyOTP, verifyPayment } from '../controllers/mentor.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
-import { acceptSessionRequests, changeCurrentPassword, changeStatusToCompleted, getAllActiveSessions, getAllCompletedSessions, getAllSessionRequests, logoutUser, updateAccountDetails } from '../controllers/mentorDashboard.controller.js'
+import { acceptSessionRequests, changeCurrentPassword, changeStatusToCompleted, getAllActiveSessions, getAllCompletedSessions, getAllSessionRequests, logoutUser, updateAccountDetails, updatePaymentDetails } from '../controllers/mentorDashboard.controller.js'
 const router = Router()
 
 
@@ -32,6 +32,7 @@ router.route("/change-status-completed").post(verifyJWT, upload.fields([{ name: 
 router.route("/mentor-update-details").post(verifyJWT, upload.fields([{ name: 'profilePicture' }]), updateAccountDetails)
 router.route("/mentor-logout").post(verifyJWT,logoutUser)
 router.route("/change-current-password").post(verifyJWT,changeCurrentPassword)
+router.route("/update-payment-details").post(verifyJWT,updatePaymentDetails)
 
 
 

@@ -25,7 +25,9 @@ import Chat from './components/MentorDashboardComponent/Chat.jsx'
 import ProfileSetting from './components/MentorDashboardComponent/ProfileSetting.jsx'
 import Referals from './components/MentorDashboardComponent/Referals.jsx'
 import Sessions from './components/MentorDashboardComponent/Sessions.jsx'
-import Withdrawal from './components/MentorDashboardComponent/Withdrawal.jsx'
+import Wallet from './components/MentorDashboardComponent/Wallet.jsx'
+import Updates from './components/MentorDashboardComponent/Updates.jsx'
+import Help from './components/MentorDashboardComponent/Help.jsx'
 
 
 const router = createBrowserRouter(
@@ -52,7 +54,9 @@ const router = createBrowserRouter(
         <Route path='/mentor-dashboard/profile-setting' element={<ProfileSetting />} />
         <Route path='/mentor-dashboard/referals' element={<Referals />} />
         <Route path='/mentor-dashboard/sessions' element={<Sessions />} />
-        <Route path='/mentor-dashboard/withdrawal' element={<Withdrawal />} />
+        <Route path='/mentor-dashboard/wallet' element={<Wallet />} />
+        <Route path='/mentor-dashboard/updates' element={<Updates />} />
+        <Route path='/mentor-dashboard/help' element={<Help />} />
       </Route>
     </>
   )

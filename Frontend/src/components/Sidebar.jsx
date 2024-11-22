@@ -16,6 +16,8 @@ import { setToggleSidebar } from './store/SidebarSlice';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import Loading from './utils/Loading';
 import axios from 'axios';
+import { MdSystemSecurityUpdateWarning } from "react-icons/md";
+import { IoMdHelpCircleOutline } from "react-icons/io";
 
 
 function LogoutDialog({ handleClose, handleLogout }) {
@@ -108,9 +110,9 @@ function Sidebar() {
                             <IoMdNotificationsOutline size={25} />
                             Notifications
                         </NavLink>
-                        <NavLink onClick={handleSidebar} to='/mentor-dashboard/withdrawal' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                        <NavLink onClick={handleSidebar} to='/mentor-dashboard/wallet' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <TbCashBanknote size={25} />
-                            Withdrawal
+                            Wallet
                         </NavLink>
                         <NavLink onClick={handleSidebar} to='/mentor-dashboard/profile-setting' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <LuSettings size={25} />
@@ -123,6 +125,14 @@ function Sidebar() {
                         <NavLink onClick={handleSidebar} to='/mentor-dashboard/referals' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <FaUsers size={25} />
                             Referals
+                        </NavLink>
+                        <NavLink onClick={handleSidebar} to='/mentor-dashboard/updates' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <MdSystemSecurityUpdateWarning size={25} />
+                            Updates
+                        </NavLink>
+                        <NavLink onClick={handleSidebar} to='/mentor-dashboard/help' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <IoMdHelpCircleOutline size={25} />
+                            Help
                         </NavLink>
                         <button onClick={() => setLogoutPopUp(true)} className='text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]'>
                             <MdLogout size={25} />

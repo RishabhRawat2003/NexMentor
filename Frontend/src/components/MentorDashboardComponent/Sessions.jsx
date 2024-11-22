@@ -4,6 +4,8 @@ import { IoSearch } from "react-icons/io5";
 import axios from 'axios'
 import { MdOutlineDone } from "react-icons/md";
 import Loading from '../utils/Loading';
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { NavLink } from 'react-router-dom'
 
 function Sessions() {
   const [activeSessions, setActiveSessions] = useState([]);
@@ -170,6 +172,7 @@ function Sessions() {
                   <span className='sm:w-4/12 sm:text-center hidden sm:block'>Service Status</span>
                   <span className='w-4/12 text-center sm:w-4/12'>Student</span>
                   <span className='w-1/12 text-center'></span>
+                  <span className='w-1/12 text-center'></span>
                 </div>
                 {
                   activeSessions.length > 0
@@ -183,7 +186,8 @@ function Sessions() {
                           <span className='w-4/12 text-center'>{item.package.packageName}</span>
                           <span className='sm:w-4/12 sm:text-center hidden sm:block'>{item.status}</span>
                           <span className='w-4/12 text-center sm:w-4/12'>{item.student.username}</span>
-                          <div className='w-1/12 text-center'><MdOutlineDone onClick={() => handleCompleted(item._id, item.student._id)} size={20} className='text-blue-500 cursor-pointer' /></div>
+                          <div className='w-1/12 text-center'><MdOutlineDone onClick={() => handleCompleted(item._id, item.student._id)} size={20} className='text-blue-500 cursor-pointer md:hover:text-blue-700 active:text-blue-700' /></div>
+                          <NavLink to={`/mentor-dashboard/chat/${item.student._id}`} className='w-1/12 text-center'><IoChatboxEllipsesOutline className='text-blue-500 md:size-5 cursor-pointer md:hover:text-blue-700 active:text-blue-700' size={15} /></NavLink>
                         </div>
 
                       </div>

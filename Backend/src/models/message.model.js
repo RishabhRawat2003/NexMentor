@@ -1,27 +1,39 @@
-import mongoose, { Schema } from "mongoose"
+import mongoose, { Schema } from "mongoose";
 
 const messageSchema = new Schema(
     {
         senderId: {
             type: Schema.Types.ObjectId,
-            ref: ['Mentor', 'Student']
+            refPath: 'senderType', // Dynamic reference to Mentor or Student
+            required: true,
         },
         receiverId: {
             type: Schema.Types.ObjectId,
-            ref: ['Mentor', 'Student']
+            refPath: 'receiverType', // Dynamic reference to Mentor or Student
+            required: true,
         },
         message: {
             type: String,
-            required: true
+            required: true,
         },
         read: {
             type: Boolean,
-            default: false
+            default: false,
+        },
+        senderType: {
+            type: String,
+            enum: ['Mentor', 'Student'], // Allow only Mentor or Student
+            required: true,
+        },
+        receiverType: {
+            type: String,
+            enum: ['Mentor', 'Student'], // Allow only Mentor or Student
+            required: true,
         },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
-)
+);
 
-export const Message = mongoose.model("Message", messageSchema)
+export const Message = mongoose.model("Message", messageSchema);

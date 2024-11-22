@@ -99,7 +99,7 @@ function StudentProfile() {
       try {
         setLoading(true)
         const userType = JSON.parse(localStorage.getItem("userType"));
-        let url = userType === 'student' ? "/api/v1/students/student-details" : "/api/v1/mentors/mentor-details";
+        let url = userType === 'Student' ? "/api/v1/students/student-details" : "/api/v1/mentors/mentor-details";
         const response = await axios.post(url);
         setUserDetails(response.data.data);
         setLoading(false)

@@ -44,11 +44,11 @@ function Login() {
       const response = await axios.post(url, loginDetails);
       setLoading(false);
       if (activeContainer === "student") {
-        localStorage.setItem("userType", JSON.stringify("student"))
+        localStorage.setItem("userType", JSON.stringify("Student"))
         localStorage.setItem("userId", JSON.stringify(response.data.data))
         navigate('/search-mentor');
       } else {
-        localStorage.setItem("userType", JSON.stringify("mentor"))
+        localStorage.setItem("userType", JSON.stringify("Mentor"))
         localStorage.setItem("userId", JSON.stringify(response.data.data))
         navigate('/mentor-dashboard')
       }

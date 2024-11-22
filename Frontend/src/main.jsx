@@ -47,7 +47,7 @@ const router = createBrowserRouter(
         <Route path='/mentor-dashboard' element={<MentorDashboard />} />
         <Route path='/mentor-dashboard/approval-section' element={<ApprovalSection />} />
         <Route path='/mentor-dashboard/change-password' element={<ChangePassword />} />
-        <Route path='/mentor-dashboard/chat' element={<Chat />} />
+        <Route path='/mentor-dashboard/chat/:id?' element={<Chat />} />
         <Route path='/mentor-dashboard/notifications' element={<Notifications />} />
         <Route path='/mentor-dashboard/profile-setting' element={<ProfileSetting />} />
         <Route path='/mentor-dashboard/referals' element={<Referals />} />

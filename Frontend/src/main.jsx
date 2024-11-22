@@ -33,7 +33,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/' element={<App />}>
         <Route path='/' element={<Homepage />} />
-        <Route path='/student-profile' element={<StudentProfile />} />
+        <Route path='/student-profile/:id?' element={<StudentProfile />} />
         <Route path='/search-mentor' element={<SearchMentor />} />
         <Route path='/single-mentor/:id' element={<SingleMentor />} />
       </Route>

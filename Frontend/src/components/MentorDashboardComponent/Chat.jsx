@@ -29,9 +29,9 @@ function Chat() {
 
   return (
     <>
-    {
-      loading && <Loading />
-    }
+      {
+        loading && <Loading />
+      }
       <div className='w-full h-auto flex flex-col bg-[#F4F4F4] lg:w-[70%] xl:w-[75%] 2xl:w-[80%]'>
         <Header />
         <div className='w-full h-auto flex justify-center gap-3 2xl:gap-20'>
@@ -48,7 +48,7 @@ function Chat() {
                       </div>
                       <div className='h-auto flex-1 flex flex-col px-2'>
                         <span className='font-cg-times md:text-lg'>{students.username}</span>
-                        <span className='mt-3 text-sm text-gray-500 md:mt-2 md:text-base'>{students.lastMessage.message}</span>
+                        <span className={`${students._id !== students.lastMessage.receiverId ? students.lastMessage.read ? 'text-gray-500' : 'text-blue-500 font-semibold' : null} mt-3 text-sm md:mt-2 md:text-base `}>{students.lastMessage.message}</span>
                       </div>
                     </NavLink>
                   ))
@@ -62,7 +62,6 @@ function Chat() {
               <div className='hidden xl:flex xl:flex-col xl:items-center xl:w-[45%] 2xl:w-[40%]'>
                 <div className='w-full h-[600px] rounded-3xl overflow-hidden border-[1px] border-gray-400 mt-20'>
                   {window.innerWidth > 1280 && id && <ChatSingle />}
-
                 </div>
               </div>
             )

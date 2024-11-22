@@ -5,6 +5,8 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Student } from "../models/student.model.js";
 import { sendVerificationEmail } from "./emailService.js";
+import { Conversation } from "../models/conversation.model.js";
+import { Message } from "../models/message.model.js";
 
 
 const getAllSessionRequests = asyncHandler(async (req, res) => {
@@ -295,6 +297,7 @@ The NexMentor Team
     const message = 'Session Marked as Completed'
 
     await sendVerificationEmail(completeSession.email, mailContent, message);
+    await deleteChatsAndConversations(studentId, mentorId)
 
     return res
         .status(200)
@@ -358,7 +361,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     } = req.body;
 
     console.log(languages);
-    
+
 
     const updateFields = {};
 
@@ -416,7 +419,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, mentor, "Details updated or changed successfully"));
 });
 
-
 const logoutUser = asyncHandler(async (req, res) => {
     await Mentor.findByIdAndUpdate(
         req.user._id,
@@ -469,6 +471,29 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "Password Changed Successfully"))
 
 })
+
+const deleteChatsAndConversations = async (studentId, mentorId) => {
+
+    await Conversation.deleteOne(
+        {
+            participants: {
+                $all: [studentId, mentorId]
+            }
+        }
+    )
+
+    await Message.deleteMany(
+        {
+            senderId: {
+                $in: [studentId, mentorId]
+            },
+            receiverId: {
+                $in: [studentId, mentorId]
+            }
+        }
+    )
+
+}
 
 export {
     getAllSessionRequests,

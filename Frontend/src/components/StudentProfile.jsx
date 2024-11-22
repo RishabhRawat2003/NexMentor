@@ -4,24 +4,16 @@ import { MdManageSearch } from "react-icons/md";
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { GrCompliance } from "react-icons/gr";
 import { IoIosLogOut } from "react-icons/io";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import axios from 'axios';
 import AccountInformation from './AccountInformation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from './utils/Loading';
 import SessionManagement from './SessionManagement';
 import CompletedSessions from './CompletedSessions';
+import Chats from './Chats';
+import ChatSingle from './ChatSingleStudent';
 
-function Chats() {
-  return (
-    <div className='w-full h-auto flex flex-col gap-3 md:w-[50vw]'>
-      <h1 className='font-cg-times text-2xl font-semibold'>Chats</h1>
-      <div className='w-full h-auto flex flex-col bg-gray-100 p-3 gap-3 font-cg-times text-sm rounded-md sm:text-base md:text-lg lg:text-xl md:gap-6'>
-        <p className='h-40'>No Chats Found Yet</p>
-      </div>
-    </div>
-  )
-}
 
 function AllTabs({ options, data, handleToChat }) {
   if (options === 'accountInformation') {
@@ -70,6 +62,7 @@ function StudentProfile() {
   const [logoutPopUp, setLogoutPopUp] = useState(false)
   const [userDetails, setUserDetails] = useState({})
   const [loading, setLoading] = useState(false)
+  const {id} = useParams()
 
   const navigate = useNavigate()
 
@@ -152,10 +145,19 @@ function StudentProfile() {
             </div>
           </div>
           <AllTabs data={userDetails} options={options} handleToChat={handleToChat} />
+          {
+            options === 'chats' && id && <div className='hidden xl:flex xl:w-[40vw] xl:h-[80vh] xl:pt-10'>
+              <ChatSingle />
+            </div>
+          }
+          
           <div className='w-full h-auto flex flex-col gap-3 md:hidden'>
             <SessionManagement />
             <Chats />
             <CompletedSessions />
+          </div>
+          <div className='w-full h-auto flex justify-center items-center md:hidden'>
+            <div onClick={() => setLogoutPopUp(true)} className='w-auto h-auto my-3 text-black bg-gray-100 flex gap-3 py-2 items-center px-7 rounded-md cursor-pointer active:bg-red-100 active:text-red-500 md:hover:bg-red-100 md:hover:text-red-500'><IoIosLogOut size={20} /> Logout</div>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
 import { getReceiverSocketId, io } from "../app.js";
 import { Student } from "../models/student.model.js";
+import { Mentor } from "../models/mentor.model.js";
 
 const sendMessage = asyncHandler(async (req, res) => {
     try {
@@ -80,6 +81,7 @@ const getMessages = asyncHandler(async (req, res) => {
     }
 });
 
+// this is to get mentors conversations only
 const getConversationUsersForMentors = asyncHandler(async (req, res) => {
     try {
         const mentorId = req.user._id; // Assuming the authenticated mentor's ID is available on `req.user._id`
@@ -201,4 +203,68 @@ const searchUserDetails = asyncHandler(async (req, res) => {
 
 })
 
-export { sendMessage, getMessages, getConversationUsersForMentors, readMessage, searchUserDetails };
+// this is to get students conversations only
+const getConversationUsersForStudents = asyncHandler(async (req, res) => {
+    try {
+        const studentId = req.user._id; // Assuming the authenticated mentor's ID is available on `req.user._id`
+
+        // Find conversations where the student is a participant
+        const conversations = await Conversation.find({
+            participants: { $in: [studentId] },
+        }).populate({
+            path: 'participants',
+            select: '_id mentorId profilePicture',
+            model: 'Mentor', // Populates only mentors details
+        });
+
+
+        // Extract the "other" participant details who are mentors
+        const mentors = conversations
+            .map((conversation) => {
+                // Exclude mentor from participants to get the mentor
+                return conversation.participants.find(
+                    (participant) =>
+                        !participant._id.equals(studentId)
+                );
+            })
+            .filter((mentors) => mentors); // Remove undefined entries
+
+        // Get the last message for each conversation
+        const lastMessagesMap = await lastMessage(studentId);
+
+        // Combine mentors details with their last messages
+        const mentorsWithLastMessages = mentors.map((mentor) => ({
+            ...mentor.toObject(),
+            lastMessage: lastMessagesMap[mentor._id.toString()] || null,
+        }));
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, mentorsWithLastMessages, "Mentors and their last messages retrieved successfully"));
+    } catch (error) {
+        console.error(error);
+        throw new ApiError(500, "Error while retrieving conversation users");
+    }
+});
+
+//used to get info about mentors this is used in student
+const searchUserDetailsMentors = asyncHandler(async (req, res) => {
+    const { searchedUserId } = req.body
+
+    if (!searchedUserId) {
+        return res.status(400).json(new ApiResponse(400, {}, "Please provide a valid id "))
+    }
+
+    const student = await Mentor.findById(searchedUserId).select("mentorId profilePicture")
+
+    if (!student) {
+        return res.status(404).json(new ApiResponse(404, {}, "User not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, student, "Mentor details fetched successfully"))
+
+})
+
+export { sendMessage, getMessages, getConversationUsersForMentors, readMessage, searchUserDetails, getConversationUsersForStudents, searchUserDetailsMentors };

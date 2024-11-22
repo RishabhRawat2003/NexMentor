@@ -6,7 +6,7 @@ import axios from 'axios';
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 
-function SessionManagement({handleToChat}) {
+function SessionManagement({ handleToChat }) {
     const [loading, setLoading] = useState(false)
     const [purchasedSessions, setPurchasedSessions] = useState([])
     const [dropdown, setDropDown] = useState('')
@@ -84,7 +84,7 @@ function SessionManagement({handleToChat}) {
                                             <span className='w-4/6 text-center xl:w-4/12'>{item.package.packageName}</span>
                                             <span className='sm:w-4/12 sm:text-center hidden sm:block'>{item.status}</span>
                                             <span className='w-4/6 text-center sm:w-4/12'>{item.mentor.mentorId}</span>
-                                            <span  onClick={() => item.status === 'active' && handleToChat()}  className='w-1/12 text-center'><IoChatboxEllipsesOutline size={20} className={`${item.status ==='active' ? 'cursor-pointer text-blue-500' : 'cursor-not-allowed' } `}/></span>
+                                            <span onClick={() => item.status === 'active' && handleToChat(item.mentor._id)} className='w-1/12 text-center'><IoChatboxEllipsesOutline size={20} className={`${item.status === 'active' ? 'cursor-pointer text-blue-500' : 'cursor-not-allowed'} `} /></span>
                                             <span className='w-1/12 text-center hidden xl:block'>
                                                 {
                                                     dropdown === index

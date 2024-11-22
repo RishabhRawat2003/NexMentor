@@ -16,17 +16,28 @@ import ChatSingle from './ChatSingleStudent';
 
 
 function AllTabs({ options, data, handleToChat }) {
+  const { id } = useParams()
+  const navigate = useNavigate()
   if (options === 'accountInformation') {
+    if (id) {
+      navigate('/student-profile', { replace: true });
+    }
     return <AccountInformation data={data} />
 
   }
   else if (options === 'sessionManagement') {
+    if (id) {
+      navigate('/student-profile', { replace: true });
+    }
     return <SessionManagement handleToChat={handleToChat} />
   }
   else if (options === 'chats') {
     return <Chats />
   }
   else {
+    if (id) {
+      navigate('/student-profile', { replace: true });
+    }
     return <CompletedSessions />
   }
 
@@ -62,7 +73,7 @@ function StudentProfile() {
   const [logoutPopUp, setLogoutPopUp] = useState(false)
   const [userDetails, setUserDetails] = useState({})
   const [loading, setLoading] = useState(false)
-  const {id} = useParams()
+  const { id } = useParams()
 
   const navigate = useNavigate()
 
@@ -106,8 +117,9 @@ function StudentProfile() {
     }
   }
 
-  function handleToChat() {
+  function handleToChat(id) {
     setOptions('chats')
+    navigate(`/student-profile/${id}`)
   }
 
   useEffect(() => {
@@ -150,7 +162,7 @@ function StudentProfile() {
               <ChatSingle />
             </div>
           }
-          
+
           <div className='w-full h-auto flex flex-col gap-3 md:hidden'>
             <SessionManagement />
             <Chats />

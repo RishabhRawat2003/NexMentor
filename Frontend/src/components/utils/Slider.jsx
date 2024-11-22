@@ -1,11 +1,12 @@
 import React, { useEffect, useState , useMemo} from 'react'
 import { NavLink } from 'react-router-dom'
-import sliderImage1 from '../images/loginSignupPageImages/slider1.jpg'
-import sliderImage2 from '../images/loginSignupPageImages/slider2.jpg'
-import sliderImage3 from '../images/loginSignupPageImages/slider3.jpg'
+import Image1 from '../images/loginSignupPageImages/image1.png'
+import Image2 from '../images/loginSignupPageImages/image2.png'
+import Image3 from '../images/loginSignupPageImages/image3.png'
+
 import { FaArrowLeftLong } from "react-icons/fa6";
 
-const images = [sliderImage1, sliderImage2, sliderImage3];
+const images = [Image1, Image2, Image3];
 
 function Slider() {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,10 +31,6 @@ function Slider() {
             <div className="relative w-full mx-auto overflow-hidden flex items-center justify-center">
                 <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
                     {sliderContent}
-                </div>
-                <div className='absolute left-5 bottom-24 flex flex-col gap-1 font-cg-times text-white'>
-                    <span className='text-6xl'>Welcome Back</span>
-                    <span className='text-3xl'>Something will come here</span>
                 </div>
                 <NavLink to="/" className='absolute top-5 right-5 px-5 py-2 bg-[#00000094] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
                     <FaArrowLeftLong /> Back to Homepage

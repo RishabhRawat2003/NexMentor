@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logo from './images/logo2.png';
 import { FaUserCheck } from "react-icons/fa6";
 import { Select, MenuItem, FormControl, TextField } from '@mui/material';
-import SideImage from './images/loginSignupPageImages/academics.png';
+// import SideImage from './images/loginSignupPageImages/academics.png';
 import Logo2 from './images/loginSignupPageImages/logoSideImage.png';
 import { TbUserUp } from "react-icons/tb";
 import { MdLockOutline } from "react-icons/md";
@@ -12,6 +12,7 @@ import axios from 'axios'
 import Loading from './utils/Loading';
 import ErrorPopup from './utils/ErrorPopUp';
 import { useNavigate } from 'react-router-dom';
+import SideImage from './images/Mentorapplication.png'
 
 
 function FileUpload({ label, onFileChange }) {
@@ -220,24 +221,8 @@ function MentorSignup() {
       <div className='w-full h-auto mb-10 flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-10'>
         <div className='w-full h-auto xl:flex xl:items-center xl:justify-center xl:gap-5 2xl:gap-10'>
           {/* Side Image start here */}
-          <div className='hidden xl:relative xl:z-30 xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[90vh] xl:rounded-xl xl:overflow-hidden'>
-            <img src={SideImage} alt="Mentorship Logo" className="w-full h-full object-cover" />
-            <img src={Logo2} alt="Logo" className='absolute z-20 w-80 top-28 left-12' />
-            <div className='absolute w-full h-auto flex bottom-24 left-12 z-20'>
-              <div className='w-20 h-auto flex flex-col items-center'>
-                <span className='w-10 h-10 border-[1px] border-white rounded-full flex justify-center items-center'><TbUserUp size={25} color='white' /></span>
-                <div className="border-l-2 border-dotted border-gray-400 h-28"></div>
-                <span className='w-10 h-10 border-[1px] border-white rounded-full flex justify-center items-center'><MdLockOutline size={25} color='white' /></span>
-                <div className="border-l-2 border-dotted border-gray-400 h-28"></div>
-                <span className='w-10 h-10 border-[1px] border-white rounded-full flex justify-center items-center'><FaUserCheck size={25} color='white' /></span>
-              </div>
-              <div className='w-auto h-auto flex flex-col pl-5 pr-20 justify-between text-white'>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium odio nobis recusandae sit ipsam. Consequatur, molestias ut. Saepe iure ex voluptatum provident nisi nemo veniam, reprehenderit nostrum, ipsa quo eum.</p>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium odio nobis recusandae sit ipsam. Consequatur, molestias ut. Saepe iure ex voluptatum provident nisi nemo veniam, reprehenderit nostrum, ipsa quo eum.</p>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium odio nobis recusandae sit ipsam. Consequatur, molestias ut. Saepe iure ex voluptatum provident nisi nemo veniam, reprehenderit nostrum, ipsa quo eum.</p>
-              </div>
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,146,219,0.8)] to-[rgba(0,23,35,0.8)]"></div>
+          <div className='hidden xl:relative xl:z-30 xl:flex xl:flex-col xl:w-[50%] shadow-lg 2xl:w-[43%] xl:h-[79vh] xl:rounded-xl xl:overflow-hidden'>
+            <img src={SideImage} alt="Mentorship Logo" className="w-full h-full object-contain rounded-md" />
           </div>
 
           {/* main form start here */}

@@ -145,6 +145,8 @@ const mentorAcademicDetails = asyncHandler(async (req, res) => {
     const scoreCardUpload = await uploadOnCloudinary(scoreCardFile.path);
     const studentIdUpload = await uploadOnCloudinary(studentIdFile.path);
 
+    const randomEightDigitNumber = () => Math.floor(10000000 + Math.random() * 90000000); // this is a referralCode
+
     const updatedMentor = await Mentor.findByIdAndUpdate(
         id,
         {
@@ -157,7 +159,8 @@ const mentorAcademicDetails = asyncHandler(async (req, res) => {
             studentId: studentIdUpload ? studentIdUpload.secure_url : '',
             gender,
             neetAttempt,
-            agreeVerificationStep
+            agreeVerificationStep,
+            referralsCode: randomEightDigitNumber()
         },
         { new: true }
     );

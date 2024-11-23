@@ -231,6 +231,12 @@ const mentorSchema = new Schema({
         },
         paymentInfo: {
             type: String,
+        },
+        accountHolderName: {
+            type: String
+        },
+        ifscCode: {
+            type: String
         }
     },
     wallet: {
@@ -241,6 +247,13 @@ const mentorSchema = new Schema({
         type: Number,
         default: 0
     },
+    totalReferrals: {
+        type: Number,
+        default: 0
+    },
+    referralsCode: {
+        type: String
+    }
 }, {
     timestamps: true
 })

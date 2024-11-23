@@ -134,7 +134,6 @@ function MentorDashboard() {
                                     <MdOutlineShoppingCartCheckout size={20} className='xl:size-7' />
                                 </div>
                                 <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{userData?.activeSessions?.length}</span>
-                                <NavLink to='/mentor-dashboard/sessions' className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</NavLink>
                             </div>
                             <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
                                 <div className='w-full h-auto flex justify-between items-center gap-4'>
@@ -142,7 +141,6 @@ function MentorDashboard() {
                                     <BsGraphUpArrow size={20} className='xl:size-7' />
                                 </div>
                                 <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{formatNumber(userData?.totalEarnings)}</span>
-                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
                             </div>
                             <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
                                 <div className='w-full h-auto flex justify-between items-center gap-4'>
@@ -150,15 +148,13 @@ function MentorDashboard() {
                                     <LuShoppingCart size={20} className='xl:size-7' />
                                 </div>
                                 <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{userData?.completeSessions?.length}</span>
-                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
                             </div>
                             <div className='w-[230px] h-auto rounded-3xl p-3 px-5 flex flex-col font-nunito border-[1px] border-[#D3CBFB] xl:w-[280px]'>
                                 <div className='w-full h-auto flex justify-between items-center gap-4'>
                                     <span className='text-xl text-[#797D8C] xl:text-2xl'>Referred People</span>
                                     <HiUsers size={20} className='xl:size-7' />
                                 </div>
-                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>10</span>
-                                <div className='text-end underline underline-offset-2 text-[#0092DB] xl:text-lg cursor-pointer'>view</div>
+                                <span className='text-4xl font-semibold xl:mt-4 xl:text-5xl'>{userData?.totalReferrals}</span>
                             </div>
                         </div>
                         <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 min-h-[90vh] max-h-[90vh] h-80 flex flex-col py-6 bg-white xl:px-5`}>

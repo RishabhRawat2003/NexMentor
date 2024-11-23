@@ -127,6 +127,14 @@ const studentSchema = new Schema({
     },
     resetPasswordExpire: {
         type: Date
+    },
+    referred: {
+        type: Boolean,
+        default: false
+    },
+    referredBy:{
+        type: Schema.Types.ObjectId,
+        ref: 'Mentor'
     }
 }, {
     timestamps: true

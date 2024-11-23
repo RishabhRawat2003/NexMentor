@@ -47,7 +47,7 @@ const generateOTP = () => {
 };
 
 const createStudentAccount = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password, confirmPassword } = req.body
+    const { firstName, lastName, email, password, confirmPassword, referralCode } = req.body
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
         console.log("All Fields are required !!");
@@ -68,6 +68,12 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         return res.status(401).json(new ApiResponse(401, {}, "Email already exists"))
     }
 
+    const mentor = await Mentor.findOne(
+        {
+            referralsCode: referralCode
+        }
+    )
+
     const url = await createProfilePicture(firstName, lastName)
     const otp = generateOTP();
     const otpExpiry = Date.now() + 5 * 60 * 1000;
@@ -81,7 +87,9 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         otp,
         otpExpiry,
         profilePicture: url,
-        username: generatedUsername
+        username: generatedUsername,
+        referred: mentor ? true : false,
+        referredBy: mentor ? mentor._id : ''
     });
 
     await newStudent.save();

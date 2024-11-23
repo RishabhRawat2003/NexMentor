@@ -263,7 +263,7 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
             path: "purchasedSessions.mentor",
             select: "mentorId _id"
         })
-        .select("purchasedSessions")
+        .select("purchasedSessions referred completeSessions referredBy")
 
     const studentPurchasedSessionsArr = student.purchasedSessions
     let indexOfPurchasedSession
@@ -275,6 +275,22 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
     })
 
     const singlePurchasedSession = studentPurchasedSessionsArr[indexOfPurchasedSession]
+
+    if (student.referred === true) {
+        if (student.completeSessions.length === 0) {
+            await Mentor.findByIdAndUpdate(
+                student.referredBy,
+                {
+                    $inc: {
+                        wallet: 50,
+                        totalEarnings: 50,
+                        totalReferrals: 1
+                    }
+                },
+                { new: true }
+            )
+        }
+    }
 
     const completeSession = await Student.findByIdAndUpdate(
         requestItem.student._id,
@@ -510,7 +526,7 @@ const deleteChatsAndConversations = async (studentId, mentorId) => {
 }
 
 const updatePaymentDetails = asyncHandler(async (req, res) => {
-    const { paymentMethod, paymentInfo } = req.body
+    const { paymentMethod, paymentInfo, accountHolderName, ifscCode } = req.body
 
     if (!paymentMethod || !paymentInfo) {
         return res.status(400).json(new ApiResponse(400, {}, "Payment Method and Payment Info are required"))
@@ -522,7 +538,9 @@ const updatePaymentDetails = asyncHandler(async (req, res) => {
             $set: {
                 paymentDetails: {
                     paymentMethod,
-                    paymentInfo
+                    paymentInfo,
+                    accountHolderName,
+                    ifscCode
                 }
             }
         },

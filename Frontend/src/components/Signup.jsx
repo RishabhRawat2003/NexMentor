@@ -28,7 +28,7 @@ function Signup() {
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [accountData, setAccountData] = useState({
-    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' },
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '' },
     mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
   });
 
@@ -92,7 +92,7 @@ function Signup() {
   };
 
   const resetForm = () => setAccountData({
-    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' },
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '' },
     mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
   });
 
@@ -170,7 +170,7 @@ function Signup() {
           {/* Sider start here */}
           <Slider />
           {/* main form start here */}
-          <div className='w-auto h-auto flex flex-col mt-10 mx-5 xl:w-[35%] 2xl:w-[30%]'>
+          <div className='w-auto h-auto flex flex-col mx-5 xl:w-[35%] 2xl:w-[30%]'>
             <div className='w-full h-auto flex justify-center items-center text-2xl font-cg-times font-bold'>CREATE NEW ACCOUNT</div>
             <div className='w-auto h-auto flex font-cg-times text-sm mt-5'>
               <p onClick={() => handleButtonClick('student')} className='w-[50%] h-10 flex items-center justify-center cursor-pointer active:bg-gray-100 md:hover:bg-gray-100 lg:text-xl'>Student</p>
@@ -179,7 +179,7 @@ function Signup() {
             <div className={`${activeContainer === 'student' ? 'translate-x-0' : 'translate-x-[50%]'} w-auto h-auto flex transition duration-300`}>
               <p className='w-[50%] h-[2px] bg-[#0092DB]'></p>
             </div>
-            <div className='relative w-full h-[90vh] overflow-hidden xl:h-[70vh]'>
+            <div className='relative w-full h-[650px] overflow-hidden xl:h-[550px]'>
               {/* student Signup */}
               <div className={`absolute top-0 w-full h-full flex flex-col transition-transform duration-300 ease-in-out ${activeContainer === 'student' ? 'transform translate-x-0' : 'transform -translate-x-full'}`}>
                 <Authentication />
@@ -236,6 +236,15 @@ function Signup() {
                       onChange={(e) => handleChange(e)}
                     />
                   </div>
+                  <TextField
+                    label="Referral Code (If you have)"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={accountData.student.referralCode}
+                    name='referralCode'
+                    onChange={(e) => handleChange(e)}
+                  />
                   <div onClick={verifyEmail} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
                     Sign Up
                   </div>

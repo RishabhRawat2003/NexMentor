@@ -146,6 +146,9 @@ const mentorSchema = new Schema({
             status: {
                 type: String,
                 trim: true
+            },
+            approvalTime: {
+                type: String
             }
         }
     ],

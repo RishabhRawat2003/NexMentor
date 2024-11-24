@@ -57,4 +57,9 @@ app.use("/api/v1/students", studentRouter)
 import messageRouter from './routes/message.routes.js'
 app.use("/api/v1/message", messageRouter)
 
+
+//Admin Routes
+import adminRouter from './routes/admin.routes.js'
+app.use("/api/v1/admin", adminRouter)
+
 export { app, server, io }

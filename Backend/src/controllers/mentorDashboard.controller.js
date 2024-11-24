@@ -93,7 +93,8 @@ const acceptSessionRequests = asyncHandler(async (req, res) => {
                     student: requestItem.student._id,
                     purchasedSessionId: requestItem.purchasedSessionId,
                     purchaseDate: requestItem.purchaseDate,
-                    status: 'active'
+                    status: 'active',
+                    approvalTime: new Date().toISOString()
                 }
             }
         },

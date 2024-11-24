@@ -6,8 +6,8 @@ import ErrorPopup from '../utils/ErrorPopUp';
 import Loading from '../utils/Loading';
 import axios from 'axios';
 
+function AdminChangePassword() {
 
-function ChangePassword() {
   const [passwords, setPasswords] = useState({
     oldPassword: "",
     newPassword: "",
@@ -27,34 +27,6 @@ function ChangePassword() {
     setLocalSidebarState((prev) => !prev)
   }
 
-  async function changePassword() {
-    try {
-      setLoading(true)
-      const response = await axios.post("/api/v1/mentors/change-current-password", passwords)
-      if (response.data.statusCode === 200) {
-        setLoading(false)
-        setSuccessMsgPopUp(true)
-        setPasswords({
-          oldPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        })
-        setTimeout(() => {
-          setSuccessMsgPopUp(false)
-        }, 4000);
-      }
-    } catch (error) {
-      console.log("Error While changing password", error);
-      setLoading(false)
-      setErrorMsg(error?.response?.data?.message)
-      setErrorPopUp(true)
-      setPasswords({
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      })
-    }
-  }
 
   return (
     <>
@@ -96,10 +68,7 @@ function ChangePassword() {
               onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
             />
           </div>
-          <div className='w-full h-auto flex justify-end items-center'>
-            <NavLink to='/login/forgot-password' className='text-sm text-blue-500'>Forget Password ?</NavLink>
-          </div>
-          <div onClick={changePassword} className='w-full h-auto flex flex-col bg-blue-500 text-white justify-center items-center py-2 mt-6 rounded-md cursor-pointer'>
+          <div className='w-full h-auto flex flex-col bg-blue-500 text-white justify-center items-center py-2 mt-6 rounded-md cursor-pointer'>
             Change Password
           </div>
           {
@@ -111,4 +80,4 @@ function ChangePassword() {
   )
 }
 
-export default ChangePassword
+export default AdminChangePassword

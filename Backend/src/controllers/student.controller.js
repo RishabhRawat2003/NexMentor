@@ -12,6 +12,7 @@ import { Mentor } from '../models/mentor.model.js'
 import { razorpayInstance } from '../config/razorpayConfig.js'
 import { Package } from '../models/mentorPackage.model.js';
 import { Notification } from '../models/notification.model.js';
+import { Admin } from '../models/admin.model.js';
 
 const razorpayInstanceValue = razorpayInstance()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -89,7 +90,7 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         profilePicture: url,
         username: generatedUsername,
         referred: mentor ? true : false,
-        referredBy: mentor ? mentor._id : ''
+        referredBy: mentor ? mentor._id : null
     });
 
     await newStudent.save();
@@ -655,6 +656,11 @@ const verifyPayment = asyncHandler(async (req, res) => {
             console.log("Package not found");
             return res.status(400).json(new ApiResponse(400, {}, "Package not found"));
         }
+
+        await Admin.updateOne(
+            {},
+            { $inc: { totalRevenue: packageItem.packagePrice } }
+        )
 
         const student = await Student.findByIdAndUpdate(
             req.user._id,

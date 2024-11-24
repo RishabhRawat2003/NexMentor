@@ -130,7 +130,7 @@ function FieldForUpdateProfile({ userDetails, setUserDetails, gender, setGender,
                     />
                 </div>
                 <TextField
-                    label="Number"
+                    label="Contact Number"
                     variant="outlined"
                     margin="normal"
                     fullWidth

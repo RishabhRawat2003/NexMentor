@@ -50,12 +50,12 @@ function Wallet() {
         <div className='w-full h-auto flex justify-end items-center font-cg-times'>
           <div className='flex gap-2 items-center px-6 py-2 bg-yellow-200 rounded-2xl lg:py-3 lg:gap-4'>
             <span className='p-1 bg-yellow-500 rounded-full'><LuIndianRupee size={20} /></span>
-            <span className=''>Wallet : ₹ {userData.wallet}</span>
+            <span className=''>Wallet : ₹ {userData?.wallet}</span>
           </div>
         </div>
         <div className='w-full h-auto flex flex-col font-cg-times'>
           <p className='font-semibold'>Note :</p>
-          <p className='w-full h-auto mt-4 text-sm md:text-base'>1. You have earned a total of ₹ {userData.wallet} in your wallet.</p>
+          <p className='w-full h-auto mt-4 text-sm md:text-base'>1. You have earned a total of ₹ {userData?.wallet} in your wallet.</p>
           <p className='w-full h-auto mt-3 text-sm md:text-base'>2. To transfer your earnings, please provide your payment details. We support the following methods: Bank Account Number, Paytm, Google Pay, PhonePe</p>
           <p className='w-full h-auto mt-3 text-sm md:text-base'>3. Your wallet funds will be transferred to your chosen payment method on every month 5th.</p>
           <p className='w-full h-auto mt-3 text-sm md:text-base'>4. Once the transfer is complete, you will receive a notification confirming the transaction.</p>

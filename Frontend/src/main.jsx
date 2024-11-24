@@ -28,7 +28,19 @@ import Sessions from './components/MentorDashboardComponent/Sessions.jsx'
 import Wallet from './components/MentorDashboardComponent/Wallet.jsx'
 import Updates from './components/MentorDashboardComponent/Updates.jsx'
 import Help from './components/MentorDashboardComponent/Help.jsx'
-
+import Admin from './Admin.jsx'
+import AdminDashboard from './components/Admin/AdminDashboard.jsx'
+import ActiveSessions from './components/Admin/ActiveSessions.jsx'
+import BlogPost from './components/Admin/BlogPost.jsx'
+import AdminChangePassword from './components/Admin/ChangePassword.jsx'
+import MentorApproval from './components/Admin/MentorApproval.jsx'
+import Mentors from './components/Admin/Mentors.jsx'
+import Payment from './components/Admin/Payment.jsx'
+import AdminProfileSetting from './components/Admin/ProfileSetting.jsx'
+import Students from './components/Admin/Students.jsx'
+import AdminUpdates from './components/Admin/Updates.jsx'
+import Webinars from './components/Admin/Webinars.jsx'
+import AdminLogin from './components/Admin/Login.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,6 +70,20 @@ const router = createBrowserRouter(
         <Route path='/mentor-dashboard/updates' element={<Updates />} />
         <Route path='/mentor-dashboard/help' element={<Help />} />
       </Route>
+      <Route path='/admin-dashboard' element={<Admin />}>
+        <Route path='/admin-dashboard' element={<AdminDashboard />} />
+        <Route path='/admin-dashboard/active-sessions' element={<ActiveSessions />} />
+        <Route path='/admin-dashboard/blog-post' element={<BlogPost />} />
+        <Route path='/admin-dashboard/admin-change-password' element={<AdminChangePassword />} />
+        <Route path='/admin-dashboard/mentor-approval' element={<MentorApproval />} />
+        <Route path='/admin-dashboard/mentors' element={<Mentors />} />
+        <Route path='/admin-dashboard/payment' element={<Payment />} />
+        <Route path='/admin-dashboard/admin-profile-setting' element={<AdminProfileSetting />} />
+        <Route path='/admin-dashboard/students' element={<Students />} />
+        <Route path='/admin-dashboard/admin-updates' element={<AdminUpdates />} />
+        <Route path='/admin-dashboard/webinars' element={<Webinars />} />
+      </Route>
+      <Route path='/admin/login' element={<AdminLogin />} />
     </>
   )
 )

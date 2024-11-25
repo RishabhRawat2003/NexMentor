@@ -256,6 +256,10 @@ const mentorSchema = new Schema({
     },
     referralsCode: {
         type: String
+    },
+    activate: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

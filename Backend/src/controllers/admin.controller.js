@@ -146,7 +146,7 @@ export const totalCompletedSessions = asyncHandler(async (req, res) => {
         })
         .select("completeSessions mentorId _id feedBack");
 
-        const data = allMentors.filter(item => item.completeSessions.length > 0);
+    const data = allMentors.filter(item => item.completeSessions.length > 0);
 
     return res
         .status(200)
@@ -157,7 +157,7 @@ export const totalCompletedSessions = asyncHandler(async (req, res) => {
 // this function will be used in total mentors as well as payout page
 export const totalMentors = asyncHandler(async (req, res) => {
     const allMentors = await Mentor.find()
-        .select("mentorId email address feedBack wallet paymentDetails") // add another field of activating and deactivating later
+        .select("mentorId email address feedBack wallet paymentDetails activate _id")
 
 
     return res
@@ -214,7 +214,7 @@ export const totalPendingSessions = asyncHandler(async (req, res) => {
 export const approvalRequestMentors = asyncHandler(async (req, res) => {
     const allMentors = await Mentor.find(
         { verifiedFromAdmin: false }
-    ).select("firstName lastName email address neetScore institute scoreCard studentId gender number createdAt")
+    ).select("firstName lastName email address neetScore institute scoreCard studentId gender number createdAt _id")
 
 
     return res
@@ -263,6 +263,8 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
         return res.status(400).json(new ApiResponse(400, {}, "All fields are required"));
     }
 
+    updateFields.email = email
+
     // If a profile picture is uploaded, handle the file upload
     if (req.files?.profilePicture) {
         const profileImageFile = req.files.profilePicture[0];
@@ -287,3 +289,106 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
     // Send success response with updated admin details
     return res.status(200).json(new ApiResponse(200, admin, "Details updated or changed successfully"));
 });
+
+export const acceptApprovalRequest = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+    if (!mentorId) {
+        return res.status(400).json(new ApiResponse(400, {}, "Mentor ID is required"))
+    }
+
+    const mentor = await Mentor.findByIdAndUpdate(
+        mentorId,
+        {
+            $set: {
+                verifiedFromAdmin: true
+            }
+        },
+        { new: true }
+    )
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Mentor approval requets accepted successfully"))
+
+})
+
+export const removeApprovalRequest = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+    if (!mentorId) {
+        return res.status(400).json(new ApiResponse(400, {}, "Mentor ID is required"))
+    }
+
+    const mentor = await Mentor.findByIdAndDelete(
+        mentorId
+    )
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Mentor approval requets rejected successfully"))
+
+})
+
+export const activateOrDeactivateStatus = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+    if (!mentorId) {
+        return res.status(400).json(new ApiResponse(400, {}, "Mentor ID is required"))
+    }
+
+    const mentor = await Mentor.findByIdAndUpdate(
+        mentorId,
+        [
+            {
+                $set: {
+                    activate: { $not: ["$activate"] }
+                }
+            }
+        ],
+        { new: true }
+    )
+
+    if (!mentor) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Mentor id Toggled Successfully"))
+
+})
+
+export const logoutAdmin = asyncHandler(async (req, res) => {
+    await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax'
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "Admin Logged Out Successfully"))
+})

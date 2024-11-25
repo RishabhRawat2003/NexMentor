@@ -25,8 +25,11 @@ const adminSchema = new Schema({
     },
     profilePicture: {
         type: String
+    },
+    name:{
+        type:String,
+        default: 'NexMentor'
     }
-
 }, {
     timestamps: true
 })

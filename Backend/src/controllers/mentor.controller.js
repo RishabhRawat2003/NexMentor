@@ -244,11 +244,17 @@ const mentorLogin = asyncHandler(async (req, res) => {
         return res.status(400).json(new ApiResponse(401, {}, "Email and Password are Required"))
     }
 
-    const existedMentor = await Mentor.findOne({ email })
+    const existedMentor = await Mentor.findOne({
+        email
+    })
 
     if (!existedMentor) {
         console.log("Mentor Not Found")
         return res.status(400).json(new ApiResponse(404, {}, "Mentor Not Found"))
+    }
+
+    if (existedMentor.verifiedFromAdmin === false) {
+        return res.status(400).json(new ApiResponse(404, {}, "Your approval request is not accepted yet"))
     }
 
     const isPasswordCorrect = await existedMentor.comparePassword(password)
@@ -508,7 +514,11 @@ const allMentors = asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
 
     try {
-        let mentors = await Mentor.find()
+        let mentors = await Mentor.find(
+            {
+                activate: true
+            }
+        )
             .skip(skip)
             .limit(limit)
             .select("-password -refreshToken -address -email -emailVerified -agreeVerificationStep -verifiedFromAdmin -paid -notifications -sessionRequests -number -scoreCard -studentId -package")

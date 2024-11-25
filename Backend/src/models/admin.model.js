@@ -26,10 +26,32 @@ const adminSchema = new Schema({
     profilePicture: {
         type: String
     },
-    name:{
-        type:String,
+    name: {
+        type: String,
         default: 'NexMentor'
-    }
+    },
+    clearedAmount: [
+        {
+            id: {
+                type: String
+            },
+            mentorId: {
+                type: String
+            },
+            email: {
+                type: String
+            },
+            amountCleared: {
+                type: Number
+            },
+            imageOfProof: {
+                type: String
+            },
+            clearDate: {
+                type: String
+            }
+        }
+    ]
 }, {
     timestamps: true
 })

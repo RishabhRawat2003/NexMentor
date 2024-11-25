@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { sendVerificationEmail } from "./emailService.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -391,4 +392,67 @@ export const logoutAdmin = asyncHandler(async (req, res) => {
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
         .json(new ApiResponse(200, {}, "Admin Logged Out Successfully"))
+})
+
+export const clearPayment = asyncHandler(async (req, res) => {
+    const { mentorID } = req.body
+
+    if (!mentorID) {
+        return res.status(401).json(new ApiResponse(401, {}, "Mentor id is required"))
+    }
+
+    if (!req.files.imageOfProof) {
+        return res.status(401).json(new ApiResponse(401, {}, "Image of proof is required"))
+    }
+
+    const mentor = await Mentor.findById(mentorID)
+
+    const imageOfProofFile = req.files.imageOfProof[0];
+    const imageOfProofFileUpload = await uploadOnCloudinary(imageOfProofFile.path);
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $push: {
+                clearedAmount: {
+                    id: mentor._id,
+                    mentorId: mentor.mentorId,
+                    email: mentor.email,
+                    amountCleared: mentor.wallet,
+                    imageOfProof: imageOfProofFileUpload.secure_url,
+                    clearDate: new Date().toISOString()
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    mentor.wallet = 0
+    await mentor.save()
+
+    const mailContent = `
+Dear Mentor,
+
+I hope this message finds you well.
+
+We are writing to inform you that the amount due in your wallet has been successfully cleared and transferred to your provided payment method. Below are the details of the payment:
+
+If you do not receive the payment or have any questions regarding the transaction, please feel free to reach out to us.
+
+Thank you for your contributions, and we appreciate your continued support.
+
+Best regards,
+The NexMentor Team
+`;
+    const message = 'Confirmation of Payment Transfer'
+
+    await sendVerificationEmail(mentor.email, mailContent, message);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Session Completed Successfully "))
 })

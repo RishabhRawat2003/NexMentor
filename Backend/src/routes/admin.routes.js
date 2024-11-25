@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptApprovalRequest, activateOrDeactivateStatus, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, dashboardData, logoutAdmin, removeApprovalRequest, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
+import { acceptApprovalRequest, activateOrDeactivateStatus, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, logoutAdmin, removeApprovalRequest, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 
@@ -24,6 +24,7 @@ router.route("/accept-approval").post(verifyJWT, acceptApprovalRequest)
 router.route("/remove-approval").post(verifyJWT, removeApprovalRequest)
 router.route("/toggle-status").post(verifyJWT, activateOrDeactivateStatus)
 router.route("/admin-logout").post(verifyJWT, logoutAdmin)
+router.route("/clear-payment").post(verifyJWT, upload.fields([{ name: 'imageOfProof' }]), clearPayment)
 
 
 

@@ -6,8 +6,7 @@ import axios from 'axios'
 import Loading from './utils/Loading'
 import { NavLink } from 'react-router-dom';
 import ErrorPopup from './utils/ErrorPopUp';
-import { FaStar, FaRegStar } from 'react-icons/fa';
-
+import { StarRating } from './utils/StarRating';
 
 function DualRangeSlider({ min, max, step2, onRangeChange }) {
     const [minValue, setMinValue] = useState(min);
@@ -76,23 +75,6 @@ function DualRangeSlider({ min, max, step2, onRangeChange }) {
         </div>
     );
 }
-
-export const StarRating = ({ rating }) => {
-    return (
-        <div className="flex items-center">
-            {[...Array(5)].map((_, index) => (
-                <span key={index}>
-                    {index < rating ? (
-                        <FaStar size={15} className="text-yellow-500" />
-                    ) : (
-                        <FaRegStar size={15} className="text-gray-300" />
-                    )}
-                </span>
-            ))}
-        </div>
-    );
-};
-
 
 function SearchMentor() {
     const [formDetails, setFormDetails] = useState({

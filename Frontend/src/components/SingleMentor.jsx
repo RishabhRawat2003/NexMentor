@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import Loading from './utils/Loading'
 import ErrorPopup from './utils/ErrorPopUp'
-import { StarRating } from './SearchMentor'
+import { StarRating } from './utils/StarRating'
 
 
 function SingleMentor() {

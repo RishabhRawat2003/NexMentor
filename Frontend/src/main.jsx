@@ -42,6 +42,7 @@ import AdminUpdates from './components/Admin/Updates.jsx'
 import Webinars from './components/Admin/Webinars.jsx'
 import AdminLogin from './components/Admin/Login.jsx'
 import PendingSessions from './components/Admin/PendingSessions.jsx'
+import ClearedPayment from './components/Admin/ClearedPayment.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -80,6 +81,7 @@ const router = createBrowserRouter(
         <Route path='/admin-dashboard/mentor-approval' element={<MentorApproval />} />
         <Route path='/admin-dashboard/mentors' element={<Mentors />} />
         <Route path='/admin-dashboard/payment' element={<Payment />} />
+        <Route path='/admin-dashboard/cleared-payment' element={<ClearedPayment />} />
         <Route path='/admin-dashboard/admin-profile-setting' element={<AdminProfileSetting />} />
         <Route path='/admin-dashboard/students' element={<Students />} />
         <Route path='/admin-dashboard/admin-updates' element={<AdminUpdates />} />

@@ -31,7 +31,6 @@ function Students() {
     }
   };
 
-
   function handleStateChange() {
     setLocalSidebarState((prev) => !prev)
   }
@@ -46,7 +45,7 @@ function Students() {
         setLoading(false)
       }
     } catch (error) {
-      console.log("Error while fetching Total Mentors", error);
+      console.log("Error while fetching Total Students", error);
       setLoading(false)
     }
   }
@@ -90,7 +89,7 @@ function Students() {
           <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
             <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Total Students</span>
             <div className='border-[1px] border-[#979797] w-auto h-auto px-3 flex items-center gap-3 rounded-xl'>
-              <IoSearch onClick={() => searchStudentFromTotalStudents(searchedMentor)} size={20} />
+              <IoSearch onClick={() => searchStudentFromTotalStudents(searchedStudent)} size={20} />
               <input type="text" value={searchedStudent} onKeyDown={handlekeyDown} onChange={(e) => setSearchedStudent(e.target.value)} placeholder='Search by username' className='outline-none h-auto w-full py-2' />
             </div>
           </div>

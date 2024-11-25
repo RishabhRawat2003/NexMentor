@@ -66,7 +66,7 @@ function AdminProfileSetting() {
         <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 h-auto max-h-auto flex flex-col lg:w-[60%] py-10 bg-white xl:w-[50%] xl:px-5`}>
           <div className='w-full h-auto flex flex-col gap-3 lg:gap-6'>
             <div className='hidden lg:block text-center font-cg-times text-xl font-semibold'>Change Profile Image</div>
-            <img src={previewImage} alt="profile picture" className='w-40 bg-gray-400 h-40 mx-auto rounded-full object-cover' />
+            <img src={previewImage} alt="profile picture" className='w-40 bg-gray-400 h-40 mx-auto rounded-full object-cover border-[1px] border-blue-500' />
             <div className="w-full h-auto flex justify-center items-center">
               <input
                 type="file"

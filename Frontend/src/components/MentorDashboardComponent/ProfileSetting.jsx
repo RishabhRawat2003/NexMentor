@@ -360,7 +360,7 @@ function ProfileSetting() {
           </div>
         </div>
         <div className={`${localSidebarState ? 'hidden' : 'flex'} w-full h-auto flex justify-center items-center pb-10 lg:justify-start px-5`}>
-          <span onClick={updateMentorDetails} className='text-white bg-blue-500 font-cg-times text-lg px-6 py-2 rounded-md cursor-pointer font-semibold'>Save Changes</span>
+          <span onClick={updateMentorDetails} className='text-white bg-blue-500 active:bg-blue-600 md:hover:bg-blue-600 font-cg-times text-lg px-6 py-2 rounded-md cursor-pointer font-semibold'>Save Changes</span>
         </div>
       </div>
     </>

@@ -27,6 +27,34 @@ function AdminChangePassword() {
     setLocalSidebarState((prev) => !prev)
   }
 
+  async function changePassword() {
+    try {
+      setLoading(true)
+      const response = await axios.post("/api/v1/admin/change-password", passwords)
+      if (response.data.statusCode === 200) {
+        setLoading(false)
+        setSuccessMsgPopUp(true)
+        setPasswords({
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+        setTimeout(() => {
+          setSuccessMsgPopUp(false)
+        }, 4000);
+      }
+    } catch (error) {
+      console.log("Error While changing password", error);
+      setLoading(false)
+      setErrorMsg(error?.response?.data?.message)
+      setErrorPopUp(true)
+      setPasswords({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      })
+    }
+  }
 
   return (
     <>
@@ -68,7 +96,7 @@ function AdminChangePassword() {
               onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
             />
           </div>
-          <div className='w-full h-auto flex flex-col bg-blue-500 text-white justify-center items-center py-2 mt-6 rounded-md cursor-pointer'>
+          <div onClick={changePassword} className='w-full h-auto flex flex-col bg-blue-500 text-white justify-center items-center py-2 mt-6 rounded-md cursor-pointer'>
             Change Password
           </div>
           {

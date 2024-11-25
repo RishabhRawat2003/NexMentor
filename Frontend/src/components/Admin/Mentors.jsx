@@ -47,6 +47,20 @@ function Mentors() {
     }
   }
 
+  async function toggleStatus(mentorId) {
+    try {
+      setLoading(true)
+      const response = await axios.post("/api/v1/admin/toggle-status", { mentorId })
+      if (response.data.statusCode === 200) {
+        fetchTotalMentors()
+        setLoading(false)
+      }
+    } catch (error) {
+      console.log("Error while fetching Total Mentors", error);
+      setLoading(false)
+    }
+  }
+
   function handleStateChange() {
     setLocalSidebarState((prev) => !prev)
   }
@@ -80,9 +94,9 @@ function Mentors() {
 
   return (
     <>
-    {
-      loading && <Loading />
-    }
+      {
+        loading && <Loading />
+      }
       <div className='w-full h-auto flex flex-col bg-[#F4F4F4] lg:w-[70%] xl:w-[75%] 2xl:w-[80%]'>
         <Header handleStateChange={handleStateChange} />
         <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 min-h-[90vh] max-h-auto flex flex-col py-6 bg-white xl:px-5`}>
@@ -142,12 +156,16 @@ function Mentors() {
                       rating={
                         item?.feedBack.length > 0
                           ? Math.round(item.feedBack.reduce((acc, item) => acc + item.rating, 0) / item.feedBack.length)
-                          : o
+                          : 0
                       }
                     />
                   </td>
                   <td className="py-4 px-4 whitespace-nowrap text-sm text-center">
-                    Activate Deactivate
+                    {
+                      item?.activate === true
+                        ? <span onClick={() => toggleStatus(item?._id)} className='cursor-pointer text-red-500 active:text-red-600 md:hover:text-red-600'>Deactivate</span>
+                        : <span onClick={() => toggleStatus(item?._id)} className='cursor-pointer text-blue-500 active:text-blue-600 md:hover:text-blue-600'>Activate</span>
+                    }
                   </td>
                 </tr>
               ))}

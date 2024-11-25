@@ -41,6 +41,7 @@ import Students from './components/Admin/Students.jsx'
 import AdminUpdates from './components/Admin/Updates.jsx'
 import Webinars from './components/Admin/Webinars.jsx'
 import AdminLogin from './components/Admin/Login.jsx'
+import PendingSessions from './components/Admin/PendingSessions.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -72,6 +73,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path='/admin-dashboard' element={<Admin />}>
         <Route path='/admin-dashboard' element={<AdminDashboard />} />
+        <Route path='/admin-dashboard/pending-sessions' element={<PendingSessions />} />
         <Route path='/admin-dashboard/active-sessions' element={<ActiveSessions />} />
         <Route path='/admin-dashboard/blog-post' element={<BlogPost />} />
         <Route path='/admin-dashboard/admin-change-password' element={<AdminChangePassword />} />

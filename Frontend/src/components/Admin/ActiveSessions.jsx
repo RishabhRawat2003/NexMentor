@@ -35,7 +35,7 @@ function ActiveSessions() {
     setLocalSidebarState((prev) => !prev)
   }
 
-  async function fetchCompletedSessions() {
+  async function fetchActiveSessions() {
     try {
       setLoading(true)
       const response = await axios.post("/api/v1/admin/total-active-sessions")
@@ -103,7 +103,7 @@ function ActiveSessions() {
   }, [searchedMentor, originalActiveSessions]);
 
   useEffect(() => {
-    fetchCompletedSessions()
+    fetchActiveSessions()
   }, [])
 
   return (

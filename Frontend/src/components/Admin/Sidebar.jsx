@@ -2,9 +2,6 @@ import React, { useState } from 'react'
 import Logo from '../images/loginSignupPageImages/logoSideImage.png'
 import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
-import { FaLaptop } from "react-icons/fa6";
-import { LuMessageCircle } from "react-icons/lu";
-import { IoMdNotificationsOutline } from "react-icons/io";
 import { GoDeviceCameraVideo } from "react-icons/go";
 import { MdPostAdd } from "react-icons/md";
 import { TbCashBanknote } from "react-icons/tb";
@@ -19,7 +16,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography }
 import Loading from '../utils/Loading';
 import axios from 'axios';
 import { MdSystemSecurityUpdateWarning } from "react-icons/md";
-import { IoMdHelpCircleOutline } from "react-icons/io";
+import { MdPendingActions } from "react-icons/md";
 
 
 function LogoutDialog({ handleClose, handleLogout }) {
@@ -62,22 +59,21 @@ function Sidebar() {
         setLogoutPopUp(false);
     };
 
-    // const handleLogout = async () => {
-    //     try {
-    //         setLoading(true)
-    //         const response = await axios.post("/api/v1/mentors/mentor-logout")
-    //         if (response.data.statusCode === 200) {
-    //             setLogoutPopUp(false);
-    //             setLoading(false)
-    //             localStorage.removeItem("userId")
-    //             localStorage.removeItem("userType")
-    //             navigate('/login')
-    //         }
-    //     } catch (error) {
-    //         console.log("Error while logging out !!", error);
-    //         setLoading(false)
-    //     }
-    // };
+    const handleLogout = async () => {
+        try {
+            setLoading(true)
+            const response = await axios.post("/api/v1/admin/admin-logout")
+            if (response.data.statusCode === 200) {
+                setLogoutPopUp(false);
+                setLoading(false)
+                localStorage.removeItem("adminId")
+                navigate('/admin/login')
+            }
+        } catch (error) {
+            console.log("Error while logging out !!", error);
+            setLoading(false)
+        }
+    };
 
 
     return (
@@ -108,6 +104,10 @@ function Sidebar() {
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/mentor-approval' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <LuShoppingCart size={25} />
                             Mentors Approvals
+                        </NavLink>
+                        <NavLink onClick={handleSidebar} to='/admin-dashboard/pending-sessions' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <MdPendingActions size={25} />
+                            Pending Sessions
                         </NavLink>
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/active-sessions' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <LuShoppingCart size={25} />

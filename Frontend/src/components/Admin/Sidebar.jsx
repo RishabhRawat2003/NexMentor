@@ -17,6 +17,8 @@ import Loading from '../utils/Loading';
 import axios from 'axios';
 import { MdSystemSecurityUpdateWarning } from "react-icons/md";
 import { MdPendingActions } from "react-icons/md";
+import { RiUserStarFill } from "react-icons/ri";
+import { FaRegNoteSticky } from "react-icons/fa6";
 
 
 function LogoutDialog({ handleClose, handleLogout }) {
@@ -129,6 +131,10 @@ function Sidebar() {
                             <LuUnlock size={25} />
                             Change Password
                         </NavLink>
+                        <NavLink onClick={handleSidebar} to='/admin-dashboard/featured-mentors' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <RiUserStarFill size={25} />
+                            Faetured Mentors
+                        </NavLink>
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/blog-post' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <MdPostAdd size={25} />
                             Blog Post
@@ -140,6 +146,10 @@ function Sidebar() {
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/webinars' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <GoDeviceCameraVideo size={25} />
                             Webinars
+                        </NavLink>
+                        <NavLink onClick={handleSidebar} to='/admin-dashboard/testimonial' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <FaRegNoteSticky size={25} />
+                            Testimonial
                         </NavLink>
                         <button onClick={() => setLogoutPopUp(true)} className='text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]'>
                             <MdLogout size={25} />

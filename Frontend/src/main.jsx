@@ -43,6 +43,8 @@ import Webinars from './components/Admin/Webinars.jsx'
 import AdminLogin from './components/Admin/Login.jsx'
 import PendingSessions from './components/Admin/PendingSessions.jsx'
 import ClearedPayment from './components/Admin/ClearedPayment.jsx'
+import FeaturedMentors from './components/Admin/FeaturedMentors.jsx'
+import AddTestimonial from './components/Admin/AddTestimonial.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -80,12 +82,14 @@ const router = createBrowserRouter(
         <Route path='/admin-dashboard/admin-change-password' element={<AdminChangePassword />} />
         <Route path='/admin-dashboard/mentor-approval' element={<MentorApproval />} />
         <Route path='/admin-dashboard/mentors' element={<Mentors />} />
+        <Route path='/admin-dashboard/featured-mentors' element={<FeaturedMentors />} />
         <Route path='/admin-dashboard/payment' element={<Payment />} />
         <Route path='/admin-dashboard/cleared-payment' element={<ClearedPayment />} />
         <Route path='/admin-dashboard/admin-profile-setting' element={<AdminProfileSetting />} />
         <Route path='/admin-dashboard/students' element={<Students />} />
         <Route path='/admin-dashboard/admin-updates' element={<AdminUpdates />} />
         <Route path='/admin-dashboard/webinars' element={<Webinars />} />
+        <Route path='/admin-dashboard/testimonial' element={<AddTestimonial />} />
       </Route>
       <Route path='/admin/login' element={<AdminLogin />} />
     </>

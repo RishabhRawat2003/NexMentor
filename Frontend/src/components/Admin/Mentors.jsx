@@ -4,6 +4,8 @@ import { IoSearch } from "react-icons/io5";
 import axios from 'axios';
 import { StarRating } from '../utils/StarRating';
 import Loading from '../utils/Loading';
+import { FaStar } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 function Mentors() {
   const [localSidebarState, setLocalSidebarState] = useState(false)
@@ -11,6 +13,7 @@ function Mentors() {
   const [totalMentors, setTotalMentors] = useState([])
   const [originalTotalMentors, setOriginalTotalMentors] = useState([]);
   const [searchedMentor, setSearchedMentor] = useState('')
+  const [featuredMentors, setFeaturedMentors] = useState()
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -19,6 +22,8 @@ function Mentors() {
   const currentItems = totalMentors.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(totalMentors.length / itemsPerPage);
+
+  const navigate = useNavigate()
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -45,6 +50,24 @@ function Mentors() {
       console.log("Error while fetching Total Mentors", error);
       setLoading(false)
     }
+  }
+
+  async function featureSingleMentor(id) {
+    try {
+      setLoading(true)
+      const response = await axios.post("/api/v1/admin/feature-mentor", { mentorId: id })
+      if (response.data.statusCode === 200) {
+        navigate(0)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.log("Error while Featuring Mentor", error);
+      setLoading(false)
+    }
+  }
+
+  function getData(e) {
+    setFeaturedMentors(e.featuredMentors)
   }
 
   async function toggleStatus(mentorId) {
@@ -98,7 +121,7 @@ function Mentors() {
         loading && <Loading />
       }
       <div className='w-full h-auto flex flex-col bg-[#F4F4F4] lg:w-[70%] xl:w-[75%] 2xl:w-[80%]'>
-        <Header handleStateChange={handleStateChange} />
+        <Header getData={getData} handleStateChange={handleStateChange} />
         <div className={`${localSidebarState ? 'hidden' : 'flex'} w-[95%] mx-auto px-2 rounded-2xl my-8 min-h-[90vh] max-h-auto flex flex-col py-6 bg-white xl:px-5`}>
           <div className='w-full h-auto flex flex-col gap-4 md:flex-row md:justify-between md:items-center'>
             <span className='text-2xl font-[poppins] font-semibold xl:text-3xl'>Total Mentors</span>
@@ -130,6 +153,9 @@ function Mentors() {
                 </th>
                 <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
+                </th>
+                <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Feature
                 </th>
               </tr>
             </thead>
@@ -167,12 +193,19 @@ function Mentors() {
                         : <span onClick={() => toggleStatus(item?._id)} className='cursor-pointer text-blue-500 active:text-blue-600 md:hover:text-blue-600'>Activate</span>
                     }
                   </td>
+                  <td className="py-4 px-4 whitespace-nowrap text-sm text-center flex justify-center">
+                    {
+                      featuredMentors?.some(mentor => mentor.id === item._id)
+                        ? <FaStar size={20} className='text-yellow-500 cursor-pointer' />
+                        : <FaStar size={20} onClick={() => featureSingleMentor(item?._id)} className='text-gray-400 cursor-pointer active:text-yellow-500 md:hover:text-yellow-500' />
+                    }
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {
-            currentItems.length > 10 && (
+            totalMentors.length > 10 && (
               <div className="flex items-center justify-center space-x-4 mt-6">
                 <button
                   onClick={handlePrevPage}

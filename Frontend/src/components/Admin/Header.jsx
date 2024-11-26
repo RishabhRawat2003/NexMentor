@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { FaBars } from "react-icons/fa6";
-import { IoNotificationsOutline } from "react-icons/io5";
-import { IoMailOutline } from "react-icons/io5";
 import { useDispatch } from 'react-redux';
 import { setToggleSidebar } from '../store/SidebarSlice';
 import { IoClose } from "react-icons/io5";
 import axios from 'axios';
-import { NavLink } from 'react-router-dom';
 
 function Header({ handleStateChange, getData }) {
     const [sideBar, setSideBar] = useState(false)

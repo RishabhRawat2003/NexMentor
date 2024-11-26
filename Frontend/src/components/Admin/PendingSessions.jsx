@@ -151,7 +151,7 @@ function PendingSessions() {
                         </tbody>
                     </table>
                     {
-                        currentItems.length > 10 && (
+                        pendingSessions.length > 10 && (
                             <div className="flex items-center justify-center space-x-4 mt-6">
                                 <button
                                     onClick={handlePrevPage}

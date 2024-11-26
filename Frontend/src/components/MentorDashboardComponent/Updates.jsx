@@ -76,20 +76,38 @@ function Updates() {
                     <div className='w-full h-auto flex flex-col mt-5 xl:mt-10 lg:mx-auto gap-4'>
                         {
                             currentItems?.map((item, index) => (
-                                <div key={index} className='w-full h-auto flex bg-gray-100 py-3 px-2 rounded-lg xl:p-4'>
-                                    <div className='w-auto h-auto flex'>
-                                        <img src={adminDetails.profilePicture} alt="profile Picture" className='w-10 h-10 rounded-full border-[1px] border-blue-500 xl:w-14 xl:h-14' />
+                                <div
+                                    key={index}
+                                    className="w-full h-auto flex bg-gray-100 py-3 px-2 rounded-lg xl:p-4 gap-x-3"
+                                >
+                                    {/* Profile Picture */}
+                                    <div className="flex-shrink-0">
+                                        <img
+                                            src={adminDetails.profilePicture}
+                                            alt="profile Picture"
+                                            className="w-10 h-10 rounded-full border-[1px] border-blue-500 xl:w-14 xl:h-14"
+                                        />
                                     </div>
-                                    <div className='w-full h-auto flex-1 flex flex-col px-3'>
-                                        <span className='xl:text-lg font-cg-times font-semibold'>{adminDetails.name}</span>
-                                        <span className='text-sm text-gray-600'>{item.content}</span>
-                                        <p className='w-full h-auto flex justify-end text-xs text-gray-500'>
+
+                                    {/* Text Content */}
+                                    <div className="flex flex-col flex-1 px-3 overflow-hidden">
+                                        <span
+                                            className="xl:text-lg font-cg-times font-semibold break-words">
+                                            {adminDetails.name}
+                                        </span>
+                                        <span
+                                            className="text-sm text-gray-600 break-words">
+                                            {item.content}
+                                        </span>
+                                        <p
+                                            className="w-full flex justify-end text-xs text-gray-500">
                                             {convertToIST(item.date)}
                                         </p>
                                     </div>
                                 </div>
                             ))
                         }
+
                     </div>
                     {
                         adminDetails?.updates?.length > 5 && (

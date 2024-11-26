@@ -157,7 +157,9 @@ export const totalCompletedSessions = asyncHandler(async (req, res) => {
 
 // this function will be used in total mentors as well as payout page
 export const totalMentors = asyncHandler(async (req, res) => {
-    const allMentors = await Mentor.find()
+    const allMentors = await Mentor.find(
+        { verifiedFromAdmin: true }
+    )
         .select("mentorId email address feedBack wallet paymentDetails activate _id")
 
 
@@ -455,4 +457,221 @@ The NexMentor Team
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "Session Completed Successfully "))
+})
+
+export const featuredMentors = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+    if (!mentorId) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor id is required"))
+    }
+
+    const featuredMentors = await Mentor.findById(mentorId)
+
+    if (!featuredMentors) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
+    }
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $push: {
+                featuredMentors: {
+                    id: featuredMentors._id,
+                    mentorId: featuredMentors.mentorId,
+                    email: featuredMentors.email,
+                    state: featuredMentors.address.state,
+                    city: featuredMentors.address.city,
+                    feedBack: featuredMentors.feedBack
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Mentor Featured Successfully"))
+
+})
+
+export const removeFeaturedMentor = asyncHandler(async (req, res) => {
+    const { mentorId } = req.body
+
+
+    if (!mentorId) {
+        return res.status(404).json(new ApiResponse(404, {}, "Mentor id is required"))
+    }
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $pull: {
+                featuredMentors: { id: mentorId }
+            }
+        },
+        { new: true }
+    );
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Featured Mentor Removed Successfully"))
+
+})
+
+export const addUpdates = asyncHandler(async (req, res) => {
+    const { message } = req.body
+
+    if (!message) {
+        return res.status(404).json(new ApiResponse(404, {}, "Message is required"))
+    }
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $push: {
+                updates: {
+                    content: message,
+                    date: new Date().toISOString()
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Update Added Successfully"))
+
+})
+
+export const deleteUpdates = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    if (!id) {
+        return res.status(404).json(new ApiResponse(404, {}, "ID is required"))
+    }
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $pull: {
+                updates: { _id: id }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Update Deleted Successfully"))
+})
+
+export const getUpdates = asyncHandler(async (req, res) => {
+    const admin = await Admin.find().select("profilePicture name updates")
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, admin, "All Updates Fetched Successfully"))
+
+
+})
+
+export const addTestimonials = asyncHandler(async (req, res) => {
+    const { name, message } = req.body
+
+    if (!name || !message) {
+        return res.status(404).json(new ApiResponse(404, {}, "Name and Message are required"))
+    }
+
+    if (!req.files.image) {
+        return res.status(404).json(new ApiResponse(404, {}, "Image is required"))
+    }
+
+    const image = req.files.image[0];
+    const imageFileUpload = await uploadOnCloudinary(image.path);
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $push: {
+                testimonials: {
+                    name,
+                    testimonial: message,
+                    image: imageFileUpload.secure_url
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Testimonial Added Successfully"))
+})
+
+export const deleteTestimonials = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    if (!id) {
+        return res.status(404).json(new ApiResponse(404, {}, "id is required"))
+    }
+
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $pull: {
+                testimonials: { _id: id }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Testimonial removed Successfully"))
+
+})
+
+export const getTestimonials = asyncHandler(async (req, res) => {
+
+    const admin = await Admin.find()
+        .select("testimonials")
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, admin[0].testimonials, "All Testimonials fetched Successfully"))
 })

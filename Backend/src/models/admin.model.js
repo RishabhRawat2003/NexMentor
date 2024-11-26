@@ -51,6 +51,52 @@ const adminSchema = new Schema({
                 type: String
             }
         }
+    ],
+    featuredMentors: [
+        {
+            id: {
+                type: String
+            },
+            mentorId: {
+                type: String
+            },
+            email: {
+                type: String
+            },
+            state: {
+                type: String
+            },
+            city: {
+                type: String
+            },
+            feedBack: {
+                type: [Object],
+                default: [],
+            }
+        }
+    ],
+    updates: [
+        {
+            content: {
+                type: String
+            },
+            date: {
+                type: String
+            }
+        }
+    ],
+    testimonials: [
+        {
+            name: {
+                type: String
+            },
+            image: {
+                type: String
+            },
+            testimonial: {
+                type: String
+            }
+        }
     ]
 }, {
     timestamps: true

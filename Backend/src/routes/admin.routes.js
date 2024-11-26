@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptApprovalRequest, activateOrDeactivateStatus, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, logoutAdmin, removeApprovalRequest, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
+import { acceptApprovalRequest, activateOrDeactivateStatus, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, deleteTestimonials, deleteUpdates, featuredMentors, getTestimonials, getUpdates, logoutAdmin, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 
@@ -25,6 +25,14 @@ router.route("/remove-approval").post(verifyJWT, removeApprovalRequest)
 router.route("/toggle-status").post(verifyJWT, activateOrDeactivateStatus)
 router.route("/admin-logout").post(verifyJWT, logoutAdmin)
 router.route("/clear-payment").post(verifyJWT, upload.fields([{ name: 'imageOfProof' }]), clearPayment)
+router.route("/feature-mentor").post(verifyJWT, featuredMentors)
+router.route("/remove-feature-mentor").post(verifyJWT, removeFeaturedMentor)
+router.route("/add-update").post(verifyJWT, addUpdates)
+router.route("/delete-update").post(verifyJWT, deleteUpdates)
+router.route("/get-updates").post(verifyJWT, getUpdates)
+router.route("/add-testimonial").post(verifyJWT, upload.fields([{ name: 'image' }]), addTestimonials)
+router.route("/delete-testimonial").post(verifyJWT, deleteTestimonials)
+router.route("/get-testimonial").post(verifyJWT, getTestimonials)
 
 
 

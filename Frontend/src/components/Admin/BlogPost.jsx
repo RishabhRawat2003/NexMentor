@@ -108,6 +108,7 @@ function BlogPost() {
       const response = await axios.post('/api/v1/admin/remove-blog', { id })
       if (response.data.statusCode === 200) {
         setLoading(false)
+        getBlogs()
       }
     } catch (error) {
       console.log("Error while getting a blog", error);

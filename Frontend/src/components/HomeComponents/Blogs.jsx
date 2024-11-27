@@ -1,0 +1,50 @@
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+
+function Blogs() {
+    const [totalBlogs, setTotalBlogs] = useState([])
+
+    async function getBlogs() {
+        try {
+            const response = await axios.post('/api/v1/admin/get-blogs')
+            if (response.data.statusCode === 200) {
+                setTotalBlogs(response.data.data);
+            }
+
+        } catch (error) {
+            console.log("Error while getting blog", error);
+        }
+    }
+
+    useEffect(() => {
+        getBlogs()
+    }, [])
+
+    return (
+        <div className='w-full h-auto flex flex-col mb-10 lg:mb-20'>
+            <h1 className='text-center font-semibold font-cg-times text-xl sm:text-2xl md:text-3xl lg:text-4xl'>Our Recent Blogs</h1>
+            <p className='px-3 text-[#4F4F4F] font-cg-times text-center text-xs mt-5 md:text-sm lg:px-10 lg:text-base xl:px-32'>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores dicta harum iure? Voluptas ipsum saepe, cupiditate doloribus ut fuga laudantium, ratione at aut voluptate soluta culpa qui consequatur praesentium maxime repellendus id est vitae repellat necessitatibus. Fugiat porro accusamus blanditiis.</p>
+            <div className='disable-scrollbar w-full h-auto py-10 md:py-20 flex gap-5 px-5 md:px-10 overflow-x-scroll lg:gap-8 xl:px-20'>
+                {totalBlogs?.map((blog, index) => (
+                    <div
+                        key={index}
+                        className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] xl:min-w-[25%] shadow-custom h-auto p-4 border justify-between rounded-lg bg-white flex flex-col"
+                    >
+                        <div className='w-full h-auto flex flex-col'>
+                            <img src={blog.image} alt="testimonial image" className='w-full h-40 object-cover mx-auto border border-gray-400' />
+                            <span className='mx-auto lg:text-lg font-semibold mt-3'>{blog.title}</span>
+                            <p className='w-full h-auto text-center text-sm mt-2 text-gray-400'>
+                                {blog.content.length > 30 ? blog.content.slice(0, 150) + '...' : blog.content}
+                            </p>
+                        </div>
+                        <p className='flex justify-between items-center mt-3'>
+                            <span className='text-blue-500 font-cg-times md:hover:text-blue-600 active:text-blue-600 cursor-pointer hover:underline active:underline underline-offset-2'>View</span>
+                        </p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+export default Blogs

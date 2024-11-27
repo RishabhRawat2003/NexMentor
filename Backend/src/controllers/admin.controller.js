@@ -797,3 +797,26 @@ export const getSingleBlog = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(200, singleBlog[0], "Single blog fetched Successfully"))
 })
+
+export const getFeaturedMentors = asyncHandler(async (req, res) => {
+
+    const admin = await Admin.find().select("featuredMentors")
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    const featuredMentors = admin[0].featuredMentors;
+
+    if (featuredMentors.length === 0) {
+        return res.status(200).json(new ApiResponse(200, [], "No featured mentors available"));
+    }
+
+    const mentorIds = featuredMentors.map(mentor => mentor.id);
+
+    const mentors = await Mentor.find({ '_id': { $in: mentorIds } }).select("firstName lastName profilePicture neetScore institute feedBack")
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, mentors, "Featured Mentors Fetched successfully"))
+})

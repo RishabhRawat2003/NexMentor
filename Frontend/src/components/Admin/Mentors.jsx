@@ -15,7 +15,7 @@ function Mentors() {
   const [searchedMentor, setSearchedMentor] = useState('')
   const [featuredMentors, setFeaturedMentors] = useState()
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -205,7 +205,7 @@ function Mentors() {
             </tbody>
           </table>
           {
-            totalMentors.length > 10 && (
+            totalMentors.length > 15 && (
               <div className="flex items-center justify-center space-x-4 mt-6">
                 <button
                   onClick={handlePrevPage}

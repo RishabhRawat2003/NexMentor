@@ -600,12 +600,8 @@ export const getUpdates = asyncHandler(async (req, res) => {
 export const addTestimonials = asyncHandler(async (req, res) => {
     const { name, message } = req.body
 
-    if (!name || !message) {
-        return res.status(404).json(new ApiResponse(404, {}, "Name and Message are required"))
-    }
-
-    if (!req.files.image) {
-        return res.status(404).json(new ApiResponse(404, {}, "Image is required"))
+    if (!name || !message || !req.files.image) {
+        return res.status(404).json(new ApiResponse(404, {}, "Name , Image and Message are required"))
     }
 
     const image = req.files.image[0];
@@ -674,4 +670,130 @@ export const getTestimonials = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, admin[0].testimonials, "All Testimonials fetched Successfully"))
+})
+
+export const featuredAdAndUpdateAmount = asyncHandler(async (req, res) => {
+    const { amount } = req.body
+
+    let updateFields = {}
+
+    if (amount) updateFields.verificationAmount = amount
+
+    if (req.files.image) {
+        const image = req.files.image[0];
+        const imageFileUpload = await uploadOnCloudinary(image.path);
+        updateFields.featuredAd = imageFileUpload.secure_url
+    }
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        { $set: updateFields },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Ad and verification amount set successfully"))
+
+})
+
+export const addBlogs = asyncHandler(async (req, res) => {
+    const { title, content } = req.body
+
+    if (!title || !content || !req.files.image) {
+        return res.status(400).json(new ApiResponse(400, {}, "Title ,Image and Content are required"))
+    }
+
+    const image = req.files.image[0];
+    const imageFileUpload = await uploadOnCloudinary(image.path);
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $push: {
+                blogs: {
+                    title,
+                    content,
+                    image: imageFileUpload.secure_url
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Blog added Successfully"))
+
+})
+
+export const deleteBlog = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    if (!id) {
+        return res.status(400).json(new ApiResponse(400, {}, "id is required"))
+    }
+
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $pull: {
+                blogs: {
+                    _id: id
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Blog removed Successfully"))
+
+})
+
+export const getBlogs = asyncHandler(async (req, res) => {
+    const admin = await Admin.find().select("blogs")
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, admin[0].blogs, "All blogs fetched Successfully"))
+
+})
+
+export const getSingleBlog = asyncHandler(async (req, res) => {
+    const { blogId } = req.params
+
+    if (!blogId) {
+        return res.status(400).json(new ApiResponse(400, {}, "blogId is required"))
+    }
+
+    const admin = await Admin.find().select("blogs")
+
+    const singleBlog = admin[0].blogs.filter(blog => blog._id == blogId)
+
+    if (!singleBlog) {
+        return res.status(404).json(new ApiResponse(404, {}, "Blog not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, singleBlog[0], "Single blog fetched Successfully"))
 })

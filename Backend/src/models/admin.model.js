@@ -97,6 +97,26 @@ const adminSchema = new Schema({
                 type: String
             }
         }
+    ],
+    featuredAd: {
+        type: String
+    },
+    verificationAmount: {
+        type: Number,
+        default: 149
+    },
+    blogs: [
+        {
+            title: {
+                type: String
+            },
+            content: {
+                type: String
+            },
+            image: {
+                type: String
+            }
+        }
     ]
 }, {
     timestamps: true

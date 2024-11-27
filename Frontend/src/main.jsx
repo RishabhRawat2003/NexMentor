@@ -45,6 +45,7 @@ import PendingSessions from './components/Admin/PendingSessions.jsx'
 import ClearedPayment from './components/Admin/ClearedPayment.jsx'
 import FeaturedMentors from './components/Admin/FeaturedMentors.jsx'
 import AddTestimonial from './components/Admin/AddTestimonial.jsx'
+import FeaturedAd from './components/Admin/FeaturedAd.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -79,6 +80,7 @@ const router = createBrowserRouter(
         <Route path='/admin-dashboard/pending-sessions' element={<PendingSessions />} />
         <Route path='/admin-dashboard/active-sessions' element={<ActiveSessions />} />
         <Route path='/admin-dashboard/blog-post' element={<BlogPost />} />
+        <Route path='/admin-dashboard/featured-ad' element={<FeaturedAd />} />
         <Route path='/admin-dashboard/admin-change-password' element={<AdminChangePassword />} />
         <Route path='/admin-dashboard/mentor-approval' element={<MentorApproval />} />
         <Route path='/admin-dashboard/mentors' element={<Mentors />} />

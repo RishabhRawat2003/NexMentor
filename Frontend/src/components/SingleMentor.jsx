@@ -140,7 +140,7 @@ function SingleMentor() {
                 </div>
               </div>
               <div className='w-full h-auto flex justify-center items-center md:w-[60vw] lg:w-[70vw]'>
-                <img src="" alt="" className='w-[90%] h-[25vh] bg-gray-400 rounded-xl sm:h-[40vh] lg:h-[55vh] shadow-custom' />
+                <img src="" alt="featured ad" className='w-[90%] h-[25vh] bg-gray-400 rounded-xl sm:h-[40vh] lg:h-[55vh] shadow-custom' />
               </div>
             </div>
             <div className='w-[90%] h-auto mx-auto flex flex-col rounded-md shadow-custom p-2 gap-2 md:p-6'>

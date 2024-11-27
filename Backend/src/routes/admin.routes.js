@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptApprovalRequest, activateOrDeactivateStatus, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, deleteTestimonials, deleteUpdates, featuredMentors, getTestimonials, getUpdates, logoutAdmin, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
+import { acceptApprovalRequest, activateOrDeactivateStatus, addBlogs, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, deleteBlog, deleteTestimonials, deleteUpdates, featuredAdAndUpdateAmount, featuredMentors, getBlogs, getSingleBlog, getTestimonials, getUpdates, logoutAdmin, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 
@@ -33,6 +33,12 @@ router.route("/get-updates").post(verifyJWT, getUpdates)
 router.route("/add-testimonial").post(verifyJWT, upload.fields([{ name: 'image' }]), addTestimonials)
 router.route("/delete-testimonial").post(verifyJWT, deleteTestimonials)
 router.route("/get-testimonial").post(verifyJWT, getTestimonials)
+router.route("/add-feature-ad").post(verifyJWT, upload.fields([{ name: 'image' }]), featuredAdAndUpdateAmount)
+router.route("/add-blog").post(verifyJWT, upload.fields([{ name: 'image' }]), addBlogs)
+router.route("/remove-blog").post(verifyJWT, deleteBlog)
+router.route("/get-blogs").post(verifyJWT, getBlogs)
+router.route("/get-single-blog/:blogId").post(verifyJWT, getSingleBlog)
+
 
 
 

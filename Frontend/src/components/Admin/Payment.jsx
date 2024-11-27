@@ -16,7 +16,7 @@ function Payment() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [errorMsg, setErrorMsg] = useState('')
   const [mentorID, setMentorID] = useState('')
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -211,7 +211,7 @@ function Payment() {
             </tbody>
           </table>
           {
-            payoutMentors.length > 10 && (
+            payoutMentors.length > 15 && (
               <div className="flex items-center justify-center space-x-4 mt-6">
                 <button
                   onClick={handlePrevPage}

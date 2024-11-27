@@ -10,6 +10,7 @@ import { razorpayInstance } from '../config/razorpayConfig.js'
 import { Student } from '../models/student.model.js'
 import { Package } from '../models/mentorPackage.model.js'
 import axios from 'axios'
+import { Admin } from '../models/admin.model.js'
 
 const razorpayInstanceValue = razorpayInstance()
 
@@ -407,7 +408,8 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 // this is the payment gateway for mentor when they first create thier account
 const createOrder = asyncHandler(async (req, res) => {
-    const amount = 149 // this amount can be changed in the future from Admin Dashboard
+    const admin = await Admin.find().select("verificationAmount")
+    const amount = admin[0].verificationAmount
 
     const option = {
         amount: amount * 100,
@@ -507,7 +509,6 @@ const createOrUpdatePackage = async (mentorId) => {
     return existingPackage;
 };
 
-//changes later here that only verified mentors are sended in response
 const allMentors = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 9;

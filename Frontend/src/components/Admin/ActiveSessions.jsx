@@ -11,7 +11,7 @@ function ActiveSessions() {
   const [originalActiveSessions, setOriginalActiveSessions] = useState([]);
   const [searchedMentor, setSearchedMentor] = useState('')
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -164,7 +164,7 @@ function ActiveSessions() {
             </tbody>
           </table>
           {
-            activeSessions.length > 10 && (
+            activeSessions.length > 15 && (
               <div className="flex items-center justify-center space-x-4 mt-6">
                 <button
                   onClick={handlePrevPage}

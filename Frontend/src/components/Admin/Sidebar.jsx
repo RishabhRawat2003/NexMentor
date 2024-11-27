@@ -19,7 +19,7 @@ import { MdSystemSecurityUpdateWarning } from "react-icons/md";
 import { MdPendingActions } from "react-icons/md";
 import { RiUserStarFill } from "react-icons/ri";
 import { FaRegNoteSticky } from "react-icons/fa6";
-
+import { MdOutlineFeaturedVideo } from "react-icons/md";
 
 function LogoutDialog({ handleClose, handleLogout }) {
 
@@ -138,6 +138,10 @@ function Sidebar() {
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/blog-post' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <MdPostAdd size={25} />
                             Blog Post
+                        </NavLink>
+                        <NavLink onClick={handleSidebar} to='/admin-dashboard/featured-ad' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
+                            <MdOutlineFeaturedVideo size={25} />
+                            Featured Ad
                         </NavLink>
                         <NavLink onClick={handleSidebar} to='/admin-dashboard/admin-updates' className={({ isActive }) => `${isActive ? 'shadow-custom-blue bg-[#0092DB]' : 'bg-inherit shadow-none'} text-xl w-[280px] px-8 py-3 rounded-2xl flex justify-start items-center gap-3 lg:px-4 lg:text-base lg:mx-0 active:bg-[#0092DB] active:shadow-custom-blue lg:hover:shadow-custom-blue cursor-pointer lg:hover:bg-[#0092DB]`}>
                             <MdSystemSecurityUpdateWarning size={25} />

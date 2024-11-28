@@ -53,14 +53,6 @@ function Faq() {
                         ))
                     }
                 </div>
-                <div className='w-full h-auto flex justify-center items-center mt-10 sm:w-[48%] lg:w-[30%] sm:items-start sm:justify-start '>
-                    <div className='border border-[#0092DB] w-[80%] h-auto flex flex-col items-center px-3 py-6 rounded-lg md:py-10'>
-                        <FaQuestion />
-                        <h1 className='text-center font-semibold text-base sm:text-lg md:text-xl xl:text-2xl mt-3 md:mt-6'>Do you have any other questions?</h1>
-                        <p className='text-center text-xs mt-3 lg:my-6'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus atque perferendis provident laborum nihil nesciunt voluptatem repellat eligendi illum quo.</p>
-                        <button className='px-4 py-2 bg-blue-500 text-white font-semibold mx-auto rounded-md mt-4 md:mt-6'>Shoot email</button>
-                    </div>
-                </div>
             </div>
         </div>
     )

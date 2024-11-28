@@ -13,20 +13,20 @@ function WhyChoose() {
             <div className='w-full h-auto flex justify-center items-center relative'>
                 <img src={CenterImage} alt="image" className='w-[90%] md:w-[60%] xl:w-[45%] rounded-md' />
                 <div className='hidden lg:w-[300px] lg:h-auto lg:flex lg:justify-between lg:absolute lg:top-32 lg:left-36 lg:px-6 xl:left-60 2xl:left-80 lg:py-2 2xl:py-4 lg:text-white lg:rounded-xl lg:bg-gradient-to-r lg:from-[#0092DB] lg:to-[#355F9F]'>
-                    <p className='flex-1'>Expert Guidance From Recent NEET Toppers</p>
+                    <p className='flex-1 2xl:text-lg'>Expert Guidance From Recent NEET Toppers</p>
                     <LuShieldCheck size={30} className='text-white' />
                 </div>
                 <div className='hidden lg:w-[300px] lg:h-auto lg:flex lg:justify-between lg:absolute lg:top-64 lg:left-20 xl:left-48 2xl:left-72 2xl:top-96 2xl:py-4 lg:px-6 lg:py-2 lg:text-white lg:rounded-xl lg:bg-gradient-to-r lg:from-[#0092DB] lg:to-[#355F9F]'>
-                    <p className='flex-1'>Customized Study Plans</p>
+                    <p className='flex-1 2xl:text-lg'>Customized Study Plans</p>
                     <LuShieldCheck size={30} className='text-white' />
                 </div>
                 <div className='hidden lg:w-[300px] lg:h-auto lg:flex lg:justify-between lg:gap-5 lg:absolute lg:bottom-32 lg:right-36 xl:right-60 2xl:right-80 2xl:py-4 lg:px-6 lg:py-2 lg:text-white lg:rounded-xl lg:bg-gradient-to-r lg:from-[#0092DB] lg:to-[#355F9F]'>
                     <LuShieldCheck size={30} className='text-white' />
-                    <p className='flex-1'>Free Educational Webinars</p>
+                    <p className='flex-1 2xl:text-lg'>Free Educational Webinars</p>
                 </div>
                 <div className='hidden lg:w-[300px] lg:h-auto lg:flex lg:justify-between lg:gap-5 lg:absolute lg:bottom-80 lg:right-20 xl:right-48 2xl:right-72 2xl:py-4 2xl:bottom-96 lg:px-6 lg:py-2 lg:text-white lg:rounded-xl lg:bg-gradient-to-r lg:from-[#0092DB] lg:to-[#355F9F]'>
                     <LuShieldCheck size={30} className='text-white' />
-                    <p className='flex-1'>Real-Life Success Stories</p>
+                    <p className='flex-1 2xl:text-lg'>Real-Life Success Stories</p>
                 </div>
             </div>
         </div>

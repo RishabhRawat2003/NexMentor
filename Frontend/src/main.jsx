@@ -46,6 +46,7 @@ import ClearedPayment from './components/Admin/ClearedPayment.jsx'
 import FeaturedMentors from './components/Admin/FeaturedMentors.jsx'
 import AddTestimonial from './components/Admin/AddTestimonial.jsx'
 import FeaturedAd from './components/Admin/FeaturedAd.jsx'
+import BecameMentor from './components/BecameMentor.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,6 +54,7 @@ const router = createBrowserRouter(
       <Route path='/' element={<App />}>
         <Route path='/' element={<Homepage />} />
         <Route path='/student-profile/:id?' element={<StudentProfile />} />
+        <Route path='/became-mentor' element={<BecameMentor />} />
         <Route path='/search-mentor' element={<SearchMentor />} />
         <Route path='/single-mentor/:id' element={<SingleMentor />} />
       </Route>

@@ -14,7 +14,7 @@ function LandingPage() {
                 </div>
                 <div className='w-[49%] h-auto flex flex-col justify-between'>
                     <img src={Image2} alt="landing image 2" className='rounded-xl pb-2 pr-2 object-cover' />
-                    <div className='w-full h-auto flex flex-col bg-white flex-1 rounded-t-xl rounded-r-none sm:justify-evenly'>
+                    <div className='w-full h-auto flex flex-col justify-evenly bg-white flex-1 rounded-t-xl rounded-r-none sm:justify-evenly'>
                         <div className='w-full h-auto flex justify-between items-center mt-2'>
                             <div className='w-full h-auto flex flex-col font-cg-times text-xs sm:w-[48%] sm:text-base md:w-full lg:w-[48%]'>
                                 <p className='text-center font-semibold'>100 + </p>
@@ -26,7 +26,10 @@ function LandingPage() {
                             </div>
                         </div>
                         <div className='w-full h-auto flex justify-center sm:justify-between items-center md:justify-center lg:justify-between mt-2'>
-                            <img src={Image3} alt="landing image 3" className=' w-32 sm:w-[48%] object-cover' />
+                            <div className='w-full h-auto flex flex-col font-cg-times text-xs sm:w-[48%] sm:text-base md:w-full lg:w-[48%]'>
+                                <p className='text-center font-semibold'>100 + </p>
+                                <p className='text-center text-gray-500'>Completed Sessions </p>
+                            </div>
                             <img src={Image4} alt="landing image 3" className=' hidden sm:block sm:w-[48%] object-cover md:hidden lg:block' />
                         </div>
                     </div>

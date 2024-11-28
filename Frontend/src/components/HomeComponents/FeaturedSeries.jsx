@@ -7,15 +7,39 @@ import { FaArrowRight } from "react-icons/fa";
 
 const allSeries = [
     {
-        title: 'Personalized Guidance',
+        title: 'One-on-One Mentorship with NEET Toppers',
         image: Series1,
     },
     {
-        title: 'Customized Roadmap to Success',
+        title: 'Proven NEET Preperation Strategies',
         image: Series2,
     },
     {
-        title: 'Focused Topic Review',
+        title: 'Customized Roadmap for NEET Success',
+        image: Series3,
+    },
+    {
+        title: 'Subject Specific Topic Reviews',
+        image: Series1,
+    },
+    {
+        title: 'Real-Life NEET Success Stories',
+        image: Series2,
+    },
+    {
+        title: 'Up-to-Date NEET Exam Insights',
+        image: Series3,
+    },
+    {
+        title: 'Focused Revision Sessions',
+        image: Series1,
+    },
+    {
+        title: 'Interactive Q&A with NEET Experts',
+        image: Series2,
+    },
+    {
+        title: 'Progress Tracking and Feedback',
         image: Series3,
     }
 ]
@@ -24,7 +48,7 @@ function FeaturedSeries() {
     return (
         <div className='w-full h-auto flex flex-col'>
             <h1 className='w-full text-center h-auto font-semibold font-cg-times text-xl sm:text-2xl md:text-3xl lg:text-4xl'>Our Featured Series</h1>
-            <div className='disable-scrollbar w-full h-auto flex mt-10 px-5 xl:justify-center gap-6 overflow-x-scroll'>
+            <div className='disable-scrollbar w-full h-auto flex mt-10 px-5 xl:px-10 gap-6 overflow-x-scroll'>
                 {
                     allSeries.map((series, index) => (
                         <div key={index} className='min-w-[90%] sm:min-w-[30%] md:min-w-[25%] h-auto flex flex-col relative'>

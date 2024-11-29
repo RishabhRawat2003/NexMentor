@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
+
 
 function Blogs() {
     const [totalBlogs, setTotalBlogs] = useState([]);
@@ -48,9 +50,9 @@ function Blogs() {
                             </p>
                         </div>
                         <p className="flex justify-between items-center mt-3">
-                            <span className="text-blue-500 font-cg-times md:hover:text-blue-600 active:text-blue-600 cursor-pointer hover:underline active:underline underline-offset-2">
+                            <NavLink state={{blog}} to='/single-blog' className="text-blue-500 font-cg-times md:hover:text-blue-600 active:text-blue-600 cursor-pointer hover:underline active:underline underline-offset-2">
                                 View
-                            </span>
+                            </NavLink>
                         </p>
                     </div>
                 ))}

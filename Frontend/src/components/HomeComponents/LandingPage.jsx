@@ -64,9 +64,9 @@ function LandingPage() {
                     <NavLink to='/search-mentor' className='bg-[#0092DB] text-white px-4 py-2 cursor-pointer rounded-md text-xs sm:text-sm md:text-xs lg:text-base xl:text-lg'>
                         Book Your Session Now
                     </NavLink>
-                    <span className='px-4 py-2 rounded-md text-xs cursor-pointer sm:text-sm md:text-xs lg:text-base xl:text-lg'>
+                    <NavLink to='/webinar-page' className='px-4 py-2 rounded-md text-xs cursor-pointer sm:text-sm md:text-xs lg:text-base xl:text-lg'>
                         Attend a Free Webinar
-                    </span>
+                    </NavLink>
                 </div>
             </div>
         </div>

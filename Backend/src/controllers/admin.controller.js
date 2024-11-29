@@ -5,7 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { sendVerificationEmail } from "./emailService.js";
+import { registeredUserForWebinar, sendVerificationEmail } from "./emailService.js";
 
 export const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -819,4 +819,95 @@ export const getFeaturedMentors = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, mentors, "Featured Mentors Fetched successfully"))
+})
+
+export const createWebinar = asyncHandler(async (req, res) => {
+    const { date, day, year, content } = req.body
+
+    if (!date || !day || !year || !req.files.image) {
+        return res.status(400).json(new ApiResponse(400, {}, "Date, Day, Content, Image and Year are required"))
+    }
+
+    const image = req.files.image[0];
+    const imageFileUpload = await uploadOnCloudinary(image.path);
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                webinar: {
+                    date,
+                    day,
+                    year,
+                    content,
+                    image: imageFileUpload.secure_url
+                }
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Webinar Created Successfully"))
+
+})
+
+export const getWebinar = asyncHandler(async (req, res) => {
+    const admin = await Admin.find().select("webinar")
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, admin[0].webinar, "Webinar fetched Successfully"))
+
+})
+
+export const deleteWebinar = asyncHandler(async (req, res) => {
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                webinar: 1
+            }
+        },
+        { new: true }
+    )
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, {}, "Admin not found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Webinar removed Successfully"))
+})
+
+export const registerForWebinar = asyncHandler(async (req, res) => {
+    const { name, email } = req.body
+
+    if (!name || !email) {
+        return res.status(400).json(new ApiResponse(400, {}, "Name and Email are required"))
+    }
+
+    const mailContent = `
+This user registered for incoming Webinar :-
+name: ${name}
+email: ${email}
+`;
+    const message = `Registered For Incoming Webinar ${name}`
+
+    await registeredUserForWebinar(email, mailContent, message);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "User Registered Successfully"))
+
 })

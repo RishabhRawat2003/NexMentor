@@ -117,7 +117,24 @@ const adminSchema = new Schema({
                 type: String
             }
         }
-    ]
+    ],
+    webinar: {
+        image: {
+            type: String
+        },
+        date: {
+            type: String
+        },
+        day: {
+            type: String
+        },
+        year: {
+            type: String
+        },
+        content:{
+            type:String
+        }
+    }
 }, {
     timestamps: true
 })

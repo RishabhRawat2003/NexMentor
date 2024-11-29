@@ -47,6 +47,10 @@ import FeaturedMentors from './components/Admin/FeaturedMentors.jsx'
 import AddTestimonial from './components/Admin/AddTestimonial.jsx'
 import FeaturedAd from './components/Admin/FeaturedAd.jsx'
 import BecameMentor from './components/BecameMentor.jsx'
+import WebinarPage from './components/WebinarPage.jsx'
+import BlogsPage from './components/BlogsPage.jsx'
+import SingleBlogPage from './components/SingleBlogPage.jsx'
+import ContactPage from './components/ContactPage.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -56,7 +60,11 @@ const router = createBrowserRouter(
         <Route path='/student-profile/:id?' element={<StudentProfile />} />
         <Route path='/became-mentor' element={<BecameMentor />} />
         <Route path='/search-mentor' element={<SearchMentor />} />
+        <Route path='/webinar-page' element={<WebinarPage />} />
+        <Route path='/blogs-page' element={<BlogsPage />} />
+        <Route path='/single-blog' element={<SingleBlogPage />} />
         <Route path='/single-mentor/:id' element={<SingleMentor />} />
+        <Route path='/contact-us' element={<ContactPage />} />
       </Route>
       <Route path='/login' element={<Login />} />
       <Route path='/login/forgot-password' element={<ForgotPassword />} />

@@ -46,7 +46,7 @@ function ProfileSetting() {
       neetScore: e.neetScore,
       neetExamYear: e.neetExamYear,
       yearOfEducation: e.yearOfEducation,
-      about: e.about
+      about: e?.about || ''
     })
     setPreviewImage(e.profilePicture)
     setSelectedLanguages(e.languages)

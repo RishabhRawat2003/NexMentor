@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptApprovalRequest, activateOrDeactivateStatus, addBlogs, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, dashboardData, deleteBlog, deleteTestimonials, deleteUpdates, featuredAdAndUpdateAmount, featuredMentors, getBlogs, getFeaturedMentors, getSingleBlog, getTestimonials, getUpdates, logoutAdmin, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
+import { acceptApprovalRequest, activateOrDeactivateStatus, addBlogs, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, createWebinar, dashboardData, deleteBlog, deleteTestimonials, deleteUpdates, deleteWebinar, featuredAdAndUpdateAmount, featuredMentors, getBlogs, getFeaturedMentors, getSingleBlog, getTestimonials, getUpdates, getWebinar, logoutAdmin, registerForWebinar, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 
@@ -36,13 +36,18 @@ router.route("/add-feature-ad").post(verifyJWT, upload.fields([{ name: 'image' }
 router.route("/add-blog").post(verifyJWT, upload.fields([{ name: 'image' }]), addBlogs)
 router.route("/remove-blog").post(verifyJWT, deleteBlog)
 router.route("/get-single-blog/:blogId").post(verifyJWT, getSingleBlog)
-
+router.route("/create-webinar").post(verifyJWT, upload.fields([{ name: 'image' }]), createWebinar)
+router.route("/remove-webinar").post(verifyJWT, deleteWebinar)
 
 
 // for home page
 router.route("/get-featured-mentors").post(getFeaturedMentors)
 router.route("/get-blogs").post(getBlogs)
 router.route("/get-testimonial").post(getTestimonials)
+
+// for webinar page
+router.route("/get-webinar").post(getWebinar)
+router.route("/register-for-webinar").post(registerForWebinar)
 
 
 

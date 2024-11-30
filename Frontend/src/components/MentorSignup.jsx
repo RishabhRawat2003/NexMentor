@@ -342,9 +342,9 @@ function MentorSignup() {
                 <FileUpload label="Neet Score Card" onFileChange={(file) => setNeetScoreCard(file)} />
                 <FileUpload label="College ID" onFileChange={(file) => setCollegeId(file)} />
               </div>
-              <div className='flex gap-2 items-center'>
-                <input type="checkbox" id='agree' className='size-3' value={check} onChange={(event) => setCheck(event.target.checked)} />
-                <label htmlFor="agree" className='text-gray-500 text-xs lg:text-sm'>I agree with verification steps in <span className='text-black font-semibold'>For Mentor</span></label>
+              <div className='flex gap-2'>
+                <input type="checkbox" id='agree' className='size-3 mt-1' value={check} onChange={(event) => setCheck(event.target.checked)} />
+                <label htmlFor="agree" className='text-gray-500 text-xs lg:text-sm'>I agree with verification steps in <span className='text-black font-semibold'>For Mentor</span>, <span className='text-black font-semibold'>Terms and Condition</span> and <span className='text-black font-semibold'>Refund Policy</span></label>
               </div>
               <div
                 onClick={check ? handlePayment : undefined}

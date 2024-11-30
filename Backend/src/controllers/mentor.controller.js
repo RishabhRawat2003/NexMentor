@@ -560,9 +560,16 @@ const singleMentor = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
     }
 
+    const admin = await Admin.find()
+
+    const data = {
+        ...mentor.toObject(),
+        featuredAd: admin.length > 0 ? admin[0].featuredAd : null,
+    };
+
     return res
         .status(200)
-        .json(new ApiResponse(200, mentor, "Single mentor Info fetched Successfully"))
+        .json(new ApiResponse(200, data, "Single mentor Info fetched Successfully"))
 
 })
 

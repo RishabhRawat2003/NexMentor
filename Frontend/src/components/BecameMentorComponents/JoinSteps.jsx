@@ -40,7 +40,7 @@ function JoinSteps() {
                     <div className='w-full h-auto p-3 bg-white shadow-custom flex flex-col gap-4 xl:p-4'>
                         <div className='w-full h-auto flex items-center gap-3'>
                             <span className='p-3 bg-[#F3F3F3] flex justify-center items-center'><MdSettingsSuggest size={20} /></span>
-                            <span className='font-semibold xl:text-lg'>Get Set Up</span>
+                            <span className='font-semibold xl:text-lg'>Training & Demo Session</span>
                         </div>
                         <p className='text-[#413E3E]'>Once approved, you’re ready to mentor! Set up your profile and prepare to inspire.</p>
                     </div>

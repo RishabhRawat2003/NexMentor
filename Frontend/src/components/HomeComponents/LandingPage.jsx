@@ -1,5 +1,5 @@
 import React from 'react';
-import Image1 from '../images/home/1.png';
+import Image1 from '../images/home/home1.jpeg';
 import Image2 from '../images/home/2.png';
 import Image4 from '../images/home/4.png';
 import { NavLink } from 'react-router-dom'

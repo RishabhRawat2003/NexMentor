@@ -134,11 +134,11 @@ function Header() {
               />
               {resourcesDropdown && (
                 <div className="absolute top-full left-[-50px] mt-2 bg-white shadow-lg rounded-md w-[200px] py-4 z-50">
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">About Us</NavLink>
+                  <NavLink to='/about-us' className="block px-2 py-2 text-black hover:bg-gray-200">About Us</NavLink>
                   <NavLink to='/blogs-page' className="block px-2 py-2 text-black hover:bg-gray-200">Blogs</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">Privacy Policy</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">Terms and Conditions</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">Refund Policy</NavLink>
+                  <NavLink to='/privacy-policy' className="block px-2 py-2 text-black hover:bg-gray-200">Privacy Policy</NavLink>
+                  <NavLink to='/terms-condition' className="block px-2 py-2 text-black hover:bg-gray-200">Terms and Conditions</NavLink>
+                  <NavLink to='/refund-policy' className="block px-2 py-2 text-black hover:bg-gray-200">Refund Policy</NavLink>
                   <NavLink to='/contact-us' className="block px-2 py-2 text-black hover:bg-gray-200">Contact Us</NavLink>
                 </div>
               )}
@@ -199,11 +199,11 @@ function Header() {
           /></span>
           {resourcesDropdown && (
             <div className="w-full h-auto flex flex-col text-sm">
-              <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">About Us</NavLink>
+              <NavLink to='/about-us' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">About Us</NavLink>
               <NavLink to='/blogs-page' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Blogs</NavLink>
-              <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Privacy Policy</NavLink>
-              <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Terms and Conditions</NavLink>
-              <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Refund Policy</NavLink>
+              <NavLink to='/privacy-policy' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Privacy Policy</NavLink>
+              <NavLink to='/terms-condition' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Terms and Conditions</NavLink>
+              <NavLink to='/refund-policy' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Refund Policy</NavLink>
               <NavLink to='/contact-us' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Contact Us</NavLink>
             </div>
           )}

@@ -214,6 +214,54 @@ export const totalPendingSessions = asyncHandler(async (req, res) => {
 
 })
 
+export const removePendingSession = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    const mentor = await Mentor.findOne(
+        { 'sessionRequests._id': id }, // Match document containing the session
+        { sessionRequests: { $elemMatch: { _id: id } } } // Limit `sessionRequests` to the matching object
+    )
+        .populate("sessionRequests.package")
+
+    const admin = await Admin.findByIdAndUpdate(
+        req.user._id,
+        {
+            $inc: { totalRevenue: -mentor.sessionRequests[0].package.packagePrice },
+        },
+        { new: true }
+    );
+
+    if (!admin) {
+        return res.status(404).json(new ApiResponse(404, null, "Admin Not Found"))
+    }
+
+    const removeSessionFromStudent = await Student.findByIdAndUpdate(
+        mentor.sessionRequests[0].student,
+        { $pull: { purchasedSessions: { _id: mentor.sessionRequests[0].purchasedSessionId } } },
+        { new: true }
+    )
+
+
+    if (!removeSessionFromStudent) {
+        return res.status(404).json(new ApiResponse(404, null, "Student Not Found"))
+    }
+
+    const removeSessionFromMentor = await Mentor.findByIdAndUpdate(
+        mentor._id,
+        { $pull: { sessionRequests: { _id: id } } },
+        { new: true }
+    )
+
+    if (!removeSessionFromMentor) {
+        return res.status(404).json(new ApiResponse(404, null, "Mentor Not Found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Pending session removed successfully"))
+
+})
+
 export const approvalRequestMentors = asyncHandler(async (req, res) => {
     const allMentors = await Mentor.find(
         { verifiedFromAdmin: false }

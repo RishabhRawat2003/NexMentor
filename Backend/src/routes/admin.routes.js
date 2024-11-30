@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptApprovalRequest, activateOrDeactivateStatus, addBlogs, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, createWebinar, dashboardData, deleteBlog, deleteTestimonials, deleteUpdates, deleteWebinar, featuredAdAndUpdateAmount, featuredMentors, getBlogs, getFeaturedMentors, getSingleBlog, getTestimonials, getUpdates, getWebinar, logoutAdmin, registerForWebinar, removeApprovalRequest, removeFeaturedMentor, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
+import { acceptApprovalRequest, activateOrDeactivateStatus, addBlogs, addTestimonials, addUpdates, adminCreateAccount, adminDetails, adminLogin, approvalRequestMentors, changeCurrentPassword, clearPayment, createWebinar, dashboardData, deleteBlog, deleteTestimonials, deleteUpdates, deleteWebinar, featuredAdAndUpdateAmount, featuredMentors, getBlogs, getFeaturedMentors, getSingleBlog, getTestimonials, getUpdates, getWebinar, logoutAdmin, registerForWebinar, removeApprovalRequest, removeFeaturedMentor, removePendingSession, totalActiveSessions, totalCompletedSessions, totalMentors, totalPendingSessions, totalStudents, updateAccountDetails } from "../controllers/admin.controller.js";
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 
@@ -16,6 +16,7 @@ router.route("/total-completed-sessions").post(verifyJWT, totalCompletedSessions
 router.route("/total-mentors").post(verifyJWT, totalMentors)
 router.route("/total-students").post(verifyJWT, totalStudents)
 router.route("/total-pending-sessions").post(verifyJWT, totalPendingSessions)
+router.route("/remove-pending-session").post(verifyJWT,removePendingSession)
 router.route("/total-active-sessions").post(verifyJWT, totalActiveSessions)
 router.route("/approval-requests").post(verifyJWT, approvalRequestMentors)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)

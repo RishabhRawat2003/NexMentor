@@ -48,9 +48,9 @@ const generateOTP = () => {
 };
 
 const createStudentAccount = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password, confirmPassword, referralCode } = req.body
+    const { firstName, lastName, email, password, confirmPassword, referralCode, check } = req.body
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !check) {
         console.log("All Fields are required !!");
         return res.status(401).json(new ApiResponse(401, {}, "All Fields are required !!"))
     }
@@ -90,7 +90,8 @@ const createStudentAccount = asyncHandler(async (req, res) => {
         profilePicture: url,
         username: generatedUsername,
         referred: mentor ? true : false,
-        referredBy: mentor ? mentor._id : null
+        referredBy: mentor ? mentor._id : null,
+        agreeAllDocuments: check
     });
 
     await newStudent.save();

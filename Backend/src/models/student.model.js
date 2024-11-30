@@ -132,10 +132,14 @@ const studentSchema = new Schema({
         type: Boolean,
         default: false
     },
-    referredBy:{
+    referredBy: {
         type: Schema.Types.ObjectId,
         ref: 'Mentor'
-    }
+    },
+    agreeAllDocuments: {
+        type: Boolean,
+        default: false
+    },
 }, {
     timestamps: true
 })

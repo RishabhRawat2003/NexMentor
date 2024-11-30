@@ -4,7 +4,7 @@ import axios from 'axios'
 import Loading from './utils/Loading'
 import ErrorPopup from './utils/ErrorPopUp'
 import { StarRating } from './utils/StarRating'
-
+import Testimonial from './HomeComponents/Testimonials'
 
 function SingleMentor() {
   const [loading, setLoading] = useState(false)
@@ -50,6 +50,7 @@ function SingleMentor() {
           axios.post("/api/v1/students/verify-payment", option2)
             .then((response) => {
               if (response.data.success === true) {
+                setLoading(true)
                 navigate("/student-profile")
               } else {
                 setErrorMsg(error.response.data.message)
@@ -78,22 +79,30 @@ function SingleMentor() {
   }
 
   useEffect(() => {
-    const loadScript = (src) => {
-      return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-          resolve(true);
-        }
-        script.onerror = () => {
-          resolve(false);
-        }
-        document.body.appendChild(script);
-      })
-    }
-    loadScript('https://checkout.razorpay.com/v1/checkout.js')
+    // let scriptLoaded = false;
+
+    // const loadScript = (src) => {
+    //   return new Promise((resolve) => {
+    //     if (!scriptLoaded) {
+    //       const script = document.createElement('script');
+    //       script.src = src;
+    //       script.onload = () => {
+    //         scriptLoaded = true;
+    //         resolve(true);
+    //       };
+    //       script.onerror = () => {
+    //         resolve(false);
+    //       };
+    //       document.body.appendChild(script);
+    //     }
+    //   });
+    // };
+
+    // loadScript('https://checkout.razorpay.com/v1/checkout.js');
     fetchMentorDetails()
   }, [id])
+
+  console.log(window.history.length);
 
   return (
     <>
@@ -103,7 +112,7 @@ function SingleMentor() {
         : (
           <div className='w-full h-auto flex flex-col py-3 gap-8 scroll-smooth'>
             <div className='w-full h-auto flex flex-col md:flex-row md:justify-between md:px-3 lg:px-20 2xl:px-32 gap-7'>
-              <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[50vh] lg:w-[25vw] lg:h-[55vh] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
+              <div className='w-full h-auto flex shadow-custom mx-auto md:flex-col md:w-[30vw] md:mx-0 md:h-[370px] lg:w-[25vw] lg:h-[400px] xl:w-[20vw] 2xl:w-[20vw] md:rounded-lg'>
                 <div className='w-auto md:w-full flex justify-center items-center md:h-40 md:object-cover lg:h-52 md:rounded-t-lg md:py-1'>
                   <img src={user.profilePicture} alt="profile picture" className='w-48 h-32 rounded-full md:w-40 md:h-40 mx-auto object-cover border-[1px] border-bg-gray-500' />
                 </div>
@@ -140,7 +149,7 @@ function SingleMentor() {
                 </div>
               </div>
               <div className='w-full h-auto flex justify-center items-center md:w-[60vw] lg:w-[70vw]'>
-                <img src="" alt="featured ad" className='w-[90%] h-[25vh] bg-gray-400 rounded-xl sm:h-[40vh] lg:h-[55vh] shadow-custom' />
+                <img src={user.featuredAd} alt="featured ad" className='w-[90%] h-[200px] bg-gray-400 rounded-xl sm:h-[300px] lg:h-[400px] shadow-custom' />
               </div>
             </div>
             <div className='w-[90%] h-auto mx-auto flex flex-col rounded-md shadow-custom p-2 gap-2 md:p-6'>
@@ -166,6 +175,7 @@ function SingleMentor() {
                 }
               </div>
             </div>
+            <Testimonial />
           </div>
         )
       }

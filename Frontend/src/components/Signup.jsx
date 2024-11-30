@@ -28,7 +28,7 @@ function Signup() {
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [accountData, setAccountData] = useState({
-    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '' },
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '', check: false },
     mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
   });
 
@@ -92,7 +92,7 @@ function Signup() {
   };
 
   const resetForm = () => setAccountData({
-    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '' },
+    student: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', referralCode: '', check: false },
     mentor: { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', city: '', state: '' }
   });
 
@@ -179,7 +179,7 @@ function Signup() {
             <div className={`${activeContainer === 'student' ? 'translate-x-0' : 'translate-x-[50%]'} w-auto h-auto flex transition duration-300`}>
               <p className='w-[50%] h-[2px] bg-[#0092DB]'></p>
             </div>
-            <div className='relative w-full h-[650px] overflow-hidden xl:h-[550px]'>
+            <div className='relative w-full h-[650px] overflow-hidden xl:h-[580px]'>
               {/* student Signup */}
               <div className={`absolute top-0 w-full h-full flex flex-col transition-transform duration-300 ease-in-out ${activeContainer === 'student' ? 'transform translate-x-0' : 'transform -translate-x-full'}`}>
                 <Authentication />
@@ -245,7 +245,21 @@ function Signup() {
                     name='referralCode'
                     onChange={(e) => handleChange(e)}
                   />
-                  <div onClick={verifyEmail} className='w-auto h-10 flex justify-center items-center font-cg-times text-white bg-[#0092DB] my-5 rounded-md mx-5 active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd] cursor-pointer md:text-lg'>
+                  <div className='flex gap-2 items-center'>
+                    <input type="checkbox" id='agree' className='size-3' value={accountData.student.check} onChange={(event) =>
+                      setAccountData((prevState) => ({
+                        ...prevState,
+                        student: { ...prevState.student, check: event.target.checked },
+                      }))
+                    } />
+                    <label htmlFor="agree" className='text-gray-500 text-xs lg:text-sm'>I agree with <span className='text-black font-semibold'>Terms and Condition</span> and  <span className='text-black font-semibold'>Refund Policy</span></label>
+                  </div>
+                  <div onClick={accountData.student.check ? verifyEmail : undefined}
+                    className={`w-auto h-10 flex justify-center items-center font-cg-times text-white my-5 rounded-md mx-5 md:text-lg ${accountData.student.check
+                      ? 'bg-[#0092DB] cursor-pointer active:bg-[#0092dbbd] md:hover:bg-[#0092dbbd]'
+                      : 'bg-gray-400 cursor-not-allowed'
+                      }`}
+                  >
                     Sign Up
                   </div>
                   <div className='w-full h-auto font-cg-times text-gray-500 text-xs xl:text-sm'>

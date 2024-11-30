@@ -51,6 +51,10 @@ import WebinarPage from './components/WebinarPage.jsx'
 import BlogsPage from './components/BlogsPage.jsx'
 import SingleBlogPage from './components/SingleBlogPage.jsx'
 import ContactPage from './components/ContactPage.jsx'
+import TermsCondition from './components/TermsCondition.jsx'
+import RefundPolicy from './components/RefundPolicy.jsx'
+import PrivacyPolicy from './components/PrivacyPolicy.jsx'
+import AboutUs from './components/AboutUs.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,6 +62,10 @@ const router = createBrowserRouter(
       <Route path='/' element={<App />}>
         <Route path='/' element={<Homepage />} />
         <Route path='/student-profile/:id?' element={<StudentProfile />} />
+        <Route path='/terms-condition' element={<TermsCondition />} />
+        <Route path='/refund-policy' element={<RefundPolicy />} />
+        <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+        <Route path='/about-us' element={<AboutUs />} />
         <Route path='/became-mentor' element={<BecameMentor />} />
         <Route path='/search-mentor' element={<SearchMentor />} />
         <Route path='/webinar-page' element={<WebinarPage />} />

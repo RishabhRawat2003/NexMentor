@@ -72,6 +72,20 @@ function PendingSessions() {
         }
     }
 
+    async function removePendingSession(id) {
+        try {
+            setLoading(true)
+            const response = await axios.post("/api/v1/admin/remove-pending-session", { id })
+            if (response.data.statusCode === 200) {
+                fetchPendingSessions()
+                setLoading(false)
+            }
+        } catch (error) {
+            console.log("Error while fetching Pending sessions", error);
+            setLoading(false)
+        }
+    }
+
     function handlekeyDown(event) {
         if (event.key === "Enter") {
             searchMentorFromPendingSession(searchedMentor);
@@ -126,6 +140,9 @@ function PendingSessions() {
                                 <th className="py-3 px-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Purchased Date
                                 </th>
+                                <th className="py-3 px-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Delete
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -145,6 +162,9 @@ function PendingSessions() {
                                     </td>
                                     <td className="py-4 px-4 whitespace-nowrap text-sm text-center">
                                         {item?.purchasedDate.slice(0, 25)}
+                                    </td>
+                                    <td onClick={()=> removePendingSession(item._id)} className="py-3 px-3 whitespace-nowrap text-sm text-center text-red-500 cursor-pointer md:hover:text-red-600 md:hover:underline md:underline-offset-2">
+                                        Delete
                                     </td>
                                 </tr>
                             ))}

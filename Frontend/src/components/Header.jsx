@@ -107,8 +107,8 @@ function Header() {
                 <div className="absolute top-full left-[-50px] mt-2 bg-white shadow-lg rounded-md w-[200px] py-4 z-50">
                   <NavLink to='/search-mentor' className="block px-2 py-2 text-black hover:bg-gray-200">Find a Mentor</NavLink>
                   <NavLink to='/webinar-page' className="block px-2 py-2 text-black hover:bg-gray-200">Webinars</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">How it Works</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">FAQ's</NavLink>
+                  <NavLink to='/how-it-works' className="block px-2 py-2 text-black hover:bg-gray-200">How it Works</NavLink>
+                  <NavLink to='/faq-students' className="block px-2 py-2 text-black hover:bg-gray-200">FAQ's</NavLink>
                 </div>
               )}
             </div>
@@ -122,7 +122,7 @@ function Header() {
                 <div className="absolute top-full left-[-50px] mt-2 bg-white shadow-lg rounded-md w-[200px] py-4 z-50">
                   <NavLink to='/became-mentor' className="block px-2 py-2 text-black hover:bg-gray-200">Became a Mentor</NavLink>
                   <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">Why Choose Us?</NavLink>
-                  <NavLink className="block px-2 py-2 text-black hover:bg-gray-200">FAQ's</NavLink>
+                  <NavLink to='/faq-mentors' className="block px-2 py-2 text-black hover:bg-gray-200">FAQ's</NavLink>
                 </div>
               )}
             </div>
@@ -177,8 +177,8 @@ function Header() {
               <div className='w-full h-auto flex flex-col text-sm'>
                 <NavLink onClick={() => setDropDown(false)} to='/search-mentor' className="block px-2 py-2 text-black active:bg-gray-200">Find a Mentor</NavLink>
                 <NavLink onClick={() => setDropDown(false)} to='/webinar-page' className="block px-2 py-2 text-black active:bg-gray-200">Webinars</NavLink>
-                <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">How it Works</NavLink>
-                <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">FAQ's</NavLink>
+                <NavLink onClick={() => setDropDown(false)} to='/how-it-works' className="block px-2 py-2 text-black active:bg-gray-200">How it Works</NavLink>
+                <NavLink onClick={() => setDropDown(false)} to='/faq-students' className="block px-2 py-2 text-black active:bg-gray-200">FAQ's</NavLink>
               </div>
             )
           }
@@ -190,7 +190,7 @@ function Header() {
             <div className="w-full h-auto flex flex-col text-sm">
               <NavLink onClick={() => setDropDown(false)} to='/became-mentor' className="block px-2 py-2 text-black active:bg-gray-200">Became a Mentor</NavLink>
               <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">Why Choose Us?</NavLink>
-              <NavLink onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">FAQ's</NavLink>
+              <NavLink to='/faq-mentors' onClick={() => setDropDown(false)} className="block px-2 py-2 text-black active:bg-gray-200">FAQ's</NavLink>
             </div>
           )}
           <span onClick={() => { setResourcesDropdown(!resourcesDropdown); setStudentDropdown(false); setMentorDropdown(false) }} className="w-full h-auto flex items-center gap-2">Resources <FaChevronDown

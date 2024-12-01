@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
-import { FaQuestion } from "react-icons/fa6";
 
 function Faq() {
     const [index, setIndex] = useState(null)
@@ -9,23 +8,23 @@ function Faq() {
     const FAQ = [
         {
             id: 1,
-            title: 'What is the FitnessFit Schedule?',
-            answer: 'Our schedule is designed to accommodate all fitness levels and busy lifestyles. We offer a wide range of classes from early morning to late evening. For the most up-to-date schedule, including class times and descriptions.'
+            title: 'How do I sign up and create my account on NexMentor?',
+            answer: 'To sign up, visit the NexMentor website and click on the Sign Up button. Fill in the required details and create your account. Once registered, log in and complete your profile to personalize your experience'
         },
         {
             id: 2,
-            title: 'Do I need previous experience for your classes?',
-            answer: 'No previous experience is required to join our classes. Our certified instructors tailor each session to accommodate beginners and advanced members alike. We encourage everyone to participate, regardless of fitness level, and our team is here to support you every step of the way.'
+            title: 'How do I find the right mentor for my needs?',
+            answer: 'Use the mentor pool and apply filters such as state-wise location, NEET score, gender preference, and budget to narrow down your search. Review mentor profiles to read their biographies, check languages spoken, and other relevant details before making your selection.'
         },
         {
             id: 3,
-            title: 'Do you offer on-site classes, or just virtual classes?',
-            answer: 'We offer both on-site and virtual classes to cater to your preferences and needs. You can join us at our state-of-the-art facility for in-person sessions or participate in our virtual classes from the comfort of your home'
+            title: 'How do I book a session with a mentor?',
+            answer: 'Once you have selected a mentor, click on the Book Session button and proceed to confirm your booking. Complete the payment through our secure gateway. The session will appear as pending until the mentor approves it'
         },
         {
             id: 4,
-            title: 'Do you offer a trial class for any of your classes?',
-            answer: 'Yes, we do! We believe in the quality of our classes and invite you to experience them firsthand. We offer a complimentary trial class for new members to help you find the perfect fit. Please contact our front desk or sign up online to schedule your trial class.'
+            title: 'What happens after I book a session?',
+            answer: 'After booking, the mentor will review and approve your session within 24 hours. Once approved, the session status changes to active, and you’ll be notified via email and on the platform. You can then use the built-in chat system to finalize the session date and time'
         },
     ]
 

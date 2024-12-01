@@ -55,6 +55,7 @@ function FileUpload({ label, onFileChange }) {
 
 function MentorSignup() {
   const [year, setYear] = useState('');
+  const [amount,setAmount] = useState('')
   const [gender, setGender] = useState('');
   const [neetAttempt, setNeetAttempt] = useState('');
   const [neetScoreCard, setNeetScoreCard] = useState(null);
@@ -180,29 +181,41 @@ function MentorSignup() {
     }
   }
 
-
-  useEffect(() => {
-    const loadScript = (src) => {
-      return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-          resolve(true);
-        }
-        script.onerror = () => {
-          resolve(false);
-        }
-        document.body.appendChild(script);
-      })
+  async function getVerificationAmount() {
+    try {
+      const response = await axios.post("/api/v1/admin/get-amount")
+      if (response.data.statusCode === 200) {
+        setAmount(response.data.data)
+      }
+    } catch (error) {
+      console.log("Error while getting verification amount:", error);
     }
-    loadScript('https://checkout.razorpay.com/v1/checkout.js')
-  }, [])
+  }
+
+
+  // useEffect(() => {
+  //   const loadScript = (src) => {
+  //     return new Promise((resolve) => {
+  //       const script = document.createElement('script');
+  //       script.src = src;
+  //       script.onload = () => {
+  //         resolve(true);
+  //       }
+  //       script.onerror = () => {
+  //         resolve(false);
+  //       }
+  //       document.body.appendChild(script);
+  //     })
+  //   }
+  //   loadScript('https://checkout.razorpay.com/v1/checkout.js')
+  // }, [])
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       event.preventDefault();
       event.returnValue = ''
     };
+    getVerificationAmount()
 
     window.addEventListener('beforeunload', handleBeforeUnload);
 
@@ -353,7 +366,7 @@ function MentorSignup() {
                   : 'bg-gray-400 cursor-not-allowed'
                   }`}
               >
-                Continue and Pay ₹149
+                Continue and Pay ₹{amount}
               </div>
             </div>
           </div>

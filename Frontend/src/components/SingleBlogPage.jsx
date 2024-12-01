@@ -12,7 +12,7 @@ function SingleBlogPage() {
                 <img src={blog?.image} alt="blog image" className='w-full rounded-lg md:w-[50%] xl:w-[70%]' />
             </div>
             <h1 className='my-5 text-2xl font-semibold md:text-3xl xl:text-4xl md:my-10'>{blog.title}</h1>
-            <p className='text-[#595959] text-sm md:text-base'>{blog.content}</p>
+            <p className='text-sm md:text-base' dangerouslySetInnerHTML={{ __html: blog.content }} />
         </div>
     )
 }

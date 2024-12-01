@@ -495,7 +495,7 @@ const linkedinLogin = asyncHandler(async (req, res) => {
             .cookie("accessToken", mentorAccessToken, options)
             .cookie("refreshToken", refreshToken, options)
             // .json(new ApiResponse(200, mentor, "LinkedIn login successful"))
-            .redirect("http://localhost:5173")
+            .redirect("http://localhost:5173/search-mentor") // change this later
     } catch (error) {
         throw new ApiError(500, "Error during LinkedIn login");
     }

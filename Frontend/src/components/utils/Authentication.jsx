@@ -11,7 +11,7 @@ function Authentication() {
     const navigate = useNavigate()
 
     const handleLoginRedirect = () => {
-        window.location.href = "http://localhost:8000/api/v1/students/auth/linkedin";
+        window.location.href = "http://localhost:8000/api/v1/students/auth/linkedin"; //change this later
     };
 
     const handleLoginSuccess = async (response) => {
@@ -19,9 +19,9 @@ function Authentication() {
         try {
             const res = await axios.post("/api/v1/students/google-auth", { idToken });
             if (res.data.statusCode === 200) {
-                console.log(res.data);
-                // Redirect to student dashboard
-                navigate('/') // remove this when dashboard is made
+                localStorage.setItem("userType", JSON.stringify("Student"))
+                localStorage.setItem("userId", JSON.stringify(res.data.data._id))
+                navigate('/search-mentor');
             }
         } catch (error) {
             console.error('Error sending ID token to backend:', error);

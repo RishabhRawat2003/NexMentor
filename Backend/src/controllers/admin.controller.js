@@ -870,9 +870,9 @@ export const getFeaturedMentors = asyncHandler(async (req, res) => {
 })
 
 export const createWebinar = asyncHandler(async (req, res) => {
-    const { date, day, year, content } = req.body
+    const { date, day, year, content, time } = req.body
 
-    if (!date || !day || !year || !req.files.image) {
+    if (!date || !day || !year || !req.files.image || !content || !time) {
         return res.status(400).json(new ApiResponse(400, {}, "Date, Day, Content, Image and Year are required"))
     }
 
@@ -884,6 +884,7 @@ export const createWebinar = asyncHandler(async (req, res) => {
         {
             $set: {
                 webinar: {
+                    time,
                     date,
                     day,
                     year,
@@ -957,5 +958,41 @@ email: ${email}
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "User Registered Successfully"))
+})
+
+export const contactUs = asyncHandler(async (req, res) => {
+    const { name, email, message } = req.body
+
+    if (!name || !email || !message) {
+        return res.status(400).json(new ApiResponse(400, {}, "Name and Email are required"))
+    }
+
+    const mailContent = `
+    This user contacted us :-
+    name: ${name}
+    email: ${email}
+    message: ${message}
+`;
+    const message2 = `Contact Us Throught NexMentor ${name}`
+
+    await registeredUserForWebinar(email, mailContent, message2);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "User Registered Successfully"))
+
+})
+
+export const getVerificationAmount = asyncHandler(async (req, res) => {
+   
+    const admin = await Admin.find()
+
+    if(!admin){
+        return res.status(404).json(new ApiResponse(404, {}, "Admin Not Found"))
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, admin[0].verificationAmount, "User Registered Successfully"))
 
 })

@@ -151,7 +151,7 @@ function BlogPost() {
                   >
                     <div className='w-full h-auto flex flex-col'>
                       <img src={blog.image} alt="testimonial image" className='w-full h-40 object-cover mx-auto border border-gray-400' />
-                      <span className='mx-auto lg:text-lg font-semibold mt-3'>{blog.title}</span>
+                      <span className='mx-auto lg:text-lg font-semibold mt-3'>{blog.title.length > 30 ? blog.title.slice(0, 30) + '...' : blog.title}</span>
                       <p className='w-full h-auto text-center text-sm mt-2 text-gray-400'>
                         {blog.content.length > 30 ? blog.content.slice(0, 150) + '...' : blog.content}
                       </p>
@@ -249,8 +249,8 @@ function BlogPost() {
               </div>
               <div className='w-full h-auto flex flex-col mt-5 font-cg-times'>
                 <h2 className='text-xl lg:text-2xl 2xl:text-5xl font-semibold'>{singleBlog.title}</h2>
-                <img src={singleBlog.image} alt="blog image" className='w-full my-3' />
-                <p className='text-base md:text-lg text-gray-700 mt-5 lg:mt-10'>{singleBlog.content}</p>
+                <img src={singleBlog.image} alt="blog image" className='w-full my-3 lg:w-[60%] lg:mx-auto' />
+                <p className='text-base md:text-lg text-gray-700 mt-5 lg:mt-10' dangerouslySetInnerHTML={{ __html: singleBlog.content }}></p>
               </div>
             </div>
           }

@@ -119,6 +119,9 @@ const adminSchema = new Schema({
         }
     ],
     webinar: {
+        time: {
+            type: String
+        },
         image: {
             type: String
         },
@@ -131,8 +134,8 @@ const adminSchema = new Schema({
         year: {
             type: String
         },
-        content:{
-            type:String
+        content: {
+            type: String
         }
     }
 }, {

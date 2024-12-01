@@ -44,13 +44,13 @@ function Blogs() {
                                 className="w-full h-40 object-cover mx-auto border border-gray-400"
                                 loading="lazy" // Lazy load images
                             />
-                            <span className="mx-auto lg:text-lg font-semibold mt-3">{blog.title}</span>
+                            <span className="mx-auto lg:text-lg font-semibold mt-3">{blog.title.length > 30 ? `${blog.title.slice(0,60)}...` : blog.title}</span>
                             <p className="w-full h-auto text-center text-sm mt-2 text-gray-400">
                                 {blog.content.length > 150 ? `${blog.content.slice(0, 150)}...` : blog.content}
                             </p>
                         </div>
                         <p className="flex justify-between items-center mt-3">
-                            <NavLink state={{blog}} to='/single-blog' className="text-blue-500 font-cg-times md:hover:text-blue-600 active:text-blue-600 cursor-pointer hover:underline active:underline underline-offset-2">
+                            <NavLink state={{ blog }} to='/single-blog' className="text-blue-500 font-cg-times md:hover:text-blue-600 active:text-blue-600 cursor-pointer hover:underline active:underline underline-offset-2">
                                 View
                             </NavLink>
                         </p>

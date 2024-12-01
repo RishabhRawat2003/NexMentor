@@ -11,6 +11,7 @@ function Webinars() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [webinarDetails, setWebinarDetails] = useState({})
   const [createWebinar, setCreateWebinar] = useState({
+    time: '',
     date: '',
     day: '',
     year: '',
@@ -47,6 +48,7 @@ function Webinars() {
     try {
       setLoading(true)
       const formData = new FormData();
+      formData.append('time', createWebinar.time);
       formData.append('date', createWebinar.date);
       formData.append('day', createWebinar.day);
       formData.append('year', createWebinar.year);
@@ -124,7 +126,11 @@ function Webinars() {
             </div>
           </div>
           <div className='w-full h-auto flex flex-col gap-3 items-center sm:justify-between mt-10 md:gap-6'>
-            <div className='w-full h-auto flex flex-col gap-3 sm:justify-center sm:items-center md:flex-row xl:w-[80%] xl:mx-auto'>
+            <div className='w-full h-auto flex flex-col gap-3 sm:justify-center sm:items-center md:flex-row xl:w-full xl:mx-auto'>
+              <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
+                <label htmlFor="webinarTime">Set Time</label>
+                <input type="text" id='webinarTime' value={createWebinar.time} onChange={(e) => setCreateWebinar({ ...createWebinar, time: e.target.value })} placeholder='Enter Webinar Time' className='w-full h-auto outline-none border border-gray-400 p-2 rounded-md' />
+              </div>
               <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
                 <label htmlFor="webinarDate">Set Date</label>
                 <input type="text" id='webinarDate' value={createWebinar.date} onChange={(e) => setCreateWebinar({ ...createWebinar, date: e.target.value })} placeholder='Enter Webinar Date' className='w-full h-auto outline-none border border-gray-400 p-2 rounded-md' />
@@ -151,7 +157,7 @@ function Webinars() {
                 >
                   <div className='w-full h-auto flex flex-col'>
                     <img src={webinarDetails.image} alt="testimonial image" className='w-full h-40 object-cover border border-gray-400' />
-                    <span className='mx-auto lg:text-lg font-semibold mt-3'>{webinarDetails.date} {webinarDetails.day}, {webinarDetails.year}</span>
+                    <span className='mx-auto lg:text-lg font-semibold mt-3'>{webinarDetails.time} {webinarDetails.date} {webinarDetails.day}, {webinarDetails.year}</span>
                     <p className='w-full h-auto text-center text-sm mt-2 text-gray-400'>
                       {webinarDetails.content.length > 30 ? webinarDetails.content.slice(0, 150) + '...' : webinarDetails.content}
                     </p>

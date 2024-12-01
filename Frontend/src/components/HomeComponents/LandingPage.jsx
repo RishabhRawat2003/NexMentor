@@ -49,7 +49,7 @@ function LandingPage() {
                 <div className='w-full flex flex-col font-cg-times mt-5 xl:mt-10'>
                     <h1 className='font-semibold text-2xl sm:text-5xl md:text-2xl lg:text-4xl xl:text-5xl'>Personalized Mentorship</h1>
                     <h1 className='font-semibold text-2xl sm:text-5xl md:text-2xl lg:text-4xl xl:text-5xl xl:mt-4'>
-                        from <span className='underline underline-offset-8 decoration-blue-500'>NEET Toppers</span>
+                        from <span className='underline underline-offset-[12px] decoration-blue-500'>NEET Toppers</span>
                     </h1>
                     <p className='text-sm mt-4 text-[#5C5B5B] sm:text-base md:text-sm lg:text-lg font-semibold xl:mt-8 xl:text-xl'>
                         Boost your chances of NEET success with one-on-one guidance from those who've been there.

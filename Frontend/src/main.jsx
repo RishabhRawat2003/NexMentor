@@ -58,6 +58,7 @@ import AboutUs from './components/AboutUs.jsx'
 import FaqMentor from './components/FaqMentor.jsx'
 import HowItWorks from './components/HowItWorks.jsx'
 import FaqStudents from './components/FaqStudents.jsx'
+import WhyChooseUsPage from './components/WhyChooseUsPage.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -71,6 +72,7 @@ const router = createBrowserRouter(
         <Route path='/about-us' element={<AboutUs />} />
         <Route path='/faq-mentors' element={<FaqMentor />} />
         <Route path='/faq-students' element={<FaqStudents />} />
+        <Route path='/why-choose-us' element={<WhyChooseUsPage />} />
         <Route path='/how-it-works' element={<HowItWorks />} />
         <Route path='/became-mentor' element={<BecameMentor />} />
         <Route path='/search-mentor' element={<SearchMentor />} />

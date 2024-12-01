@@ -28,8 +28,8 @@ function Blogs() {
             <h1 className="text-center font-semibold font-cg-times text-xl sm:text-2xl md:text-3xl lg:text-4xl">
                 Our Recent Blogs
             </h1>
-            <p className="px-3 text-[#4F4F4F] font-cg-times text-center text-xs mt-5 md:text-sm lg:px-10 lg:text-base xl:px-32">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores dicta harum iure? Voluptas ipsum saepe, cupiditate doloribus ut fuga laudantium, ratione at aut voluptate soluta culpa qui consequatur praesentium maxime repellendus id est vitae repellat necessitatibus. Fugiat porro accusamus blanditiis.
+            <p className="px-3 text-[#4F4F4F] font-cg-times text-center text-xs mt-5 md:text-sm lg:px-10 lg:text-lg xl:px-32">
+            Dive into our latest blogs to supercharge your NEET preparation! From expert tips and success stories to proven strategies, we’ve got you covered.Learn how to tackle challenges, stay motivated, and achieve your dream score.Stay updated with insights that make a real difference in your journey!
             </p>
             <div className="disable-scrollbar w-full h-auto py-10 md:py-20 flex gap-5 px-5 md:px-10 overflow-x-auto lg:gap-8 xl:px-20">
                 {totalBlogs?.map((blog, index) => (

@@ -112,7 +112,7 @@ function ApprovalSection() {
           </div>
         </div>
         <div className='w-full h-auto flex gap-2 mt-4 items-center text-xs lg:text-base'>
-          <p className='w-full flex'><span className='font-semibold'>Note : </span> <span className='flex items-center gap-1'> Click <MdOutlineDone className='text-blue-500 ' /> to accept the request. After accepting the request, chat with student to schedule the session.</span></p>
+          <p className='w-full'><span className='font-semibold'>Note : </span>Click <span className=''>  <MdOutlineDone className='text-blue-500 inline ' /> </span>to accept the request. After accepting the request, chat with student to schedule the session. Mentors have 24 hours to approve session requests. If not approved within this time, the admin will automatically cancel the request. Only accept requests you intend to complete, as acceptance obligates you to deliver the session.</p>
         </div>
         <div className='w-full h-auto flex flex-col mt-4'>
           <div className='flex bg-[#9EDFFF63] font-cg-times justify-between p-2 text-xs border-b border-gray-300 rounded-t-md lg:text-base'>

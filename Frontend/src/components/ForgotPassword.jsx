@@ -68,7 +68,7 @@ function ForgotPassword() {
             </header>
             <div className='w-full h-auto flex flex-col overflow-x-hidden sm:w-[60%] sm:mx-auto md:w-[55%] lg:w-[45%] xl:w-full xl:mt-20'>
                 <div className='w-full h-auto xl:flex xl:justify-center xl:gap-5 2xl:gap-10'>
-                    <div className='hidden xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden xl:bg-[#E0E0E0]'>
+                    {/* <div className='hidden xl:flex xl:flex-col xl:border-[1px] xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl xl:overflow-hidden xl:bg-[#E0E0E0]'>
                         <div className='w-full h-auto flex justify-between items-center p-8'>
                             <img src={Logo} alt="neXmentor Logo" className='w-60' />
                             <NavLink to="/" className='px-5 py-2 bg-[#4A4A4A94] flex items-center gap-3 text-white font-cg-times rounded-full cursor-pointer'>
@@ -80,7 +80,9 @@ function ForgotPassword() {
                             <p className='text-lg'>Don't you worry, you can change your password here.</p>
                         </div>
                         <img src={ForgotImage} alt="Forgot-Image Logo" className='object-contain w-[25vw] mx-auto' />
-                    </div>
+                    </div> */}
+                    <img src={ForgotImage} alt="Forgot-Image Logo" className='xl:object-contain hidden xl:block xl:w-[50%] 2xl:w-[45%] xl:h-[85vh] xl:rounded-xl' />
+
                     <div className='w-auto h-auto flex flex-col mt-10 mx-5 xl:w-[35%] 2xl:w-[30%] font-cg-times'>
                         <h1 className='text-center text-2xl font-semibold md:text-3xl xl:text-5xl'>Forgot Password</h1>
                         <p className='w-full h-auto text-center text-sm text-gray-500 mt-6 mb-10 md:text-base'>

@@ -358,6 +358,15 @@ export const acceptApprovalRequest = asyncHandler(async (req, res) => {
         { new: true }
     )
 
+    mentor.notifications.push(
+        {
+            message: "Congratulations, You are now verified by Admin",
+            isRead: false
+        }
+    )
+
+    await mentor.save()
+
     if (!mentor) {
         return res.status(404).json(new ApiResponse(404, {}, "Mentor not found"))
     }
@@ -984,10 +993,10 @@ export const contactUs = asyncHandler(async (req, res) => {
 })
 
 export const getVerificationAmount = asyncHandler(async (req, res) => {
-   
+
     const admin = await Admin.find()
 
-    if(!admin){
+    if (!admin) {
         return res.status(404).json(new ApiResponse(404, {}, "Admin Not Found"))
     }
 

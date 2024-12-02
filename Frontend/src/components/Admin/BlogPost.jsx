@@ -250,7 +250,7 @@ function BlogPost() {
               <div className='w-full h-auto flex flex-col mt-5 font-cg-times'>
                 <h2 className='text-xl lg:text-2xl 2xl:text-5xl font-semibold'>{singleBlog.title}</h2>
                 <img src={singleBlog.image} alt="blog image" className='w-full my-3 lg:w-[60%] lg:mx-auto' />
-                <p className='text-base md:text-lg text-gray-700 mt-5 lg:mt-10' dangerouslySetInnerHTML={{ __html: singleBlog.content }}></p>
+                <p className='text-base md:text-lg text-gray-700 mt-5 lg:mt-10' style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: singleBlog.content }}></p>
               </div>
             </div>
           }

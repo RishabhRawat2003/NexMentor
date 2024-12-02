@@ -140,7 +140,7 @@ function StudentProfile() {
           <div className='w-full h-auto flex justify-end md:w-[40vw]'>
             <div className='w-full h-auto flex flex-col font-cg-times md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-[50%]'>
               <div className='w-full h-auto flex flex-col justify-center items-center md:flex-row md:justify-start md:px-2 md:gap-3'>
-                <div className='w-full h-auto flex justify-center items-center md:w-auto'><img src={userDetails.profilePicture} alt="profile picture" className='w-14 h-14 rounded-full md:w-16 md:h-16 border-[1px]' /></div>
+                <div className='w-full h-auto flex justify-center items-center md:w-auto'><img src={userDetails.profilePicture} referrerPolicy="no-referrer" alt="profile picture" className='w-14 h-14 rounded-full md:w-16 md:h-16 border-[1px]' /></div>
                 <div className='w-full h-auto flex flex-col justify-center items-center md:w-auto md:items-start'>
                   <span className='mt-1 md:text-lg'>{userDetails.firstName} {userDetails.lastName}</span>
                   <span className='text-xs text-gray-600 md:text-sm'>{userDetails.username}</span>

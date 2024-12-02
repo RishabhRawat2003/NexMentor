@@ -11,7 +11,6 @@ import axios from 'axios'
 import { Mentor } from '../models/mentor.model.js'
 import { razorpayInstance } from '../config/razorpayConfig.js'
 import { Package } from '../models/mentorPackage.model.js';
-import { Notification } from '../models/notification.model.js';
 import { Admin } from '../models/admin.model.js';
 
 const razorpayInstanceValue = razorpayInstance()
@@ -123,7 +122,9 @@ The NexMentor Team`;
 const verifyOTP = asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
 
-    const student = await Student.findOne({ email });
+    let student = await Student.findOneAndUpdate(
+        { email }
+    );
 
     if (!student) {
         throw new ApiError(404, 'Student not found');
@@ -137,6 +138,11 @@ const verifyOTP = asyncHandler(async (req, res) => {
     student.emailVerified = true;
     student.otp = undefined;
     student.otpExpiry = undefined;
+    student.notifications.push({
+        message: "Congratulations, Your Account is Created Successfully",
+        isRead: false
+    });
+
     await student.save();
 
     return res
@@ -409,6 +415,10 @@ const googleLogin = asyncHandler(async (req, res) => {
                 emailVerified,
                 username: generatedUsername
             });
+            student.notifications.push({
+                message: "Congratulations, Your Account is Created Successfully",
+                isRead: false
+            });
             await student.save()
         }
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(student._id);
@@ -480,6 +490,10 @@ const linkedinLogin = asyncHandler(async (req, res) => {
                 profilePicture,
                 username: generatedUsername,
                 emailVerified
+            });
+            student.notifications.push({
+                message: "Congratulations, Your Account is Created Successfully",
+                isRead: false
             });
             await student.save();
         }
@@ -663,7 +677,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
             { $inc: { totalRevenue: packageItem.packagePrice } }
         )
 
-        const student = await Student.findByIdAndUpdate(
+        let student = await Student.findByIdAndUpdate(
             req.user._id,
             {
                 $push: {
@@ -677,10 +691,17 @@ const verifyPayment = asyncHandler(async (req, res) => {
             { new: true }
         ).populate("purchasedSessions.package purchasedSessions.mentor");
 
+        student.notifications.push({
+            message: "Congratulations, Session Purchased Successfully, Go to your profile to view your purchased sessions",
+            isRead: false
+        });
+
         if (!student) {
             console.log("Student not found");
             return res.status(404).json(new ApiResponse(404, {}, "Student not found"));
         }
+
+        await student.save()
 
         const newSession = student.purchasedSessions[student.purchasedSessions.length - 1];
         const newSessionId = newSession._id;
@@ -688,9 +709,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
 
         const mentor = packageItem.mentorId;
         if (mentor) {
-            // Implement notification logic here
-            // For example, send an email or save a notification in a notifications collection
-            const requestToMentor = await Mentor.findByIdAndUpdate(
+            let requestToMentor = await Mentor.findByIdAndUpdate(
                 mentor._id,
                 {
                     $push: {
@@ -705,6 +724,15 @@ const verifyPayment = asyncHandler(async (req, res) => {
                 },
                 { new: true }
             ).populate("sessionRequests.package sessionRequests.student");
+
+            requestToMentor.notifications.push(
+                {
+                    message: `Congratulations, You'r Session is Purchased by ${student.username} `,
+                    isRead: false
+                }
+            )
+
+            await requestToMentor.save()
 
             if (!requestToMentor) {
                 console.log("Mentor not found");
@@ -900,6 +928,26 @@ const isFeedbackAlreadyGiven = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, isStudent, "Data fetched if student already given feedback"))
 })
 
+const notificationsRead = asyncHandler(async (req, res) => {
+    // Find the student by their ID
+    const student = await Student.findById(req.user._id);
+
+    if (!student) {
+        throw new ApiError(404, "Student not found");
+    }
+
+    // Update all notifications to be marked as read (set `isRead` to true)
+    student.notifications.forEach(notification => {
+        notification.isRead = true;
+    });
+
+    // Save the updated student document
+    await student.save();
+
+    // Send a success response
+    return res.status(200).json(new ApiResponse(200, {} , "All notifications marked as read"));
+});
+
 
 export {
     createStudentAccount,
@@ -922,5 +970,6 @@ export {
     allPurchasedSessions,
     allCompletedSessions,
     giveFeedBack,
-    isFeedbackAlreadyGiven
+    isFeedbackAlreadyGiven,
+    notificationsRead
 }

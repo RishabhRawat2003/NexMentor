@@ -1,5 +1,5 @@
 import Router from 'express'
-import { allCompletedSessions, allPurchasedSessions, changeCurrentPassword, createOrder, createStudentAccount, forgotPassword, giveFeedBack, googleLogin, isFeedbackAlreadyGiven, linkdinRedirect, linkedinLogin, logoutUser, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
+import { allCompletedSessions, allPurchasedSessions, changeCurrentPassword, createOrder, createStudentAccount, forgotPassword, giveFeedBack, googleLogin, isFeedbackAlreadyGiven, linkdinRedirect, linkedinLogin, logoutUser, notificationsRead, removeStudentIfNotVerified, resendOtp, resetPassword, studentDetails, studentLogin, studentLogout, updateProfileDetails, verifyOTP, verifyPayment } from '../controllers/student.controller.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
 import { upload } from '../middleware/multer.middleware.js'
 const router = Router()
@@ -29,6 +29,7 @@ router.route("/purchased-sessions").post(verifyJWT, allPurchasedSessions)
 router.route("/complete-sessions").post(verifyJWT, allCompletedSessions)
 router.route("/give-feedback").post(verifyJWT, giveFeedBack)
 router.route("/is-feedback-given").post(verifyJWT, isFeedbackAlreadyGiven)
+router.route("/read-notifications").post(verifyJWT,notificationsRead)
 
 
 export default router

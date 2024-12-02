@@ -1,20 +1,10 @@
 import React from 'react'
-import Ad1 from '../images/home/ad1.png'
-import Ad3 from '../images/home/ad3.png'
-import Ad4 from '../images/home/ad4.png'
-import Ad5 from '../images/home/ad5.png'
+import Marquee from 'react-fast-marquee';
 
-const ads = [Ad1, Ad3, Ad4, Ad5]
 
 function Ads() {
     return (
-        <div className='disable-scrollbar w-full h-auto flex mt-5 overflow-x-scroll lg:justify-center items-center lg:gap-20'>
-            {
-                ads.map((ad, index) => (
-                    <img key={index} src={ad} alt={`ad ${index + 1}`} className='min-w-90' />
-                ))
-            }
-        </div>
+        <div className='w-full h-auto my-10 py-2'><Marquee direction='left' speed={70} className='text-sm text-gray-600 font-cg-times font-bold sm:text-2xl md:text-3xl lg:text-4xl xl:tracking-widest'><span>MENTORSHIP FROM ARCHEIVER </span> <span className='hidden md:inline ml-20'> MENTORSHIP FROM ARCHEIVER</span></Marquee></div>
     )
 }
 

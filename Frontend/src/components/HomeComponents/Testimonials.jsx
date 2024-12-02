@@ -21,7 +21,7 @@ function Testimonials() {
 
     return (
         <div className='w-full h-auto flex flex-col mb-10 xl:mb-20'>
-            <h1 className='text-[#153F78] font-semibold font-cg-times text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl'>Our Client Testimonials</h1>
+            <h1 className='text-[#153F78] font-semibold font-cg-times text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl'>Our Users Testimonials</h1>
             <div className='disable-scrollbar w-full h-auto flex gap-6 py-10 lg:py-20 lg:gap-8 px-10 lg:px-20 overflow-x-scroll'>
                 {testimonials?.map((testimonial, index) => (
                     <div

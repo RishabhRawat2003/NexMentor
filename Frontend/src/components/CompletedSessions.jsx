@@ -121,7 +121,7 @@ function CompletedSessions() {
             <div className="bg-white p-4 rounded-lg shadow-md w-80">
               <h2 className="text-center text-lg font-semibold">Thanks For Your Feedback</h2>
               <h2 className="text-center mt-2">For Details FeedBack click below</h2>
-              <p className='text-center text-blue-500 font-cg-times'>LINK HERE</p>
+              <a href='https://forms.gle/5KwRw7cPaCj3dTAUA' target='_blank' className='text-center text-blue-500 font-cg-times'>Click here</a>
               <div className="flex justify-center mt-4">
                 <button onClick={submitFeedback} className="px-4 py-2 bg-blue-500 text-white rounded-md">Ok</button>
               </div>

@@ -1,7 +1,13 @@
 import React from 'react'
-import Series1 from '../images/home/series1.png'
-import Series2 from '../images/home/series2.png'
-import Series3 from '../images/home/series3.png'
+import Series1 from '../images/home/F1.png'
+import Series2 from '../images/home/F2.png'
+import Series3 from '../images/home/F3.png'
+import Series4 from '../images/home/F4.png'
+import Series5 from '../images/home/F5.png'
+import Series6 from '../images/home/F6.png'
+import Series7 from '../images/home/F7.png'
+import Series8 from '../images/home/F8.png'
+import Series9 from '../images/home/F9.png'
 import { FaArrowRight } from "react-icons/fa";
 
 
@@ -20,27 +26,27 @@ const allSeries = [
     },
     {
         title: 'Subject Specific Topic Reviews',
-        image: Series1,
+        image: Series4,
     },
     {
         title: 'Real-Life NEET Success Stories',
-        image: Series2,
+        image: Series5,
     },
     {
         title: 'Up-to-Date NEET Exam Insights',
-        image: Series3,
+        image: Series6,
     },
     {
         title: 'Focused Revision Sessions',
-        image: Series1,
+        image: Series7,
     },
     {
         title: 'Interactive Q&A with NEET Experts',
-        image: Series2,
+        image: Series8,
     },
     {
         title: 'Progress Tracking and Feedback',
-        image: Series3,
+        image: Series9,
     }
 ]
 

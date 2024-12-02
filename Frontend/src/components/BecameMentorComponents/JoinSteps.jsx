@@ -28,28 +28,28 @@ function JoinSteps() {
                             <span className='p-3 bg-[#F3F3F3] flex justify-center items-center'><IoNewspaperOutline size={20} /></span>
                             <span className='font-semibold xl:text-lg'>Submit Your Application</span>
                         </div>
-                        <p className='text-[#413E3E]'>Share your journey and why you’re passionate about guiding others.</p>
+                        <p className='text-[#413E3E]'>Provide your basic details along with your NEET scorecard and college ID card to initiate the application process.</p>
                     </div>
                     <div className='w-full h-auto p-3 bg-[#0092DB] shadow-custom flex flex-col gap-4 xl:p-4'>
                         <div className='w-full h-auto flex items-center gap-3'>
                             <span className='p-3 bg-[#F3F3F3] flex justify-center items-center text-black'><MdVerifiedUser size={20} /></span>
-                            <span className='font-semibold text-white xl:text-lg'>Verification and Interview</span>
+                            <span className='font-semibold text-white xl:text-lg'>Document Verification and Soft Skills Assessment</span>
                         </div>
-                        <p className='text-[#CACACA]'>Our team will verify your credentials and have a brief chat to understand your motivation and fit.</p>
+                        <p className='text-[#CACACA]'>We’ll verify your documents and evaluate your soft skills through a brief interview.</p>
                     </div>
                     <div className='w-full h-auto p-3 bg-white shadow-custom flex flex-col gap-4 xl:p-4'>
                         <div className='w-full h-auto flex items-center gap-3'>
                             <span className='p-3 bg-[#F3F3F3] flex justify-center items-center'><MdSettingsSuggest size={20} /></span>
-                            <span className='font-semibold xl:text-lg'>Training & Demo Session</span>
+                            <span className='font-semibold xl:text-lg'>Training and Onboarding</span>
                         </div>
-                        <p className='text-[#413E3E]'>Once approved, you’re ready to mentor! Set up your profile and prepare to inspire.</p>
+                        <p className='text-[#413E3E]'>Approved candidates will undergo a short training session to understand the platform and effective mentoring practices.</p>
                     </div>
                     <div className='w-full h-auto p-3 bg-white shadow-custom flex flex-col gap-4 xl:p-4'>
                         <div className='w-full h-auto flex items-center gap-3'>
                             <span className='p-3 bg-[#F3F3F3] flex justify-center items-center'><MdOutlinePublishedWithChanges size={20} /></span>
-                            <span className='font-semibold xl:text-lg'>Start Changing Lives</span>
+                            <span className='font-semibold xl:text-lg'>Get Set Up and Start Mentoring</span>
                         </div>
-                        <p className='text-[#413E3E]'>Conduct meaningful sessions, offering real insights and practical advice.</p>
+                        <p className='text-[#413E3E]'>Set up your mentor profile and begin conducting impactful mentorship sessions to help others succeed.</p>
                     </div>
                 </div>
                 <div className='w-full h-auto my-5'>

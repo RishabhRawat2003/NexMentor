@@ -38,10 +38,10 @@ function BlogsPage() {
                 <div className='w-full h-auto flex flex-col px-5 gap-5 sm:w-[70%] sm:mx-auto md:w-full md:flex-row'>
                     <div className='w-full h-auto flex flex-col gap-4 md:w-[50%]'>
                         <div className='w-full h-auto flex flex-col font-[600] text-2xl md:text-3xl lg:text-4xl xl:text-5xl xl:mt-10 2xl:text-6xl'>
-                            <h1><span className='text-[#287EFF]'>Publications</span> &</h1>
-                            <h1>Research Contributions</h1>
+                            <h1><span className='text-[#287EFF]'>NexMentor Blogs :</span> </h1>
+                            <h1>Your NEET Success Guide</h1>
                         </div>
-                        <p className='text-sm md:mt-5 md:text-base xl:text-lg text-[#595959]'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus velit voluptatem animi, ullam commodi facere in saepe. Modi quisquam deleniti soluta delectus animi dolorum autem quibusdam non, possimus neque numquam.</p>
+                        <p className='text-sm md:mt-5 md:text-base xl:text-lg text-[#595959]'>Navigate your NEET preparation with expert advice, practical tips, and motivational success stories. Our blog is packed with insights from mentors and top scorers to help you stay on track and reach your goals. Empower yourself with proven strategies and boost your confidence for exam day!</p>
                         <div className='w-full h-auto flex mt-4 items-center'>
                             <input type="text" placeholder='Subscribe to our Newsletter' className='border-2 border-[#287EFF] rounded-l-lg px-3 py-2 md:w-60 xl:w-80 xl:py-3 outline-none' />
                             <span className='px-3 bg-[#287EFF] text-white border-2 border-l-0 border-[#287EFF] py-2 rounded-r-lg xl:py-3 md:px-4 xl:px-5 cursor-pointer md:hover:bg-[#2069d5]'>Subsribe</span>

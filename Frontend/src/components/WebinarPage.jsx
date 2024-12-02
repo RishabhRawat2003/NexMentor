@@ -70,10 +70,7 @@ function WebinarPage() {
                   <span>{webinarDetails?.day},</span>
                   <span>{webinarDetails?.year}</span>
                 </div>
-                <div className='w-full h-auto font-cg-times text-sm md:text-base xl:text-lg'>
-                  {
-                    webinarDetails.content
-                  }
+                <div style={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: webinarDetails.content }} className='w-full h-auto font-cg-times text-sm md:text-base xl:text-lg'>
                 </div>
               </div>
               <div className='w-full h-auto flex flex-col md:w-[40%] lg:w-[30%]'>

@@ -179,7 +179,7 @@ function Signup() {
             <div className={`${activeContainer === 'student' ? 'translate-x-0' : 'translate-x-[50%]'} w-auto h-auto flex transition duration-300`}>
               <p className='w-[50%] h-[2px] bg-[#0092DB]'></p>
             </div>
-            <div className='relative w-full h-[650px] overflow-hidden xl:h-[580px]'>
+            <div className='relative w-[99%] h-[650px] overflow-hidden xl:h-[580px]'>
               {/* student Signup */}
               <div className={`absolute top-0 w-full h-full flex flex-col transition-transform duration-300 ease-in-out ${activeContainer === 'student' ? 'transform translate-x-0' : 'transform -translate-x-full'}`}>
                 <Authentication />

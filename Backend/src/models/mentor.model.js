@@ -203,12 +203,6 @@ const mentorSchema = new Schema({
             }
         }
     ],
-    notifications: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Notification'
-        }
-    ],
     resetPasswordToken: {
         type: String
     },
@@ -260,7 +254,18 @@ const mentorSchema = new Schema({
     activate: {
         type: Boolean,
         default: true
-    }
+    },
+    notifications: [
+        {
+            message: {
+                type: String
+            },
+            isRead: {
+                type: Boolean,
+                default: false
+            }
+        }
+    ]
 }, {
     timestamps: true
 })

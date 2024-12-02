@@ -495,8 +495,14 @@ const createOrUpdatePackage = async (mentorId) => {
         await existingPackage.save();
     } else {
         existingPackage = await Package.create({
-            packageName: "Mentor Package",
-            packageDescription: "Package for mentor based on NEET score",
+            packageName: "NEET One-on-One Mentorship",
+            packageDescription: `
+            Expert Guidance: Learn top strategies from NEET achievers.
+            Personalized Support: Tailored, one-on-one mentorship to address your unique needs.
+            Immediate Solutions: Clarify doubts and receive actionable advice.
+            Confidence Boost: Build motivation and exam readiness.
+            Focused Preparation: Optimize your study strategy in just one hour.Book Your Session Today and Take Your NEET Prep to the Next Level!
+            `,
             packagePrice: packagePrice,
             mentorId: mentorId,
             neetScore: searchedMentor.neetScore,
@@ -517,7 +523,8 @@ const allMentors = asyncHandler(async (req, res) => {
     try {
         let mentors = await Mentor.find(
             {
-                activate: true
+                activate: true,
+                verifiedFromAdmin: true
             }
         )
             .skip(skip)

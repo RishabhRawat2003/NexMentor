@@ -92,12 +92,6 @@ const studentSchema = new Schema({
             }
         }
     ],
-    notifications: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Notification'
-        }
-    ],
     completeSessions: [
         {
             package: {
@@ -140,6 +134,17 @@ const studentSchema = new Schema({
         type: Boolean,
         default: false
     },
+    notifications: [
+        {
+            message: {
+                type: String
+            },
+            isRead: {
+                type: Boolean,
+                default: false
+            }
+        }
+    ]
 }, {
     timestamps: true
 })

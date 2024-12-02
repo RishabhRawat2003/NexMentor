@@ -67,6 +67,7 @@ function Webinars() {
           day: '',
           year: '',
           content: '',
+          time: '',
         })
         setLoading(false)
       }
@@ -128,12 +129,12 @@ function Webinars() {
           <div className='w-full h-auto flex flex-col gap-3 items-center sm:justify-between mt-10 md:gap-6'>
             <div className='w-full h-auto flex flex-col gap-3 sm:justify-center sm:items-center md:flex-row xl:w-full xl:mx-auto'>
               <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
-                <label htmlFor="webinarTime">Set Time</label>
-                <input type="text" id='webinarTime' value={createWebinar.time} onChange={(e) => setCreateWebinar({ ...createWebinar, time: e.target.value })} placeholder='Enter Webinar Time' className='w-full h-auto outline-none border border-gray-400 p-2 rounded-md' />
-              </div>
-              <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
                 <label htmlFor="webinarDate">Set Date</label>
                 <input type="text" id='webinarDate' value={createWebinar.date} onChange={(e) => setCreateWebinar({ ...createWebinar, date: e.target.value })} placeholder='Enter Webinar Date' className='w-full h-auto outline-none border border-gray-400 p-2 rounded-md' />
+              </div>
+              <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
+                <label htmlFor="webinarTime">Set Time</label>
+                <input type="text" id='webinarTime' value={createWebinar.time} onChange={(e) => setCreateWebinar({ ...createWebinar, time: e.target.value })} placeholder='Enter Webinar Time' className='w-full h-auto outline-none border border-gray-400 p-2 rounded-md' />
               </div>
               <div className='w-full h-auto flex flex-col gap-2 font-cg-times sm:w-[50%]'>
                 <label htmlFor="webinarDate">Set Day</label>

@@ -75,7 +75,7 @@ const acceptSessionRequests = asyncHandler(async (req, res) => {
             path: "sessionRequests.student",
             select: "username _id"
         })
-        .select("sessionRequests");
+        .select("sessionRequests mentorId");
     const sessionRequestArray = mentor.sessionRequests
     let indexOfRequest
     sessionRequestArray.map((item, index) => {
@@ -107,7 +107,12 @@ const acceptSessionRequests = asyncHandler(async (req, res) => {
     mentor.sessionRequests.splice(indexOfRequest, 1)
     await mentor.save();
 
-    const student = await Student.findById(requestItem.student._id).populate("purchasedSessions")
+    let student = await Student.findById(requestItem.student._id).populate("purchasedSessions")
+
+    student.notifications.push({
+        message: `${mentor.mentorId} Accepted your session request. Chat with mentor to Schedule the Session.`,
+        isRead: false
+    });
 
     const studentPurchasedSessionsArr = student.purchasedSessions
 
@@ -199,7 +204,7 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
             path: "activeSessions.student",
             select: "username _id"
         })
-        .select("activeSessions");
+        .select("activeSessions mentorId");
 
     const activeSessionsArray = mentor.activeSessions
     let indexOfActiveSession
@@ -228,7 +233,7 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
 
     const imageOfProofFile = req.files.imageOfProof[0];
     const imageOfProofFileUpload = await uploadOnCloudinary(imageOfProofFile.path);
-    const completeRequest = await Mentor.findByIdAndUpdate(
+    let completeRequest = await Mentor.findByIdAndUpdate(
         mentorId,
         {
             $push: {
@@ -255,7 +260,7 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
     mentor.activeSessions.splice(indexOfActiveSession, 1)
     await mentor.save();
 
-    const student = await Student.findById(requestItem.student._id)
+    let student = await Student.findById(requestItem.student._id)
         .populate({
             path: "purchasedSessions.package",
             select: "packageName packagePrice"
@@ -264,7 +269,22 @@ const changeStatusToCompleted = asyncHandler(async (req, res) => {
             path: "purchasedSessions.mentor",
             select: "mentorId _id"
         })
-        .select("purchasedSessions referred completeSessions referredBy")
+        .select("purchasedSessions referred completeSessions referredBy notifications username")
+
+
+    completeRequest.notifications.push(
+        {
+            message: `Congratulations, You'r Session is Completed with ${student.username} `,
+            isRead: false
+        }
+    )
+    await completeRequest.save()
+
+
+    student.notifications.push({
+        message: `Congratulation Your session with ${mentor.mentorId} marked as completed`,
+        isRead: false
+    });
 
     const studentPurchasedSessionsArr = student.purchasedSessions
     let indexOfPurchasedSession
@@ -558,6 +578,27 @@ const updatePaymentDetails = asyncHandler(async (req, res) => {
 
 })
 
+const notificationsRead = asyncHandler(async (req, res) => {
+    // Find the mentor by their ID
+    const mentor = await Mentor.findById(req.user._id);
+
+    if (!mentor) {
+        throw new ApiError(404, "Mentor not found");
+    }
+
+    // Update all notifications to be marked as read (set `isRead` to true)
+    mentor.notifications.forEach(notification => {
+        notification.isRead = true;
+    });
+
+    // Save the updated mentor document
+    await mentor.save();
+
+    // Send a success response
+    return res.status(200).json(new ApiResponse(200, {}, "All notifications marked as read"));
+});
+
+
 export {
     getAllSessionRequests,
     acceptSessionRequests,
@@ -567,5 +608,6 @@ export {
     updateAccountDetails,
     logoutUser,
     changeCurrentPassword,
-    updatePaymentDetails
+    updatePaymentDetails,
+    notificationsRead
 }

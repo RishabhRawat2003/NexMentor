@@ -5,6 +5,8 @@ import Loading from './utils/Loading'
 import ErrorPopup from './utils/ErrorPopUp'
 import { StarRating } from './utils/StarRating'
 import Testimonial from './HomeComponents/Testimonials'
+import { useDispatch } from "react-redux";
+import { triggerHeaderUpdate } from "./store/HeaderSlice";
 
 function SingleMentor() {
   const [loading, setLoading] = useState(false)
@@ -12,6 +14,7 @@ function SingleMentor() {
   const { id } = useParams()
   const [errorPopUp, setErrorPopUp] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const dispatch = useDispatch();
 
   const navigate = useNavigate()
 
@@ -51,6 +54,7 @@ function SingleMentor() {
             .then((response) => {
               if (response.data.success === true) {
                 setLoading(true)
+                dispatch(triggerHeaderUpdate());
                 navigate("/student-profile")
               } else {
                 setErrorMsg(error.response.data.message)
@@ -79,30 +83,8 @@ function SingleMentor() {
   }
 
   useEffect(() => {
-    // let scriptLoaded = false;
-
-    // const loadScript = (src) => {
-    //   return new Promise((resolve) => {
-    //     if (!scriptLoaded) {
-    //       const script = document.createElement('script');
-    //       script.src = src;
-    //       script.onload = () => {
-    //         scriptLoaded = true;
-    //         resolve(true);
-    //       };
-    //       script.onerror = () => {
-    //         resolve(false);
-    //       };
-    //       document.body.appendChild(script);
-    //     }
-    //   });
-    // };
-
-    // loadScript('https://checkout.razorpay.com/v1/checkout.js');
     fetchMentorDetails()
   }, [id])
-
-  console.log(window.history.length);
 
   return (
     <>
@@ -164,11 +146,11 @@ function SingleMentor() {
                     <div key={index} className='w-[95%] h-auto flex flex-col bg-[#DAE8FB] p-3 gap-3 rounded-md sm:w-[75%] xl:gap-6 md:w-[70%] lg:w-[50%] xl:w-[35%] md:p-8'>
                       <div className='w-full h-auto font-cg-times flex justify-between items-center'>
                         <span className='text-sm w-[80%] md:text-lg font-semibold'>{item.packageName}</span>
-                        <div className='text-sm md:text-lg font-semibold'>₹ {item.packagePrice} <span className='text-xs line-through font-extralight'>₹ {item.packagePrice + 100}</span> <span className='hidden md:block text-xs font-extralight'>(Save ₹100)</span> </div>
                       </div>
-                      <div className='w-full h-auto font-cg-times text-[#2E2E2E] text-xs md:text-base'>
-                        {item.packageDescription} Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat quae, aut eligendi omnis aliquid laborum corporis unde ad velit totam quis, reiciendis consequatur ut nihil obcaecati. Quia nisi eius quae, ea adipisci deserunt a, magnam facere ipsum, autem nemo quos labore possimus cum est perferendis mollitia sint. Iure ex velit neque ullam praesentium dignissimos inventore ea recusandae modi, repellat, mollitia quod magnam odit. Magni eum vero pariatur ab sapiente cum cumque facilis, atque nam non eius quisquam sunt, a necessitatibus velit deleniti ut. Voluptatum dolorem nisi natus, minus odio expedita quod vel velit quisquam, iste neque error nemo, quasi earum.
+                      <div style={{ whiteSpace: "pre-wrap" }} className='w-full h-auto font-cg-times text-[#2E2E2E] text-xs md:text-base'>
+                        {item.packageDescription}
                       </div>
+                      <div className='w-full h-auto flex justify-end items-center gap-1 text-sm md:text-lg font-semibold'>₹ {item.packagePrice} <span className='text-xs line-through font-extralight'>₹ {item.packagePrice + 100}</span> <span className='hidden md:block text-xs font-extralight'>(Save ₹100)</span> </div>
                       <div onClick={() => bookSession(item._id)} className='w-full h-auto bg-[#0092DB] flex justify-center items-center text-white py-1 mt-2 cursor-pointer md:py-1.5 md:hover:bg-[#0092dbb6] active:bg-[#0092dbb6] rounded-sm'>Book Session</div>
                     </div>
                   ))

@@ -7,6 +7,8 @@ import Loading from './utils/Loading';
 import { FaBarsStaggered } from "react-icons/fa6";
 import { FaChevronDown } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { useSelector } from 'react-redux';
+
 
 // Debounce utility function to prevent excessive scrolling events
 const debounce = (func, delay) => {
@@ -25,9 +27,13 @@ function Header() {
   const [loading, setLoading] = useState(true);
   const [dropDown, setDropDown] = useState(false);
   const [scroll, setScroll] = useState(0);
+  const [notifcationsDropDown, setNotificationsDropDown] = useState(false)
+  const [notifications, setNotifications] = useState([])
   const dropDownRef = useRef(null);
   const imageRef = useRef(null);
   const navigate = useNavigate();
+  const updateKey = useSelector((state) => state.header.updateKey);
+
 
   // Fetch user details asynchronously
   const fetchUser = async () => {
@@ -35,6 +41,7 @@ function Header() {
       const userType = JSON.parse(localStorage.getItem("userType"));
       let url = userType === 'Student' ? "/api/v1/students/student-details" : userType === 'Mentor' ? "/api/v1/mentors/mentor-details" : "/api/v1/students/student-details";
       const response = await axios.post(url);
+      setNotifications(response.data.data.notifications.reverse())
       setLoading(false);
       setUser(response.data.data);
     } catch (error) {
@@ -42,6 +49,19 @@ function Header() {
       setLoading(false);
     }
   };
+
+  function handleNotifications() {
+    setNotificationsDropDown(!notifcationsDropDown)
+    readNotifications()
+  }
+
+  async function readNotifications() {
+    try {
+      const response = await axios.post("/api/v1/students/read-notifications");
+    } catch (error) {
+      console.log("Error while reading notifications", error);
+    }
+  }
 
   // Navigation handler for user profile
   const handleNavigate = () => {
@@ -55,12 +75,13 @@ function Header() {
   // Initialize user data fetching on mount
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [updateKey]);
 
   // Click outside event listener to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropDownRef.current && !dropDownRef.current.contains(event.target) && !imageRef.current.contains(event.target)) {
+      if ((dropDownRef.current && !dropDownRef.current.contains(event.target)) &&
+        (imageRef.current && !imageRef.current.contains(event.target))) {
         setDropDown(false);
       }
     };
@@ -76,8 +97,9 @@ function Header() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
-      if (currentScroll > scroll && dropDown) {
+      if (currentScroll > scroll || dropDown || notifcationsDropDown) {
         setDropDown(false); // Hide dropdown when scrolling down
+        setNotificationsDropDown(false)
       }
       setScroll(currentScroll);
     };
@@ -147,9 +169,22 @@ function Header() {
           {
             user && user.username && user.username.length
               ? <div className="w-auto h-auto flex justify-between items-center gap-5 lg:gap-6 flex-shrink-0">
-                <IoMdNotificationsOutline size={20} className="text-[#0092DB] sm:size-7 cursor-pointer" />
+                <IoMdNotificationsOutline onClick={handleNotifications} size={20} className='text-[#0092DB] sm:size-7 cursor-pointer' />
+                {
+                  notifcationsDropDown && (
+                    <div className='disable-scrollbar w-80 h-auto min-h-[70vh] max-h-96 overflow-y-scroll p-5 border shadow-custom absolute top-14 rounded-lg right-3 bg-gray-100 sm:top-16 lg:top-20 z-50'>
+                      {
+                        notifications?.map((item, index) => (
+                          <p key={index} className='text-sm md:text-base font-cg-times border-b-2 py-4 '>
+                            {item.message}
+                          </p>
+                        ))
+                      }
+                    </div>
+                  )
+                }
                 <div onClick={handleNavigate} className="w-auto h-auto rounded-full border-[1px] border-[#0092DB] cursor-pointer md:hover:shadow-sm md:hover:shadow-[#0092db89]">
-                  <img ref={imageRef} src={user.profilePicture} alt="profile image" className="w-8 h-8 rounded-full sm:w-9 sm:h-9 lg:w-11 lg:h-11 2xl:h-12 2xl:w-12" />
+                  <img ref={imageRef} src={user.profilePicture} referrerPolicy="no-referrer" alt="profile image" className="w-8 h-8 rounded-full object-cover sm:w-9 sm:h-9 lg:w-11 lg:h-11 2xl:h-12 2xl:w-12" />
                 </div>
               </div>
               : <div>

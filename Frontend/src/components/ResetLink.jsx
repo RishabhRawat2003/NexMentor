@@ -1,5 +1,5 @@
 import React, { useState , useCallback} from 'react'
-import Logo from './images/loginSignupPageImages/logoSideImage.png';
+import Logo from './images/loginSignupPageImages/logoSideImage.webp';
 import TextField from '@mui/material/TextField';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'

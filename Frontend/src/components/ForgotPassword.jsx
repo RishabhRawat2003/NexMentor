@@ -1,6 +1,4 @@
 import React, { useState, useCallback, lazy, Suspense } from 'react';
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { NavLink } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import Loading from './utils/Loading';
@@ -13,8 +11,8 @@ import {
     Typography,
     Button,
 } from '@mui/material';
-import Logo from './images/logo2.png';
-import ForgotImage from './images/loginSignupPageImages/forgetPassword.png'
+import Logo from './images/logo2.webp';
+import ForgotImage from './images/loginSignupPageImages/forgetPassword.webp'
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');

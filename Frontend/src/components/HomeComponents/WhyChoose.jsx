@@ -1,6 +1,6 @@
 import React from 'react'
-import BgImage from '../images/home/whychoose.png'
-import CenterImage from '../images/home/whychoose2.png'
+import BgImage from '../images/home/whychoose.webp'
+import CenterImage from '../images/home/whychoose2.webp'
 import { LuShieldCheck } from "react-icons/lu";
 
 function WhyChoose() {

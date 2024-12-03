@@ -1,13 +1,13 @@
 import React from 'react'
-import Series1 from '../images/home/F1.png'
-import Series2 from '../images/home/F2.png'
-import Series3 from '../images/home/F3.png'
-import Series4 from '../images/home/F4.png'
-import Series5 from '../images/home/F5.png'
-import Series6 from '../images/home/F6.png'
-import Series7 from '../images/home/F7.png'
-import Series8 from '../images/home/F8.png'
-import Series9 from '../images/home/F9.png'
+import Series1 from '../images/home/F1.webp'
+import Series2 from '../images/home/F2.webp'
+import Series3 from '../images/home/F3.webp'
+import Series4 from '../images/home/F4.webp'
+import Series5 from '../images/home/F5.webp'
+import Series6 from '../images/home/F6.webp'
+import Series7 from '../images/home/F7.webp'
+import Series8 from '../images/home/F8.webp'
+import Series9 from '../images/home/F9.webp'
 import { FaArrowRight } from "react-icons/fa";
 
 

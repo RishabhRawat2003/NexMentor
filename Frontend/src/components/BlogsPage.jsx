@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Image1 from './images/BlogsPage/landingimage1.png'
-import Image2 from './images/BlogsPage/landingimage2.png'
+import Image1 from './images/BlogsPage/landingimage1.webp'
+import Image2 from './images/BlogsPage/landingimage2.webp'
 import axios from 'axios'
 import Loading from './utils/Loading'
 import { NavLink } from 'react-router-dom'

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Logo from '../images/loginSignupPageImages/logoSideImage.png'
+import Logo from '../images/loginSignupPageImages/logoSideImage.webp'
 import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { LuShoppingCart } from "react-icons/lu";
 import { GoDeviceCameraVideo } from "react-icons/go";

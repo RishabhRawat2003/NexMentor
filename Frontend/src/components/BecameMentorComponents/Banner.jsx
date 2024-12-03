@@ -1,5 +1,5 @@
 import React from 'react'
-import Image4 from '../images/becamementor/image4.png'
+import Image4 from '../images/becamementor/image4.webp'
 import { FaArrowRightLong } from "react-icons/fa6";
 
 function Banner() {

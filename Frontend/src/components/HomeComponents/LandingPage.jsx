@@ -1,7 +1,7 @@
 import React from 'react';
-import Image1 from '../images/home/home1.png';
-import Image2 from '../images/home/2.png';
-import Image4 from '../images/home/4.png';
+import Image1 from '../images/home/home1.webp';
+import Image2 from '../images/home/2.webp';
+import Image4 from '../images/home/4.webp';
 import { NavLink } from 'react-router-dom'
 
 function LandingPage() {

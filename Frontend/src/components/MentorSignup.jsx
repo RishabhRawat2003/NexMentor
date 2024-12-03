@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Logo from './images/logo2.png';
+import Logo from './images/logo2.webp';
 import { Select, MenuItem, FormControl, TextField } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Box } from '@mui/material';
@@ -7,7 +7,7 @@ import axios from 'axios'
 import Loading from './utils/Loading';
 import ErrorPopup from './utils/ErrorPopUp';
 import { useNavigate } from 'react-router-dom';
-import SideImage from './images/Mentorapplication.png'
+import SideImage from './images/Mentorapplication.webp'
 
 
 function FileUpload({ label, onFileChange }) {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState , useMemo} from 'react'
 import { NavLink } from 'react-router-dom'
-import Image1 from '../images/loginSignupPageImages/image1.png'
-import Image2 from '../images/loginSignupPageImages/image2.png'
-import Image3 from '../images/loginSignupPageImages/image3.png'
+import Image1 from '../images/loginSignupPageImages/image1.webp'
+import Image2 from '../images/loginSignupPageImages/image2.webp'
+import Image3 from '../images/loginSignupPageImages/image3.webp'
 
 import { FaArrowLeftLong } from "react-icons/fa6";
 

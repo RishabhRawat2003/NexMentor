@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from '../images/becamementor/image2.png';
+import Image from '../images/becamementor/image2.webp';
 
 function ScrollView() {
     return (

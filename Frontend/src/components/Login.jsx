@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import Logo from './images/logo2.png';
+import Logo from './images/logo2.webp';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from './utils/LoginForm';
 import Authentication from './utils/Authentication';

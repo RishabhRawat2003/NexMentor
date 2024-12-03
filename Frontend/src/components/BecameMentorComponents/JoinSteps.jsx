@@ -4,7 +4,7 @@ import { IoNewspaperOutline } from "react-icons/io5";
 import { MdVerifiedUser } from "react-icons/md";
 import { MdSettingsSuggest } from "react-icons/md";
 import { MdOutlinePublishedWithChanges } from "react-icons/md";
-import Image3 from '../images/becamementor/image3.png'
+import Image3 from '../images/becamementor/image3.webp'
 
 function JoinSteps() {
     return (

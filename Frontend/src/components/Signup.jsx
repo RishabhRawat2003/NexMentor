@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Logo from './images/logo2.png';
+import Logo from './images/logo2.webp';
 import TextField from '@mui/material/TextField';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Authentication from './utils/Authentication';

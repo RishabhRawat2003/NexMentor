@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Logo from './images/logo2.png';
+import Logo from './images/logo2.webp';
 import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { IoMdNotificationsOutline } from "react-icons/io";

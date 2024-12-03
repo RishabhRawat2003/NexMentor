@@ -1,5 +1,5 @@
 import React from 'react'
-import LandingImage from '../images/becamementor/landingimage1.png'
+import LandingImage from '../images/becamementor/landingimage1.webp'
 
 function LandingPage() {
     return (

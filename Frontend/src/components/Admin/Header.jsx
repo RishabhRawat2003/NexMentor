@@ -4,11 +4,13 @@ import { useDispatch } from 'react-redux';
 import { setToggleSidebar } from '../store/SidebarSlice';
 import { IoClose } from "react-icons/io5";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Header({ handleStateChange, getData }) {
     const [sideBar, setSideBar] = useState(false)
     const [userDetails, setUserDetails] = useState({})
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     function handleSidebar() {
         setSideBar((prevSideBar) => !prevSideBar);
@@ -26,6 +28,7 @@ function Header({ handleStateChange, getData }) {
             }
         } catch (error) {
             console.log("Error while fetching user details", error);
+            navigate('/')
         }
     }
 

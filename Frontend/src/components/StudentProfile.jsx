@@ -123,6 +123,10 @@ function StudentProfile() {
   }
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userType"))
+    if (!user || user !== 'Student') {
+      navigate('/')
+    }
     fetchUserDetails()
   }, [])
 

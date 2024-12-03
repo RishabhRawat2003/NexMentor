@@ -33,6 +33,10 @@ function Header({ handleStateChange, getData }) {
     }
 
     useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("userType"))
+        if (!user || user !== 'Mentor') {
+            navigate('/')
+        }
         fetchUser()
     }, [])
 

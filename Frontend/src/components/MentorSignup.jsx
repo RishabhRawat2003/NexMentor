@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Logo from './images/logo2.png';
-import { FaUserCheck } from "react-icons/fa6";
 import { Select, MenuItem, FormControl, TextField } from '@mui/material';
-// import SideImage from './images/loginSignupPageImages/academics.png';
-import Logo2 from './images/loginSignupPageImages/logoSideImage.png';
-import { TbUserUp } from "react-icons/tb";
-import { MdLockOutline } from "react-icons/md";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { Button, Box } from '@mui/material';
 import axios from 'axios'

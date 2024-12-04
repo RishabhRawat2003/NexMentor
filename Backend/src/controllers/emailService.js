@@ -2,7 +2,9 @@ import nodemailer from 'nodemailer'
 
 export const sendVerificationEmail = async (email, message, subject) => {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtpout.secureserver.net',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -21,7 +23,9 @@ export const sendVerificationEmail = async (email, message, subject) => {
 
 export const registeredUserForWebinar = async (email, message, subject) => {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtpout.secureserver.net',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -41,7 +45,9 @@ export const registeredUserForWebinar = async (email, message, subject) => {
 
 export const contactUs = async (email, message, subject) => {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtpout.secureserver.net',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS

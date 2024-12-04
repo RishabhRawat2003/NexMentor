@@ -6,6 +6,7 @@ import { FaYoutube } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaPhoneAlt } from "react-icons/fa";
 import { NavLink } from 'react-router-dom';
+import { CiMail } from "react-icons/ci";
 
 function Footer() {
   return (
@@ -52,10 +53,11 @@ function Footer() {
         </div>
         <div className='w-full h-auto flex flex-col justify-center items-center text-white md:justify-start md:items-start'>
           <h2 className='text-lg font-semibold lg:text-lg xl:text-xl'>CONTACT US</h2>
-          <div className='w-f h-auto flex flex-col gap-4 mt-4 lg:gap-8'>
+          <div className='w-f h-auto flex flex-col gap-4 mt-4'>
             <p className='text-center text-sm md:text-start md:text-base xl:text-lg'>If you have any query, please contact us info@nexmentor.com </p>
-            <p className='text-sm flex items-center justify-center gap-2 md:justify-start xl:text-xl'><FaLocationDot size={20} /> Jammu & Kashmir, India</p>
-            <p className='text-sm flex items-center justify-center gap-2 md:justify-start xl:text-xl'><FaPhoneAlt size={20} /> +91 1234567890</p>
+            <p className='text-sm flex items-center justify-center gap-2 md:justify-start xl:text-base'><FaLocationDot size={20} /> NEXMENTOR HQ Baramulla, Jammu & Kashmir, India</p>
+            <p className='text-sm flex items-center justify-center gap-2 md:justify-start xl:text-base'><CiMail size={20} /> support@nexmentor.com</p>
+            <p className='text-sm flex items-center justify-center gap-2 md:justify-start xl:text-base'><FaPhoneAlt size={20} /> +91 91039 02768</p>
           </div>
         </div>
       </div>

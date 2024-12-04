@@ -47,6 +47,8 @@ function Header() {
     } catch (error) {
       console.log("Error while fetching user", error);
       setLoading(false);
+      localStorage.removeItem("userId")
+      localStorage.removeItem("userType")
     }
   };
 

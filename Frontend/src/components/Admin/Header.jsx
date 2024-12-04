@@ -29,6 +29,7 @@ function Header({ handleStateChange, getData }) {
         } catch (error) {
             console.log("Error while fetching user details", error);
             navigate('/')
+            localStorage.removeItem("adminId")
         }
     }
 

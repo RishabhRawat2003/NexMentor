@@ -358,6 +358,40 @@ export const acceptApprovalRequest = asyncHandler(async (req, res) => {
         { new: true }
     )
 
+    const mailContent = `
+    Dear Mentor,
+
+Thank you for submitting your application to join NexMentor! We appreciate your interest in contributing to the success of NEET aspirants and are excited to move forward with your application.
+
+Application Received:
+We have successfully received your application, including your basic details, NEET scorecard, and college ID card. This is the first step in your journey to becoming a mentor with NexMentor.
+
+Next Steps:
+Document Verification and Soft Skills Assessment
+Our team will now review your submitted documents to ensure all requirements are met. We will also conduct a brief interview to assess your soft skills and suitability for mentoring.
+
+Selection Notification
+If your application meets our criteria, we will notify you and provide details on the next steps, including training and onboarding.
+
+What You Can Do Now:
+Stay Prepared: Reflect on your journey and your approach to mentoring to prepare for the soft skills assessment.
+Be Patient: Our team will notify you once the review process is complete.
+Questions or Assistance:
+If you have any questions or need further information during this process, please don’t hesitate to reach out to us at [support@nexmentor.com].
+
+Important Note:
+Please be aware that we will only contact you through this email or the phone number displayed on the NexMentor homepage of our website. For your security, do not respond to any other communication claiming to be from NexMentor.
+
+Thank you for your enthusiasm and commitment. We look forward to supporting you through this process and the possibility of welcoming you to NexMentor!
+
+Best regards,
+Team NexMentor
+Mentorship from Achievers
+    `;
+    const message = `Application Received – NexMentor Review Process`
+
+    await sendVerificationEmail(mentor.email, mailContent, message);  // this func is use to send email to mentor when they are approved from admin
+
     mentor.notifications.push(
         {
             message: "Congratulations, You are now verified by Admin",
